@@ -1,58 +1,117 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
-import SupabaseLogin from './pages/login'
+import LoginAuth from './pages//loginAuth'
+import RegisterAuth from './pages/registerAuth'
+import RegisterProfile from './pages/RegisterProfile'
+import SistemasDashboard from './segments/sistemasComputacionales'
+import ElectronicaDashboard from './segments/electronica'
 
 function App() {
   const [session, setSession] = useState(null)
+  const [perfil, setPerfil] = useState(null)
+  const [registeredUid, setRegisteredUid] = useState(null)
+  const [isRegisterView, setIsRegisterView] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // 1. Verificar si hay sesión iniciada al cargar
+    // Verificar la sesión al iniciar
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
-      setLoading(false)
+      if (session?.user) {
+        cargarPerfil(session.user.id)
+      } else {
+        setLoading(false)
+      }
     })
 
-    // 2. Escuchar eventos de inicio / cierre de sesión en tiempo real
+    // Escuchar el estado de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
+      if (session?.user) {
+        cargarPerfil(session.user.id)
+      } else {
+        setPerfil(null)
+        setRegisteredUid(null)
+        setLoading(false)
+      }
     })
 
     return () => subscription.unsubscribe()
   }, [])
 
-  const handleLogout = async () => {
-    await supabase.auth.signOut()
+  const cargarPerfil = async (uid) => {
+    const { data, error } = await supabase
+      .from('perfiles')
+      .select('*')
+      .eq('id', uid)
+      .maybeSingle()
+
+    if (!error && data) {
+      setPerfil(data)
+    }
+    setLoading(false)
   }
 
   if (loading) {
-    return <p style={{ textAlign: 'center', marginTop: '2rem' }}>Cargando aplicación...</p>
+    return <div style={{ textAlign: 'center', marginTop: '50px' }}>Cargando aplicación...</div>
   }
 
+  // CASO 1: Transición INMEDIATA tras el registro -> Formulario de perfil de usuario
+  if (registeredUid && !perfil) {
+    return (
+      <RegisterProfile
+        userId={registeredUid}
+        onProfileComplete={(datosPerfil) => {
+          setPerfil(datosPerfil)
+          setRegisteredUid(null)
+        }}
+      />
+    )
+  }
+
+  // CASO 2: Usuario autenticado pero sin registro de información en la BD (ej. cerró la ventana antes de llenar perfil)
+  if (session?.user && !perfil) {
+    return (
+      <RegisterProfile
+        userId={session.user.id}
+        onProfileComplete={(datosPerfil) => {
+          setPerfil(datosPerfil)
+        }}
+      />
+    )
+  }
+
+  // CASO 3: Sin sesión ni registro activo -> Permite alternar entre Login y Registro
+  if (!session) {
+    return isRegisterView ? (
+      <RegisterAuth
+        onAuthSuccess={(uid) => {
+          setRegisteredUid(uid)
+        }}
+        onGoToLogin={() => setIsRegisterView(false)}
+      />
+    ) : (
+      <LoginAuth
+        onGoToRegister={() => setIsRegisterView(true)}
+      />
+    )
+  }
+
+  // CASO 4: Sesión iniciada y Perfil completo -> Discriminación por Carrera
   return (
     <div>
-      {!session ? (
-        <SupabaseLogin />
-      ) : (
-        <div style={{ textAlign: 'center', padding: '2rem', fontFamily: 'sans-serif' }}>
-          <h1>¡Bienvenido a la Plataforma!</h1>
-          <p>Has ingresado con: <strong>{session.user.email}</strong></p>
+      <div style={{ textAlign: 'right', padding: '10px' }}>
+        <button onClick={() => supabase.auth.signOut()}>Cerrar Sesión</button>
+      </div>
 
-          <button
-            onClick={handleLogout}
-            style={{
-              padding: '0.6rem 1.2rem',
-              backgroundColor: '#ef4444',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              marginTop: '1rem',
-            }}
-          >
-            Cerrar Sesión
-          </button>
+      {perfil?.carrera === 'Ingeniería en Sistemas Computacionales' ? (
+        <SistemasDashboard user={session.user} perfil={perfil} />
+      ) : perfil?.carrera === 'Ingeniería Electrónica' ? (
+        <ElectronicaDashboard user={session.user} perfil={perfil} />
+      ) : (
+        <div style={{ padding: '20px' }}>
+          <h2>Panel General</h2>
+          <p>Bienvenido, {perfil?.nombre}</p>
         </div>
       )}
     </div>
