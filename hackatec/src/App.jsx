@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
 import LoginAuth from './pages//loginAuth'
 import RegisterAuth from './pages/registerAuth'
-import RegisterProfile from './pages/RegisterProfile'
+import RegisterProfile from './pages/registerProfile'
 import SistemasDashboard from './segments/sistemasComputacionales'
 import ElectronicaDashboard from './segments/electronica'
 
