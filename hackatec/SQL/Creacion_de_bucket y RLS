@@ -1,0 +1,42 @@
+-- 1. Crear el bucket 'perfiles-bucket' como público
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('perfiles-bucket', 'perfiles-bucket', true)
+ON CONFLICT (id) DO NOTHING;
+
+-- 2. Permitir la lectura pública de las imágenes
+CREATE POLICY "Permitir lectura publica"
+ON storage.objects FOR SELECT
+USING (bucket_id = 'perfiles-bucket');
+
+-- 3. Permitir subir imágenes a usuarios autenticados
+CREATE POLICY "Permitir subida a usuarios autenticados"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id = 'perfiles-bucket');
+
+-- 4. Permitir actualizar las imágenes
+CREATE POLICY "Permitir actualizacion a usuarios autenticados"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (bucket_id = 'perfiles-bucket')
+WITH CHECK (bucket_id = 'perfiles-bucket');
+
+-- Habilitar RLS en la tabla perfiles
+ALTER TABLE perfiles ENABLE ROW LEVEL SECURITY;
+
+-- Eliminar políticas anteriores si existen para evitar conflictos
+DROP POLICY IF EXISTS "Permitir insertar o actualizar perfil propio" ON perfiles;
+DROP POLICY IF EXISTS "Permitir lectura de perfiles" ON perfiles;
+
+-- Permitir a los usuarios crear o actualizar su propio perfil
+CREATE POLICY "Permitir insertar o actualizar perfil propio"
+ON perfiles FOR ALL
+TO authenticated
+USING (auth.uid() = id)
+WITH CHECK (auth.uid() = id);
+
+-- Permitir lectura de perfiles a usuarios autenticados
+CREATE POLICY "Permitir lectura de perfiles"
+ON perfiles FOR SELECT
+TO authenticated
+USING (true);
