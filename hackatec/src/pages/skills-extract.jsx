@@ -1,10 +1,73 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../supabaseClient';
 
-export default function DocumentUploader({ onExtractSuccess }) {
+export default function DocumentUploader({ carrera, onExtractSuccess }) {
   const [loading, setLoading] = useState(false);
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState(null);
   const [resultado, setResultado] = useState(null);
+  const [temarios, setTemarios] = useState([]);
+  const [carreraLoading, setCarreraLoading] = useState(true);
+  const [carreraError, setCarreraError] = useState(null);
+  const [claveCarrera, setClaveCarrera] = useState('');
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function cargarTemariosCarrera() {
+      setCarreraLoading(true);
+      setCarreraError(null);
+      setTemarios([]);
+      setClaveCarrera('');
+
+      if (!carrera) {
+        setCarreraError('No se encontró la carrera del perfil.');
+        setCarreraLoading(false);
+        return;
+      }
+
+      try {
+        const { data: carreraData, error: carreraQueryError } = await supabase
+          .from('carreras')
+          .select('clave, nombre')
+          .eq('nombre', carrera)
+          .maybeSingle();
+
+        if (carreraQueryError) {
+          throw new Error(`No se pudo consultar la carrera: ${carreraQueryError.message}`);
+        }
+        if (!carreraData?.clave) {
+          throw new Error(`No se encontró una clave para la carrera "${carrera}".`);
+        }
+
+        const params = new URLSearchParams({ clave: carreraData.clave });
+        const response = await fetch(`/api/carrera?${params.toString()}`);
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'No se pudieron cargar los temarios de la carrera.');
+        }
+
+        if (isCurrent) {
+          setClaveCarrera(data.claveCarrera);
+          setTemarios(data.materias);
+        }
+      } catch (err) {
+        if (isCurrent) {
+          console.error('Error al cargar temarios de la carrera:', err);
+          setCarreraError(err.message || 'Error al cargar los temarios de la carrera.');
+        }
+      } finally {
+        if (isCurrent) setCarreraLoading(false);
+      }
+    }
+
+    cargarTemariosCarrera();
+
+    return () => {
+      isCurrent = false;
+    };
+  }, [carrera]);
 
   const invokeProcesarPDF = async (file) => {
     const pdfBase64 = await new Promise((resolve, reject) => {
@@ -83,6 +146,45 @@ export default function DocumentUploader({ onExtractSuccess }) {
       <h3 style={styles.title}>Extraer competencias de un temario</h3>
       <p style={styles.subtitle}>Sube un PDF para extraer la carrera, asignatura y competencias.</p>
 
+      <section style={styles.careerSection}>
+        <h4 style={styles.sectionTitle}>Temarios disponibles de tu carrera</h4>
+        {carreraLoading && <p>Cargando temarios...</p>}
+        {carreraError && <div style={styles.errorMessage}>⚠️ {carreraError}</div>}
+        {!carreraLoading && !carreraError && (
+          <>
+            <p style={styles.hint}>
+              {carrera} ({claveCarrera}) · {temarios.length} materias
+            </p>
+            {temarios.length === 0 ? (
+              <p>No hay temarios disponibles para esta carrera.</p>
+            ) : (
+              <div style={styles.courseList}>
+                {temarios.map(({ archivo, claveMateria, contenido }) => (
+                  <article key={archivo} style={styles.courseCard}>
+                    <h5 style={styles.courseTitle}>
+                      {contenido.asignatura?.nombre || claveMateria}
+                    </h5>
+                    <p style={styles.hint}>{contenido.asignatura?.clave || claveMateria}</p>
+                    {contenido.competencias?.length > 0 ? (
+                      <ul style={styles.competencyList}>
+                        {contenido.competencias.map((competencia) => (
+                          <li key={competencia.id} style={styles.competency}>
+                            <strong>{competencia.nombre}</strong>
+                            <p>{competencia.descripcion}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p>Este temario no contiene competencias.</p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+      </section>
+
       <label style={{ ...styles.dropzone, opacity: loading ? 0.6 : 1 }}>
         <input
           type="file"
@@ -140,6 +242,36 @@ const styles = {
     margin: '0 0 1.25rem 0',
     fontSize: '0.875rem',
     color: '#666666',
+  },
+  careerSection: {
+    margin: '1.5rem 0',
+    padding: '1rem',
+    borderRadius: '8px',
+    backgroundColor: '#f8fafd',
+    border: '1px solid #e0e0e0',
+  },
+  sectionTitle: {
+    margin: '0 0 0.5rem 0',
+  },
+  courseList: {
+    display: 'grid',
+    gap: '0.75rem',
+  },
+  courseCard: {
+    padding: '1rem',
+    borderRadius: '6px',
+    backgroundColor: '#ffffff',
+    border: '1px solid #e0e0e0',
+  },
+  courseTitle: {
+    margin: '0 0 0.25rem 0',
+    fontSize: '1rem',
+  },
+  competencyList: {
+    paddingLeft: '1.25rem',
+  },
+  competency: {
+    marginTop: '0.75rem',
   },
   dropzone: {
     display: 'flex',

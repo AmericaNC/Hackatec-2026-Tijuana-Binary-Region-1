@@ -110,7 +110,7 @@ function App() {
       </div>
 
       {showSkillExtractor ? (
-        <DocumentUploader />
+        <DocumentUploader carrera={perfil?.carrera} />
       ) : (
         perfil?.carrera === 'Ingeniería en Sistemas Computacionales' ? (
           <SistemasDashboard user={session.user} perfil={perfil} />

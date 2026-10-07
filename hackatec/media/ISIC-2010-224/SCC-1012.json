@@ -1,0 +1,47 @@
+{
+  "carrera": {
+    "id": "ISIC-2010-224",
+    "nombre": "Ingeniería en Sistemas Computacionales"
+  },
+  "asignatura": {
+    "clave": "SCC-1012",
+    "nombre": "Inteligencia Artificial"
+  },
+  "competencias": [
+    {
+      "id": "IA-C01",
+      "nombre": "Fundamentos de inteligencia artificial",
+      "descripcion": "Comprende los fundamentos, conceptos, enfoques, evolución y áreas de aplicación de la inteligencia artificial para analizar problemas y soluciones en diferentes contextos."
+    },
+    {
+      "id": "IA-C02",
+      "nombre": "Representación del conocimiento y razonamiento",
+      "descripcion": "Representa conocimiento y aplica técnicas de razonamiento lógico y probabilístico para modelar y resolver problemas mediante sistemas de inteligencia artificial."
+    },
+    {
+      "id": "IA-C03",
+      "nombre": "Búsqueda y resolución de problemas",
+      "descripcion": "Aplica técnicas y algoritmos de búsqueda para modelar y resolver problemas mediante la exploración de espacios de estados y estrategias de búsqueda."
+    },
+    {
+      "id": "IA-C04",
+      "nombre": "Modelos y técnicas de inteligencia artificial",
+      "descripcion": "Utiliza modelos y técnicas de inteligencia artificial para desarrollar soluciones orientadas a problemas de clasificación, diagnóstico, toma de decisiones, control y análisis de información."
+    },
+    {
+      "id": "IA-C05",
+      "nombre": "Aplicaciones de inteligencia artificial",
+      "descripcion": "Identifica y aplica técnicas de inteligencia artificial en diferentes áreas como robótica, redes neuronales, visión artificial, lógica difusa, procesamiento de lenguaje natural y sistemas expertos."
+    },
+    {
+      "id": "IA-C06",
+      "nombre": "Desarrollo de soluciones basadas en inteligencia artificial",
+      "descripcion": "Diseña e implementa soluciones computacionales que utilizan técnicas de inteligencia artificial para resolver problemas de un entorno específico."
+    },
+    {
+      "id": "IA-C07",
+      "nombre": "Análisis y selección de técnicas de inteligencia artificial",
+      "descripcion": "Analiza problemas y selecciona técnicas de inteligencia artificial apropiadas considerando las características del problema, los recursos disponibles y los objetivos de la solución."
+    }
+  ]
+}

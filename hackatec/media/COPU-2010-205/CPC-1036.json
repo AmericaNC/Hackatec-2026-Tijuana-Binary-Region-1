@@ -1,0 +1,47 @@
+{
+  "carrera": {
+    "id": "CP-2010-001",
+    "nombre": "Contador Público"
+  },
+  "asignatura": {
+    "clave": "CPC-1036",
+    "nombre": "Planeación Financiera"
+  },
+  "competencias": [
+    {
+      "id": "PF-C01",
+      "nombre": "Administración del capital de trabajo",
+      "descripcion": "Analiza y aplica herramientas para la administración del capital de trabajo, considerando efectivo, cuentas por cobrar, inventarios y otros recursos de corto plazo para apoyar la gestión financiera de una organización."
+    },
+    {
+      "id": "PF-C02",
+      "nombre": "Administración de activos fijos",
+      "descripcion": "Analiza y evalúa alternativas relacionadas con la adquisición, valuación, mantenimiento, sustitución y financiamiento de activos fijos para apoyar la toma de decisiones financieras."
+    },
+    {
+      "id": "PF-C03",
+      "nombre": "Análisis del costo de capital",
+      "descripcion": "Analiza el costo de las diferentes fuentes de capital y evalúa sus implicaciones para determinar alternativas de inversión y financiamiento que contribuyan al desempeño financiero de una organización."
+    },
+    {
+      "id": "PF-C04",
+      "nombre": "Planeación financiera y presupuestal",
+      "descripcion": "Diseña y analiza planes financieros y presupuestos operativos y financieros para proyectar escenarios, evaluar resultados y apoyar la toma de decisiones de una organización."
+    },
+    {
+      "id": "PF-C05",
+      "nombre": "Evaluación y control financiero",
+      "descripcion": "Evalúa resultados financieros y presupuestales mediante el análisis de información financiera para identificar desviaciones, oportunidades y acciones de mejora."
+    },
+    {
+      "id": "PF-C06",
+      "nombre": "Fuentes de financiamiento",
+      "descripcion": "Analiza y compara diferentes alternativas de financiamiento empresarial considerando sus costos, características, riesgos y condiciones para determinar opciones adecuadas a las necesidades de una organización."
+    },
+    {
+      "id": "PF-C07",
+      "nombre": "Análisis financiero para la toma de decisiones",
+      "descripcion": "Integra herramientas de análisis y planeación financiera para evaluar alternativas y apoyar la toma de decisiones estratégicas en organizaciones del sector público o privado."
+    }
+  ]
+}

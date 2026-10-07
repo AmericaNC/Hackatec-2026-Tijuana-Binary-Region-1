@@ -1,0 +1,42 @@
+{
+  "carrera": {
+    "id": "ISIC-2010-224",
+    "nombre": "Ingeniería en Sistemas Computacionales"
+  },
+  "asignatura": {
+    "clave": "SCD-1022",
+    "nombre": "Simulación"
+  },
+  "competencias": [
+    {
+      "id": "SIM-C01",
+      "nombre": "Fundamentos de simulación",
+      "descripcion": "Comprende los conceptos, principios, metodología y aplicaciones fundamentales de la simulación para el análisis de sistemas y apoyo en la toma de decisiones."
+    },
+    {
+      "id": "SIM-C02",
+      "nombre": "Números pseudoaleatorios",
+      "descripcion": "Genera y analiza números pseudoaleatorios mediante diferentes métodos y pruebas estadísticas para su utilización en modelos de simulación."
+    },
+    {
+      "id": "SIM-C03",
+      "nombre": "Variables aleatorias",
+      "descripcion": "Aplica métodos para generar y utilizar variables aleatorias con el propósito de representar el comportamiento de sistemas reales en modelos de simulación."
+    },
+    {
+      "id": "SIM-C04",
+      "nombre": "Modelado y simulación",
+      "descripcion": "Utiliza métodos, lenguajes y herramientas de simulación para representar, analizar y evaluar sistemas reales o hipotéticos."
+    },
+    {
+      "id": "SIM-C05",
+      "nombre": "Análisis de resultados",
+      "descripcion": "Analiza e interpreta los resultados obtenidos mediante modelos de simulación para evaluar alternativas y apoyar la toma de decisiones."
+    },
+    {
+      "id": "SIM-C06",
+      "nombre": "Aplicación de la simulación",
+      "descripcion": "Integra conocimientos de simulación para analizar sistemas de servicios, inventarios, procesos productivos u otros sistemas, identificando oportunidades de mejora."
+    }
+  ]
+}

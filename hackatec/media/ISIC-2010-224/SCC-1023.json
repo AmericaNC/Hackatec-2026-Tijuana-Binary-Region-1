@@ -1,0 +1,47 @@
+{
+  "carrera": {
+    "id": "ISIC-2010-224",
+    "nombre": "Ingeniería en Sistemas Computacionales"
+  },
+  "asignatura": {
+    "clave": "SCC-1023",
+    "nombre": "Sistemas Programables"
+  },
+  "competencias": [
+    {
+      "id": "SP-C01",
+      "nombre": "Sensores y adquisición de información",
+      "descripcion": "Comprende y aplica principios de funcionamiento de sensores para identificar, medir y adquirir información de variables físicas en sistemas programables."
+    },
+    {
+      "id": "SP-C02",
+      "nombre": "Actuadores y control",
+      "descripcion": "Comprende y aplica principios de funcionamiento de actuadores para controlar dispositivos y procesos mediante sistemas programables."
+    },
+    {
+      "id": "SP-C03",
+      "nombre": "Microcontroladores",
+      "descripcion": "Comprende la arquitectura, características y funcionamiento de los microcontroladores para integrarlos en soluciones computacionales y sistemas automatizados."
+    },
+    {
+      "id": "SP-C04",
+      "nombre": "Programación de microcontroladores",
+      "descripcion": "Programa microcontroladores utilizando lenguajes y herramientas apropiadas para controlar dispositivos de entrada y salida y desarrollar soluciones basadas en hardware."
+    },
+    {
+      "id": "SP-C05",
+      "nombre": "Comunicación entre dispositivos",
+      "descripcion": "Utiliza puertos, buses y protocolos de comunicación para establecer la interacción y transferencia de información entre microcontroladores, dispositivos y sistemas."
+    },
+    {
+      "id": "SP-C06",
+      "nombre": "Diseño de interfaces",
+      "descripcion": "Diseña e implementa interfaces hombre-máquina y máquina-máquina para integrar hardware, software y dispositivos en sistemas programables."
+    },
+    {
+      "id": "SP-C07",
+      "nombre": "Integración de sistemas programables",
+      "descripcion": "Integra sensores, actuadores, microcontroladores, interfaces y mecanismos de comunicación para desarrollar soluciones de automatización y sistemas programables."
+    }
+  ]
+}
