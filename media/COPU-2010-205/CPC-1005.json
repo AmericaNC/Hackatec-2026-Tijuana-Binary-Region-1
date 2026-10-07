@@ -1,0 +1,52 @@
+{
+  "carrera": {
+    "id": "CP-2010-001",
+    "nombre": "Contador Público"
+  },
+  "asignatura": {
+    "clave": "CPC-1005",
+    "nombre": "Análisis e Interpretación de Estados Financieros"
+  },
+  "competencias": [
+    {
+      "id": "AIEF-C01",
+      "nombre": "Comprensión de la información financiera",
+      "descripcion": "Comprende los conceptos, elementos y propósito de la información financiera para identificar su importancia en el análisis de una organización."
+    },
+    {
+      "id": "AIEF-C02",
+      "nombre": "Análisis de estados financieros",
+      "descripcion": "Analiza estados financieros mediante diferentes métodos para identificar la situación y comportamiento financiero de una organización."
+    },
+    {
+      "id": "AIEF-C03",
+      "nombre": "Aplicación de razones financieras",
+      "descripcion": "Aplica razones financieras simples y estándar para evaluar e interpretar diferentes aspectos de la situación financiera de una organización."
+    },
+    {
+      "id": "AIEF-C04",
+      "nombre": "Análisis mediante porcientos integrales",
+      "descripcion": "Aplica el método de porcientos integrales para analizar la composición de los estados financieros e interpretar la participación relativa de sus elementos."
+    },
+    {
+      "id": "AIEF-C05",
+      "nombre": "Análisis de cambios financieros",
+      "descripcion": "Analiza aumentos y disminuciones en la información financiera para identificar orígenes, aplicaciones y cambios en los recursos de una organización."
+    },
+    {
+      "id": "AIEF-C06",
+      "nombre": "Análisis de flujo de efectivo",
+      "descripcion": "Analiza y relaciona los movimientos de efectivo de una organización para comprender sus fuentes, aplicaciones y comportamiento financiero."
+    },
+    {
+      "id": "AIEF-C07",
+      "nombre": "Análisis de tendencias financieras",
+      "descripcion": "Aplica métodos de tendencias e índices para identificar patrones y cambios en el comportamiento histórico de la información financiera."
+    },
+    {
+      "id": "AIEF-C08",
+      "nombre": "Interpretación financiera para la toma de decisiones",
+      "descripcion": "Interpreta los resultados del análisis financiero para identificar situaciones relevantes, evaluar alternativas y apoyar la toma de decisiones y optimización de recursos."
+    }
+  ]
+}

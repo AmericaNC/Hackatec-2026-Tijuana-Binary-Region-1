@@ -1,0 +1,67 @@
+{
+  "carrera": {
+    "id": "IE-2010-001",
+    "nombre": "Ingeniería Electrónica"
+  },
+  "asignatura": {
+    "clave": "ETP-1018",
+    "nombre": "Fundamentos Financieros"
+  },
+  "competencias": [
+    {
+      "id": "FF-C01",
+      "nombre": "Comprensión de la contabilidad financiera y administrativa",
+      "descripcion": "Comprende la definición, funciones, estructura y utilidad de la contabilidad financiera y administrativa para interpretar la información contable en las organizaciones."
+    },
+    {
+      "id": "FF-C02",
+      "nombre": "Interpretación de cuentas e información contable",
+      "descripcion": "Identifica e interpreta la naturaleza y significado de las principales cuentas contables, así como los conceptos de ingresos, gastos, costos, utilidad, rentabilidad y pérdida."
+    },
+    {
+      "id": "FF-C03",
+      "nombre": "Comprensión de los estados financieros",
+      "descripcion": "Comprende la estructura, clasificación e interrelación de los principales estados financieros, incluyendo el estado de resultados, balance general y flujo de efectivo."
+    },
+    {
+      "id": "FF-C04",
+      "nombre": "Análisis e interpretación financiera",
+      "descripcion": "Analiza e interpreta información financiera mediante diferentes técnicas para identificar la situación y desempeño económico de una entidad."
+    },
+    {
+      "id": "FF-C05",
+      "nombre": "Aplicación de razones financieras",
+      "descripcion": "Aplica razones financieras para evaluar diferentes aspectos de la situación financiera y apoyar la identificación de fortalezas, deficiencias y áreas de oportunidad."
+    },
+    {
+      "id": "FF-C06",
+      "nombre": "Análisis mediante porcientos integrales y estados comparativos",
+      "descripcion": "Aplica porcientos integrales y estados financieros comparativos para identificar la composición, variaciones y comportamiento de la información financiera."
+    },
+    {
+      "id": "FF-C07",
+      "nombre": "Comprensión y aplicación de sistemas de costos",
+      "descripcion": "Comprende la naturaleza, importancia y clasificación de los costos y aplica diferentes sistemas de costeo para determinar y analizar el costo de productos y servicios."
+    },
+    {
+      "id": "FF-C08",
+      "nombre": "Análisis de costos para la toma de decisiones",
+      "descripcion": "Analiza información de costos mediante diferentes métodos para apoyar la toma de decisiones administrativas y financieras de corto plazo."
+    },
+    {
+      "id": "FF-C09",
+      "nombre": "Elaboración y aplicación de presupuestos",
+      "descripcion": "Comprende y aplica el proceso presupuestario para planear, controlar y asignar recursos en las diferentes áreas funcionales de una organización."
+    },
+    {
+      "id": "FF-C10",
+      "nombre": "Elaboración del presupuesto maestro",
+      "descripcion": "Integra presupuestos de operación y financieros para desarrollar un presupuesto maestro que permita planear y controlar las operaciones y recursos de una organización."
+    },
+    {
+      "id": "FF-C11",
+      "nombre": "Aplicación de información financiera para la toma de decisiones",
+      "descripcion": "Integra información contable, financiera, de costos y presupuestaria para evaluar alternativas y fundamentar la toma de decisiones administrativas."
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "carrera": {
+    "id": "CP-2010-001",
+    "nombre": "Contador Público"
+  },
+  "asignatura": {
+    "clave": "CPD-1039",
+    "nombre": "Sistemas de Costos Predeterminados"
+  },
+  "competencias": [
+    {
+      "id": "SCP-C01",
+      "nombre": "Comprensión de la producción conjunta",
+      "descripcion": "Comprende el concepto, características y clasificación de la producción conjunta para identificar los productos principales, subproductos y desperdicios derivados de un mismo proceso productivo."
+    },
+    {
+      "id": "SCP-C02",
+      "nombre": "Registro contable de la producción conjunta",
+      "descripcion": "Aplica los procedimientos de registro contable de la producción conjunta para reconocer y controlar los costos asociados con productos, subproductos y desperdicios."
+    },
+    {
+      "id": "SCP-C03",
+      "nombre": "Asignación de costos conjuntos",
+      "descripcion": "Aplica métodos de asignación o prorrateo de los costos de producción conjunta para determinar el costo correspondiente a los diferentes productos obtenidos en un proceso productivo."
+    },
+    {
+      "id": "SCP-C04",
+      "nombre": "Elaboración de información financiera de costos",
+      "descripcion": "Elabora información financiera relacionada con los costos de producción, incluyendo el estado de costo de producción, estado de costo de lo vendido, estado de resultados y estado de situación financiera."
+    },
+    {
+      "id": "SCP-C05",
+      "nombre": "Comprensión de los costos predeterminados estimados",
+      "descripcion": "Comprende el concepto, clasificación, características, ventajas y desventajas de los costos predeterminados estimados como herramienta para anticipar y controlar los costos de producción."
+    },
+    {
+      "id": "SCP-C06",
+      "nombre": "Determinación de costos unitarios estimados",
+      "descripcion": "Determina los costos unitarios estimados mediante la elaboración y aplicación de hojas de costos que integran materia prima, mano de obra y costos indirectos de fabricación."
+    },
+    {
+      "id": "SCP-C07",
+      "nombre": "Aplicación de costos estimados por órdenes de producción",
+      "descripcion": "Aplica el sistema de costos predeterminados estimados en empresas que trabajan mediante órdenes de producción para determinar, registrar y controlar el costo de los productos fabricados."
+    },
+    {
+      "id": "SCP-C08",
+      "nombre": "Aplicación de costos estimados por procesos",
+      "descripcion": "Aplica el sistema de costos predeterminados estimados en empresas con procesos productivos para determinar y controlar los costos acumulados durante las diferentes etapas de producción."
+    },
+    {
+      "id": "SCP-C09",
+      "nombre": "Análisis y ajuste de variaciones",
+      "descripcion": "Determina, analiza y ajusta las variaciones entre los costos predeterminados estimados y los costos reales para identificar diferencias y apoyar la toma de decisiones."
+    },
+    {
+      "id": "SCP-C10",
+      "nombre": "Comprensión de los costos predeterminados estándar",
+      "descripcion": "Comprende el concepto, clasificación, características, ventajas y desventajas de los costos predeterminados estándar como herramienta de control de las operaciones productivas."
+    },
+    {
+      "id": "SCP-C11",
+      "nombre": "Determinación de costos unitarios estándar",
+      "descripcion": "Determina los costos unitarios estándar mediante la elaboración de hojas de costos basadas en estudios técnicos y en condiciones previamente establecidas de producción."
+    },
+    {
+      "id": "SCP-C12",
+      "nombre": "Aplicación de costos estándar por órdenes de producción",
+      "descripcion": "Aplica el sistema de costos predeterminados estándar en empresas que trabajan mediante órdenes de producción para registrar y controlar las operaciones productivas."
+    },
+    {
+      "id": "SCP-C13",
+      "nombre": "Aplicación de costos estándar por procesos",
+      "descripcion": "Aplica el sistema de costos predeterminados estándar en empresas que utilizan procesos productivos para determinar y controlar los costos de producción."
+    },
+    {
+      "id": "SCP-C14",
+      "nombre": "Análisis de desviaciones de costos estándar",
+      "descripcion": "Determina, analiza y registra las desviaciones entre los costos estándar y los costos reales de los elementos del costo para evaluar la eficiencia de las operaciones productivas."
+    },
+    {
+      "id": "SCP-C15",
+      "nombre": "Aplicación de sistemas de costos predeterminados para la toma de decisiones",
+      "descripcion": "Integra los conocimientos de producción conjunta, costos estimados y costos estándar para generar información útil para el control de operaciones, evaluación de resultados y toma de decisiones en empresas manufactureras."
+    }
+  ]
+}
