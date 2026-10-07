@@ -1,1 +1,3 @@
 server/
+.vercel
+.env*
