@@ -1,4 +1,8 @@
 {
+  "carrera": {
+    "id": "ISIC-2010-224",
+    "nombre": "Ingeniería en Sistemas Computacionales"
+  },
   "asignatura": {
     "clave": "SCD-1022",
     "nombre": "Simulación"

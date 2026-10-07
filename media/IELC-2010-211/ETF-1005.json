@@ -1,0 +1,52 @@
+{
+  "carrera": {
+    "id": "IE-2010-001",
+    "nombre": "Ingeniería en Electrónica"
+  },
+  "asignatura": {
+    "clave": "ETF-1005",
+    "nombre": "Circuitos Eléctricos II"
+  },
+  "competencias": [
+    {
+      "id": "CEII-C01",
+      "nombre": "Análisis de circuitos de corriente alterna",
+      "descripcion": "Analiza y aplica los conceptos, leyes y técnicas fundamentales para resolver circuitos eléctricos excitados con corriente alterna en estado estacionario, utilizando representaciones fasoriales, impedancias y admitancias complejas."
+    },
+    {
+      "id": "CEII-C02",
+      "nombre": "Análisis de redes de dos puertos",
+      "descripcion": "Calcula y analiza los parámetros z, y, h y T de redes eléctricas de dos puertos, así como sus diferentes formas de interconexión, para modelar y determinar las relaciones entre sus variables de entrada y salida."
+    },
+    {
+      "id": "CEII-C03",
+      "nombre": "Análisis de circuitos acoplados magnéticamente",
+      "descripcion": "Modela y analiza circuitos acoplados magnéticamente mediante el estudio de la autoinducción, inducción mutua, coeficiente de acoplamiento, polaridades y circuitos equivalentes, incluyendo el comportamiento del transformador ideal."
+    },
+    {
+      "id": "CEII-C04",
+      "nombre": "Análisis de circuitos trifásicos",
+      "descripcion": "Analiza y resuelve circuitos trifásicos balanceados y desbalanceados con conexiones estrella y delta, determinando sus parámetros eléctricos mediante métodos analíticos, experimentales y herramientas de simulación."
+    },
+    {
+      "id": "CEII-C05",
+      "nombre": "Análisis de potencia eléctrica",
+      "descripcion": "Analiza y determina la potencia real, reactiva, aparente y compleja en circuitos monofásicos y trifásicos, así como el factor de potencia y su corrección para optimizar el uso de las cargas eléctricas."
+    },
+    {
+      "id": "CEII-C06",
+      "nombre": "Análisis de circuitos en el dominio de la frecuencia",
+      "descripcion": "Analiza la respuesta en frecuencia de circuitos RL, RC y RLC mediante el estudio de resonancia, polos, ceros, ancho de banda, factor de calidad y filtros, utilizando herramientas de simulación y diagramas de Bode."
+    },
+    {
+      "id": "CEII-C07",
+      "nombre": "Aplicación de técnicas y teoremas de circuitos",
+      "descripcion": "Aplica métodos de análisis nodal, análisis de mallas y teoremas de superposición, reciprocidad, Thévenin, Norton y máxima transferencia de potencia para resolver y verificar circuitos eléctricos."
+    },
+    {
+      "id": "CEII-C08",
+      "nombre": "Simulación y verificación de circuitos eléctricos",
+      "descripcion": "Utiliza herramientas computacionales y de simulación para modelar, analizar y verificar el comportamiento de circuitos eléctricos, comparando resultados analíticos, experimentales y simulados para la solución de problemas de ingeniería."
+    }
+  ]
+}
