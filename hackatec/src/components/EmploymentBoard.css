@@ -1,9 +1,16 @@
 .employment-board {
+  box-sizing: border-box;
   max-width: 1040px;
   margin: 24px auto 48px;
   padding: 24px;
   color: var(--text-900);
   border-top: 1px solid var(--secondary-300);
+}
+
+.employment-board *,
+.employment-board *::before,
+.employment-board *::after {
+  box-sizing: border-box;
 }
 
 .employment-heading,
@@ -92,6 +99,7 @@
 .employment-form {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  min-width: 0;
   gap: 16px;
   margin: 24px 0 32px;
   padding: 20px;
@@ -112,6 +120,8 @@
 
 .employment-field input:not([type='checkbox']),
 .employment-field textarea {
+  display: block;
+  min-width: 0;
   width: 100%;
   padding: 10px;
   border: 1px solid var(--secondary-300);
@@ -144,7 +154,7 @@
 
 .employment-career-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
   gap: 8px 14px;
 }
 
@@ -952,17 +962,93 @@
   }
 
   .employment-form {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+    min-width: 0;
     gap: 12px;
-    margin-top: 16px;
-    padding: 12px;
+    margin: 16px 0 24px;
+    padding: 14px;
+    border-radius: 10px;
+    background: var(--background-50);
+  }
+
+  .employment-form-heading,
+  .employment-field,
+  .employment-careers,
+  .employment-form > .employment-message,
+  .employment-form > .employment-submit {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .employment-form-heading h3 {
+    font-size: 1.05rem;
+    line-height: 1.35;
   }
 
   .employment-field input:not([type='checkbox']),
-  .employment-field textarea,
+  .employment-field textarea {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 46px;
+    padding: 10px 12px;
+    border-radius: 7px;
+    background: var(--background-100);
+    color: var(--text-900);
+    font-size: 16px;
+  }
+
+  .employment-field textarea {
+    min-height: 104px;
+    resize: vertical;
+  }
+
   .employment-candidate-filters select,
   .employment-candidate-filters .employment-field input[type='search'] {
     min-height: 44px;
     font-size: 16px;
+  }
+
+  .employment-careers {
+    padding: 12px;
+    border-color: var(--secondary-300);
+    border-radius: 8px;
+    background: var(--background-50);
+  }
+
+  .employment-careers legend {
+    max-width: 100%;
+    padding: 0 6px;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
+  .employment-career-options {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .employment-career-option {
+    min-width: 0;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 9px 2px;
+    border-bottom: 1px solid var(--secondary-200);
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .employment-career-option:last-child {
+    border-bottom: 0;
+  }
+
+  .employment-career-option input {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 18px;
+    margin-top: 1px;
   }
 
   .employment-submit,
@@ -976,10 +1062,23 @@
     justify-content: center;
     gap: 0.5rem;
     width: 100%;
+    padding-inline: 14px;
+    border-radius: 7px;
+    font-size: 15px;
   }
 
   .employment-item {
     padding: 14px;
+  }
+
+  @media (max-width: 360px) {
+    .employment-form {
+      padding: 11px;
+    }
+
+    .employment-careers {
+      padding: 9px;
+    }
   }
 
   .employment-details {
