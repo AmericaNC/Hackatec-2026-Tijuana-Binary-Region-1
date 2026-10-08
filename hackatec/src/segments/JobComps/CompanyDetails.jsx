@@ -122,10 +122,6 @@ export default function CompanyDetails({
           <strong>Empresa</strong>
           <p>{companyData.nombre}</p>
         </div>
-        <div className="company-box-large">
-          <strong>Sobre la empresa</strong>
-          <p>{companyData.descripcion || 'La empresa aún no ha agregado una descripción.'}</p>
-        </div>
         <div className="company-box-small">
           <strong>Ubicación</strong>
           <p>{companyData.direccion || 'No especificada'}</p>
@@ -139,6 +135,10 @@ export default function CompanyDetails({
           </p>
         </div>
       </div>
+      <section className="company-about" aria-labelledby="company-about-title">
+        <h3 id="company-about-title">Sobre la empresa</h3>
+        <p>{companyData.descripcion || 'La empresa aún no ha agregado una descripción.'}</p>
+      </section>
     </section>
   );
 }
