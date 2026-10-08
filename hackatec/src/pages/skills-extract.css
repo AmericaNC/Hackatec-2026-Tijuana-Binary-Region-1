@@ -55,7 +55,7 @@
   padding: clamp(0.85rem, 2.5vw, 1.25rem);
   border: 1px solid var(--secondary-200, #d6c6c2);
   border-radius: 10px;
-  background: var(--background-100, #e6e6e6);
+  background: var(--background-50, #ffffff);
 }
 
 .skills-section-heading,
@@ -137,7 +137,7 @@
   padding: 0.75rem;
   border: 1px solid var(--secondary-200, #d6c6c2);
   border-radius: 8px;
-  background: var(--background-100, #e6e6e6);
+  background: var(--background-50, #ffffff);
 }
 
 .skills-competency-marker {
