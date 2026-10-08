@@ -3,12 +3,15 @@ import './loginViewStyle.css'
 
 export default function RegisterView({
   email, setEmail, password, setPassword, tipoCuenta, setTipoCuenta,
-  loading, error, handleRegister, onGoToLogin
+  nombre, setNombre, matricula, setMatricula, carrera, setCarrera,
+  academia, setAcademia, carreras, cargandoCarreras,
+  loading, error, status, handleRegister, onGoToLogin
 }) {
   return (
     <div className="login-card">
       <h2>Crear Cuenta</h2>
       {error && <p className="login-error">{error}</p>}
+      {status && <p className="login-status" role="status">{status}</p>}
 
       <form onSubmit={handleRegister} className="login-form">
         <label className="login-label" htmlFor="tipo-cuenta">Tipo de cuenta:</label>
@@ -39,6 +42,47 @@ export default function RegisterView({
           required
           className="login-input"
         />
+
+        {tipoCuenta === 'estudiante' && (
+          <>
+            <input
+              type="text"
+              value={nombre}
+              onChange={(event) => setNombre(event.target.value)}
+              placeholder="Nombre completo"
+              autoComplete="name"
+              required
+              className="login-input"
+            />
+            <input
+              type="text"
+              value={matricula}
+              onChange={(event) => setMatricula(event.target.value)}
+              placeholder="Matrícula / número de control"
+              required
+              className="login-input"
+            />
+            <select
+              value={carrera}
+              onChange={(event) => setCarrera(event.target.value)}
+              required
+              disabled={cargandoCarreras || carreras.length === 0}
+              className="login-input"
+              aria-label="Carrera"
+            >
+              <option value="">{cargandoCarreras ? 'Cargando carreras...' : 'Selecciona tu carrera'}</option>
+              {carreras.map((career) => <option key={career} value={career}>{career}</option>)}
+            </select>
+            <input
+              type="text"
+              value={academia}
+              onChange={(event) => setAcademia(event.target.value)}
+              placeholder="Academia / departamento"
+              required
+              className="login-input"
+            />
+          </>
+        )}
 
         <button type="submit" disabled={loading} className="login-button">
           {loading ? 'Registrando...' : 'Registrarse y Continuar'}

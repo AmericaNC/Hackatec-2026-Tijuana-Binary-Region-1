@@ -26,7 +26,9 @@ export default function DynamicJobBoard({
 
   useEffect(() => {
     async function fetchJobs() {
-      if (!perfil) {
+      if (!perfil?.carrera) {
+        setJobs([]);
+        setSelectedJob(null);
         setLoading(false);
         return;
       }
@@ -46,15 +48,14 @@ export default function DynamicJobBoard({
             areas_oportunidad, 
             carreras_dirigidas, 
             created_at
-          `);
+          `)
+          .contains('carreras_dirigidas', [perfil.carrera]);
 
         if (error) {
           console.error('Error al cargar ofertas:', error);
         } else if (data) {
           setJobs(data);
-          if (data.length > 0) {
-            setSelectedJob(data[0]);
-          }
+          setSelectedJob(data[0] || null);
         }
       } catch (err) {
         console.error('Error inesperado al conectar con Supabase:', err);
@@ -64,7 +65,7 @@ export default function DynamicJobBoard({
     }
 
     fetchJobs();
-  }, [perfil]);
+  }, [perfil?.id, perfil?.carrera]);
 
   const toggleBookmark = (type, id) => {
     if (type === 'job') {
