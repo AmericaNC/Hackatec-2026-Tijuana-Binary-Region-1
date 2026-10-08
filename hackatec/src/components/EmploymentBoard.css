@@ -19,6 +19,56 @@
   font-size: 24px;
 }
 
+.employment-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 24px 0 20px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--secondary-300);
+}
+
+.employment-tab {
+  display: inline-flex;
+  min-width: 118px;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 10px 14px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: var(--text-700);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.employment-tab:hover {
+  background: var(--background-50);
+  color: var(--text-900);
+}
+
+.employment-tab.is-active {
+  border-bottom-color: var(--primary-600);
+  color: var(--primary-800);
+}
+
+.employment-tab small {
+  display: inline-grid;
+  min-width: 22px;
+  height: 22px;
+  place-items: center;
+  border-radius: 11px;
+  background: var(--background-200);
+  color: var(--text-700);
+  font-size: 11px;
+}
+
+.employment-tab.is-active small {
+  background: var(--primary-100);
+  color: var(--primary-800);
+}
+
 .employment-eyebrow,
 .employment-company {
   margin: 0;
