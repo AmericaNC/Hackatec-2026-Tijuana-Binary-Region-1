@@ -1,0 +1,86 @@
+.activity-log {
+  width: min(100% - 32px, 980px);
+  margin: 20px auto 32px;
+  padding-top: 16px;
+  border-top: 1px solid #cbd5d1;
+  color: var(--text-900, #202b28);
+}
+
+.activity-log-heading,
+.activity-log-participants {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.activity-log-heading {
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.activity-log-eyebrow {
+  margin: 0 0 2px;
+  color: #95620d;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.activity-log-heading h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.activity-log-count,
+.activity-log-item time {
+  color: #68736e;
+  font-size: 12px;
+}
+
+.activity-log-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.activity-log-item {
+  padding: 11px 0;
+  border-top: 1px solid #e1e6e3;
+}
+
+.activity-log-participants {
+  flex-wrap: wrap;
+  font-size: 13px;
+}
+
+.activity-log-participants span {
+  color: #738078;
+}
+
+.activity-log-item p {
+  margin: 4px 0;
+  font-size: 13px;
+  white-space: pre-wrap;
+}
+
+.activity-log-state,
+.activity-log-error {
+  margin: 10px 0;
+  font-size: 13px;
+}
+
+.activity-log-error {
+  color: #a32d25;
+}
+
+@media (max-width: 520px) {
+  .activity-log-heading {
+    align-items: flex-start;
+  }
+
+  .activity-log-count {
+    text-align: right;
+  }
+}

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import { carrerasDisponibles } from '../constants/carreras'
+import { registrarActividad } from '../utils/activityLogs'
 import './EmploymentBoard.css'
 
 const emptyForm = {
@@ -96,12 +97,20 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
     } else {
       setFormulario(emptyForm)
       setStatusMsg('La vacante se publicó correctamente.')
+      await registrarActividad({
+        eventType: 'job_posted',
+        affectedUserId: null,
+        affectedName: `Estudiantes de ${formulario.carrerasDirigidas.join(', ')}`,
+        audienceCareers: formulario.carrerasDirigidas,
+        description: `Publicó la vacante "${formulario.nombreEmpleo.trim()}" para el puesto "${formulario.puestoTrabajo.trim()}".`,
+      })
       setRefresh((actual) => actual + 1)
     }
     setSaving(false)
   }
 
   const eliminarEmpleo = async (empleoId) => {
+    const empleoEliminado = empleos.find((empleo) => empleo.id === empleoId)
     const { error: deleteError } = await supabase
       .from('empleos')
       .delete()
@@ -110,6 +119,15 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
       setError(`No se pudo eliminar la vacante: ${deleteError.message}`)
     } else {
       setEmpleos((actual) => actual.filter((empleo) => empleo.id !== empleoId))
+      if (empleoEliminado) {
+        await registrarActividad({
+          eventType: 'job_deleted',
+          affectedUserId: null,
+          affectedName: `Estudiantes de ${(empleoEliminado.carreras_dirigidas || []).join(', ')}`,
+          audienceCareers: empleoEliminado.carreras_dirigidas || [],
+          description: `Retiró la vacante "${empleoEliminado.nombre_empleo}".`,
+        })
+      }
     }
   }
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import { registrarActividad } from '../utils/activityLogs';
 
 export default function GradeEntryForm({ carreraId, matricula, materias }) {
   const [periodo, setPeriodo] = useState('');
@@ -254,6 +255,10 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
         ...actuales,
       ]);
       setSuccess(`Se guardaron ${registros.length} calificaciones para el periodo ${periodoNormalizado}.`);
+      await registrarActividad({
+        eventType: 'grades_saved',
+        description: `Registró ${registros.length} calificación(es) del periodo ${periodoNormalizado}.`,
+      });
       setStep('');
     } catch (submitError) {
       console.error('Error al guardar calificaciones:', submitError);
@@ -290,6 +295,10 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
       }
 
       setStudyPlan(result.data);
+      await registrarActividad({
+        eventType: 'study_plan_generated',
+        description: `Generó un plan de estudio para el periodo ${periodo.trim()}.`,
+      });
     } catch (planGenerationError) {
       console.error('Error al generar el plan de estudio:', planGenerationError);
       setPlanError(planGenerationError.message || 'No se pudo generar el plan de estudio.');

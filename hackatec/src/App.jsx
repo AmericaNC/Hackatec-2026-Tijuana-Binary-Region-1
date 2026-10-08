@@ -5,6 +5,7 @@ import DynamicJobBoard from './segments/DynamicJobBoard';
 import EmploymentBoard from './components/EmploymentBoard';
 import DocumentUploader from './pages/skills-extract';
 import SavedSkillsPage from './components/SavedSkillsPage';
+import ActivityLog from './components/ActivityLog';
 
 // Importación de componentes de Autenticación
 import LandingView from './pages/landingView'; // O la ruta donde guardaste LandingView
@@ -154,6 +155,7 @@ export default function App() {
           currentArea={getHeaderTitle()}
         />
       )}
+      <ActivityLog userId={session.user.id} />
     </div>
   );
 }
