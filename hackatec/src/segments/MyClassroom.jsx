@@ -209,12 +209,19 @@ export default function MyClassroom({ session, onOpenExam }) {
                     onClick={() => setSelectedPlanId(String(plan.id))}
                     aria-pressed={isSelected}
                   >
-                    <span>
+                    <span className="classroom-plan-heading">
+                      <small className="classroom-plan-label">Plan académico</small>
                       <strong id={`plan-title-${plan.id}`}>Periodo {plan.periodo}</strong>
-                      <small>{new Date(plan.updated_at || plan.created_at).toLocaleDateString('es-MX')}</small>
                     </span>
-                    <span className="classroom-plan-task-count">
-                      {planTasks.length} {planTasks.length === 1 ? 'tarea' : 'tareas'}
+                    <span className="classroom-plan-meta">
+                      <small className="classroom-plan-date">
+                        Actualizado {new Date(plan.updated_at || plan.created_at).toLocaleDateString('es-MX')}
+                      </small>
+                      <span className="classroom-plan-task-count">
+                        <strong>{planTasks.length}</strong>
+                        {planTasks.length === 1 ? ' tarea' : ' tareas'}
+                      </span>
+                      <span className="classroom-plan-chevron" aria-hidden="true">›</span>
                     </span>
                   </button>
                   <p className="classroom-summary">{plan.plan?.resumen || 'Este plan no contiene un resumen.'}</p>
@@ -223,25 +230,34 @@ export default function MyClassroom({ session, onOpenExam }) {
                     <summary>Ver plan completo</summary>
                     <h3>Prioridades académicas</h3>
                     {priorities.length ? (
-                      <ul>
+                      <div className="classroom-priority-list">
                         {priorities.map((item, index) => (
-                          <li key={`${item.materia}-${index}`}>
-                            <strong>{item.materia}</strong> · {item.prioridad} · Calificación: {item.calificacion}
+                          <article className="classroom-priority-card" key={`${item.materia}-${index}`}>
+                            <div className="classroom-priority-heading">
+                              <strong>{item.materia}</strong>
+                              <span className={`classroom-priority-badge priority-${String(item.prioridad).toLowerCase()}`}>
+                                {item.prioridad}
+                              </span>
+                            </div>
+                            <p className="classroom-priority-grade">Calificación: {item.calificacion}</p>
                             <p>{item.recomendacion}</p>
-                          </li>
+                          </article>
                         ))}
-                      </ul>
+                      </div>
                     ) : <p>No hay prioridades registradas.</p>}
 
                     <h3>Plan semanal</h3>
                     {weeks.length ? weeks.map((week) => (
                       <section key={week.semana} className="classroom-week">
                         <h4>Semana {week.semana}: {week.objetivo}</h4>
-                        <ul>
+                        <div className="classroom-activity-list">
                           {(week.actividades || []).map((activity, index) => (
-                            <li key={`${week.semana}-${index}`}>{activity}</li>
+                            <article className="classroom-activity-card" key={`${week.semana}-${index}`}>
+                              <span className="classroom-activity-number">{String(index + 1).padStart(2, '0')}</span>
+                              <p>{activity}</p>
+                            </article>
                           ))}
-                        </ul>
+                        </div>
                         {planTasksByWeek[week.semana]?.length > 0 && (
                           <div className="classroom-tasks">
                             <h5>Tareas creadas para esta semana</h5>
@@ -261,7 +277,14 @@ export default function MyClassroom({ session, onOpenExam }) {
 
                     <h3>Recomendaciones generales</h3>
                     {recommendations.length ? (
-                      <ul>{recommendations.map((item, index) => <li key={`${index}-${item}`}>{item}</li>)}</ul>
+                      <div className="classroom-recommendation-list">
+                        {recommendations.map((item, index) => (
+                          <article className="classroom-recommendation-card" key={`${index}-${item}`}>
+                            <span aria-hidden="true">✓</span>
+                            <p>{item}</p>
+                          </article>
+                        ))}
+                      </div>
                     ) : <p>No hay recomendaciones registradas.</p>}
                   </details>
                 </article>

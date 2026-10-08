@@ -9,10 +9,17 @@
   align-items: stretch;
   gap: 1rem;
   width: 100%;
-  min-height: calc(100vh - 76px);
+  height: calc(100svh - 60px);
+  min-height: 0;
   padding: 1rem;
   background: var(--background-50);
   color: var(--text-900);
+  overflow: hidden;
+}
+
+.app-container-study-plans {
+  height: 100svh;
+  overflow: hidden;
 }
 
 .classroom-col-left,
@@ -20,8 +27,20 @@
 .classroom-col-right {
   display: flex;
   min-width: 0;
+  min-height: 0;
   flex-direction: column;
   gap: 1rem;
+}
+
+.classroom-col-center {
+  overflow: hidden;
+}
+
+.classroom-col-right {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: var(--primary-400) var(--background-200);
+  scrollbar-width: thin;
 }
 
 .classroom-panel {
@@ -93,7 +112,11 @@
 }
 
 .plans-panel {
-  min-height: 100%;
+  display: flex;
+  min-height: 0;
+  height: 100%;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .classroom-section-heading,
@@ -131,24 +154,56 @@
 
 .classroom-plan-list {
   display: grid;
-  gap: 0.75rem;
+  grid-auto-rows: max-content;
+  align-content: start;
+  min-height: 0;
+  flex: 1;
+  gap: 0.9rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 0.15rem 0.55rem 0.5rem 0.1rem;
+  scrollbar-color: var(--primary-400) var(--background-200);
+  scrollbar-width: thin;
+}
+
+.classroom-plan-list::-webkit-scrollbar {
+  width: 9px;
+}
+
+.classroom-plan-list::-webkit-scrollbar-track {
+  border-radius: 999px;
+  background: var(--background-200);
+}
+
+.classroom-plan-list::-webkit-scrollbar-thumb {
+  border: 2px solid var(--background-200);
+  border-radius: 999px;
+  background: var(--primary-400);
+}
+
+.classroom-plan-list::-webkit-scrollbar-thumb:hover {
+  background: var(--primary-600);
 }
 
 .classroom-plan-card {
-  padding: 0.85rem;
+  min-width: 0;
+  padding: 1rem;
   border: 1px solid var(--secondary-200);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--background-50);
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease;
 }
 
 .classroom-plan-card.is-selected {
   border-color: var(--primary-500);
+  background: var(--background-100);
   box-shadow: 0 0 0 1px var(--primary-500);
 }
 
 .classroom-plan-select {
   width: 100%;
-  padding: 0;
+  min-width: 0;
+  padding: 0.1rem 0;
   border: 0;
   background: transparent;
   color: inherit;
@@ -156,22 +211,103 @@
   cursor: pointer;
 }
 
-.classroom-plan-select > span:first-child {
+.classroom-plan-heading {
   display: grid;
-  gap: 0.2rem;
+  min-width: 0;
+  gap: 0.25rem;
+}
+
+.classroom-plan-label {
+  color: var(--text-700);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
 }
 
 .classroom-plan-select strong {
   color: var(--text-900);
 }
 
+.classroom-plan-heading strong {
+  font-size: 1.12rem;
+  line-height: 1.3;
+}
+
+.classroom-plan-meta {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.classroom-plan-date {
+  color: var(--text-700);
+  font-size: 0.75rem;
+}
+
+.classroom-plan-task-count {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--primary-200);
+  border-radius: 999px;
+  background: var(--primary-50);
+  color: var(--primary-700);
+  font-size: 0.76rem;
+}
+
+.classroom-plan-chevron {
+  color: var(--text-700);
+  font-size: 1.5rem;
+  line-height: 1;
+  transition: transform 160ms ease;
+}
+
+.classroom-plan-select[aria-pressed="true"] .classroom-plan-chevron {
+  transform: rotate(90deg);
+}
+
+.classroom-plan-select:focus-visible {
+  border-radius: 6px;
+  outline: 2px solid var(--primary-500);
+  outline-offset: 4px;
+}
+
+.classroom-plan-select:hover .classroom-plan-heading strong {
+  color: var(--primary-700);
+}
+
+.classroom-plan-select > span:first-child {
+  display: grid;
+  gap: 0.2rem;
+}
+
 .classroom-plan-select small {
   color: var(--text-700);
 }
 
+.classroom-plan-select > .classroom-plan-meta {
+  display: flex;
+  gap: 0.55rem;
+}
+
+/* Align plan name and supporting details without squeezing either at tablet widths. */
+.classroom-plan-select {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
 .classroom-summary {
-  margin: 0.8rem 0;
-  line-height: 1.55;
+  margin: 0.85rem 0;
+  color: var(--text-800);
+  line-height: 1.6;
+  overflow-wrap: anywhere;
 }
 
 .classroom-plan-details {
@@ -180,9 +316,16 @@
 }
 
 .classroom-plan-details > summary {
-  color: var(--primary-500);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--primary-700);
   font-weight: 600;
   cursor: pointer;
+}
+
+.classroom-plan-details > summary:hover {
+  color: var(--primary-500);
 }
 
 .classroom-plan-details h3 {
@@ -190,13 +333,78 @@
   font-size: 0.95rem;
 }
 
-.classroom-plan-details p,
-.classroom-plan-details li {
+.classroom-plan-details p {
   line-height: 1.5;
 }
 
-.classroom-plan-details ul {
-  padding-left: 1.25rem;
+.classroom-priority-list,
+.classroom-activity-list,
+.classroom-recommendation-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.classroom-priority-card,
+.classroom-activity-card,
+.classroom-recommendation-card {
+  min-width: 0;
+  border: 1px solid var(--secondary-200);
+  border-radius: 8px;
+  background: var(--background-50);
+}
+
+.classroom-priority-card {
+  padding: 0.75rem 0.85rem;
+}
+
+.classroom-priority-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.classroom-priority-badge {
+  padding: 0.18rem 0.55rem;
+  border: 1px solid var(--secondary-300);
+  border-radius: 999px;
+  background: var(--background-100);
+  color: var(--text-800);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.classroom-priority-badge.priority-alta {
+  border-color: var(--accent-400);
+  background: var(--accent-50);
+  color: var(--accent-800);
+}
+
+.classroom-priority-badge.priority-media {
+  border-color: var(--primary-300);
+  background: var(--primary-50);
+  color: var(--primary-700);
+}
+
+.classroom-priority-badge.priority-baja {
+  border-color: var(--secondary-300);
+  background: var(--secondary-50);
+  color: var(--secondary-700);
+}
+
+.classroom-priority-card p {
+  margin: 0.45rem 0 0;
+  color: var(--text-700);
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+
+.classroom-priority-card .classroom-priority-grade {
+  color: var(--text-900);
+  font-size: 0.78rem;
+  font-weight: 600;
 }
 
 .classroom-week {
@@ -213,7 +421,67 @@
 }
 
 .classroom-week ul {
-  margin-bottom: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.classroom-activity-card {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0.6rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.classroom-activity-number {
+  display: inline-flex;
+  width: 1.8rem;
+  height: 1.8rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: var(--primary-100);
+  color: var(--primary-700);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.classroom-activity-card p {
+  margin: 0;
+  color: var(--text-800);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.classroom-recommendation-card {
+  display: grid;
+  grid-template-columns: 1.5rem minmax(0, 1fr);
+  align-items: start;
+  gap: 0.55rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.classroom-recommendation-card > span {
+  display: inline-flex;
+  width: 1.35rem;
+  height: 1.35rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--primary-100);
+  color: var(--primary-700);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.classroom-recommendation-card p {
+  margin: 0;
+  color: var(--text-800);
+  font-size: 0.86rem;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 
 .classroom-tasks {
@@ -438,28 +706,64 @@
 @media (max-width: 1024px) {
   .classroom-container {
     grid-template-columns: minmax(0, 1fr) minmax(240px, 0.75fr);
+    grid-template-rows: 220px minmax(0, 1fr);
   }
 
   .classroom-col-left {
     grid-column: 1 / -1;
     display: grid;
     grid-template-columns: minmax(180px, 0.7fr) minmax(0, 1fr);
+    height: auto;
   }
 
   .log-panel {
     max-height: 260px;
   }
+
+  .classroom-col-center,
+  .classroom-col-right {
+    min-height: 0;
+  }
 }
 
 @media (max-width: 700px) {
+  .app-container-study-plans {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+  }
+
   .classroom-container {
     grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto;
+    height: auto;
+    min-height: calc(100svh - 60px);
+    overflow: visible;
     padding: 0.65rem;
+  }
+
+  .plans-panel {
+    height: auto;
+    overflow: visible;
+  }
+
+  .classroom-plan-list {
+    flex: initial;
+    overflow: visible;
+    padding: 0;
   }
 
   .classroom-col-left {
     grid-column: auto;
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .classroom-col-center {
+    overflow: visible;
+  }
+
+  .classroom-col-right {
+    overflow: visible;
   }
 
   .log-panel {

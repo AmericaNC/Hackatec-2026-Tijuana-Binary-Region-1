@@ -212,7 +212,7 @@ export default function App() {
 
   // 4. SI HAY SESIÓN ACTIVA -> Tableros de la aplicación
   return (
-    <div className="app-container">
+    <div className={`app-container${showStudyPlans && !examTaskId ? ' app-container-study-plans' : ''}`}>
       {(showSkillExtractor || showSavedSkills || showStudyPlans || examTaskId || showUserProfile || perfil?.tipo_cuenta === 'empresa') && (
         <Header
           title={getHeaderTitle()}
