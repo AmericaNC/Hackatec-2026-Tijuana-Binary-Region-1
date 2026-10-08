@@ -752,6 +752,24 @@
     padding: 0.65rem;
   }
 
+  .classroom-panel {
+    padding: 0.85rem;
+  }
+
+  .classroom-section-heading,
+  .classroom-plan-select {
+    align-items: flex-start;
+  }
+
+  .classroom-section-heading h1 {
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+
+  .classroom-plan-meta {
+    gap: 0.35rem;
+  }
+
   .plans-panel {
     height: auto;
     overflow: visible;
@@ -778,6 +796,20 @@
 
   .log-panel {
     max-height: 300px;
+  }
+
+  .classroom-col-right {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .classroom-task-list li {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  .classroom-exam-button {
+    width: 100%;
   }
 
   .classroom-section-heading {

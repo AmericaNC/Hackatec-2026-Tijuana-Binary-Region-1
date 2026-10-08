@@ -64,8 +64,8 @@ export default function Header({
 
             <button
               className={`icon-btn ${showSkillExtractor ? 'active' : ''}`}
-              title={showSkillExtractor ? "Volver al panel" : "Extraer competencias"}
-              aria-label="Extraer competencias"
+              title={showSkillExtractor ? "Volver al panel" : "Temarios y calificaciones"}
+              aria-label="Temarios y calificaciones"
               onClick={onToggleExtractor}
             >
               <Lightbulb aria-hidden="true" size={18} strokeWidth={2} />

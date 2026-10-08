@@ -242,6 +242,39 @@
   border-radius: 8px;
 }
 
+@media (max-width: 520px) {
+  .login-page {
+    justify-content: flex-start;
+    gap: 14px;
+    padding: max(16px, env(safe-area-inset-top)) 12px max(20px, env(safe-area-inset-bottom));
+  }
+
+  .login-top {
+    max-width: 100%;
+  }
+
+  .login-card {
+    max-width: 100%;
+    padding: 20px 16px;
+    border-radius: 12px;
+  }
+
+  .login-card h2 {
+    font-size: 1.45rem;
+  }
+
+  .login-input {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .login-button,
+  .login-btn-verify {
+    min-height: 44px;
+    width: 100%;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .login-input,
   .login-button,

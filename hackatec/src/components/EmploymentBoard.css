@@ -924,3 +924,95 @@
     text-align: left;
   }
 }
+
+@media (max-width: 640px) {
+  .employment-board {
+    width: calc(100% - 1rem);
+    margin: 0.75rem auto 1.5rem;
+    padding: 0.75rem;
+  }
+
+  .employment-heading h2 {
+    font-size: 1.25rem;
+    line-height: 1.3;
+  }
+
+  .employment-career-tag {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .employment-tabs {
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+  }
+
+  .employment-tab {
+    min-height: 44px;
+  }
+
+  .employment-form {
+    gap: 12px;
+    margin-top: 16px;
+    padding: 12px;
+  }
+
+  .employment-field input:not([type='checkbox']),
+  .employment-field textarea,
+  .employment-candidate-filters select,
+  .employment-candidate-filters .employment-field input[type='search'] {
+    min-height: 44px;
+    font-size: 16px;
+  }
+
+  .employment-submit,
+  .employment-delete {
+    min-height: 44px;
+  }
+
+  .employment-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+  }
+
+  .employment-item {
+    padding: 14px;
+  }
+
+  .employment-details {
+    gap: 12px;
+  }
+
+  .employment-candidate {
+    padding: 13px;
+  }
+
+  .employment-application-notice {
+    align-items: flex-start;
+    padding: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .employment-view-heading {
+    flex-wrap: wrap;
+  }
+
+  .employment-view-count {
+    width: 100%;
+    margin-left: 54px;
+  }
+
+  .employment-application-item {
+    grid-template-columns: 30px minmax(0, 1fr);
+  }
+
+  .employment-application-item > :last-child,
+  .employment-application-job,
+  .employment-application-item time {
+    grid-column: 2;
+  }
+}

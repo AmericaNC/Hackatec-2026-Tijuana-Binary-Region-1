@@ -2,8 +2,11 @@
   display: block;
   width: 100%;
   max-width: 980px;
-  min-height: calc(100vh - 76px);
+  height: auto;
+  min-height: calc(100svh - 60px);
   margin: 0 auto;
+  overflow: visible;
+  padding: 1rem;
 }
 
 .study-exam-panel {
@@ -113,10 +116,49 @@
 
 @media (max-width: 700px) {
   .study-exam-page {
-    padding: 0.65rem;
+    min-height: calc(100svh - 60px);
+    padding: 0.5rem;
   }
 
   .study-exam-panel {
     gap: 1rem;
+    padding: 1rem;
+  }
+
+  .study-exam-heading h1 {
+    font-size: 1.2rem;
+  }
+
+  .study-exam-form .classroom-exam-question {
+    padding: 0 0 0.85rem;
+  }
+
+  .study-exam-form .classroom-exam-question label {
+    min-height: 44px;
+    align-items: flex-start;
+    gap: 0.65rem;
+    padding: 0.5rem 0;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .study-exam-form .classroom-exam-question input[type='radio'] {
+    flex: 0 0 auto;
+    margin-top: 0.15rem;
+  }
+
+  .study-exam-submit,
+  .study-exam-state .classroom-exam-button,
+  .study-exam-outcome .classroom-exam-button {
+    width: 100%;
+    justify-self: stretch;
+  }
+
+  .study-exam-outcome {
+    width: 100%;
+  }
+
+  .study-exam-back {
+    min-height: 44px;
   }
 }

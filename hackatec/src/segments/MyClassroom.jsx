@@ -185,7 +185,7 @@ export default function MyClassroom({ session, onOpenExam }) {
           {!error && plans.length === 0 && (
             <div className="classroom-empty">
               <h2>Aún no tienes planes guardados</h2>
-              <p>Registra tus calificaciones y genera un plan desde “Extraer competencias”.</p>
+              <p>Registra tus calificaciones y genera un plan desde “Temarios y calificaciones”.</p>
             </div>
           )}
 

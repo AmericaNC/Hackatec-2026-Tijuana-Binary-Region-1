@@ -173,7 +173,7 @@ export default function App() {
   const getHeaderTitle = () => {
     if (showUserProfile) return 'Mi perfil';
     if (examTaskId) return 'Evaluación de tarea';
-    if (showSkillExtractor) return 'Extraer Competencias';
+    if (showSkillExtractor) return 'Temarios y calificaciones';
     if (showSavedSkills) return 'Mis Skills Guardadas';
     if (showStudyPlans) return 'Mis planes de estudio';
     if (perfil?.tipo_cuenta === 'empresa') return 'Panel de Empresa';

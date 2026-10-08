@@ -717,3 +717,114 @@
   border-radius: 8px;
   background: var(--primary-50);
 }
+
+@media (max-width: 900px) {
+  .board-container {
+    height: auto;
+    min-height: 100svh;
+    overflow: visible;
+  }
+
+  .board-main {
+    height: auto;
+    min-height: 0;
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .offers-section,
+  .job-details-section,
+  .job-details-empty,
+  .company-details-section,
+  .company-details-empty {
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .offers-section {
+    max-height: 340px;
+    border-right: 0;
+    border-bottom: 1px solid var(--secondary-200);
+  }
+
+  .offers-list-container {
+    min-height: 120px;
+  }
+
+  .job-details-section,
+  .job-details-empty {
+    height: auto;
+    overflow: visible;
+    border-right: 0;
+    border-bottom: 1px solid var(--secondary-200);
+  }
+
+  .company-details-section,
+  .company-details-empty {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 520px) {
+  .offers-section {
+    max-height: 300px;
+  }
+
+  .offers-header-title {
+    margin: 4px 0 8px;
+    font-size: 1rem;
+  }
+
+  .job-details-section,
+  .job-details-empty,
+  .company-details-section,
+  .company-details-empty {
+    padding: 16px;
+  }
+
+  .details-header {
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .details-title {
+    font-size: 21px !important;
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .details-meta {
+    gap: 8px;
+  }
+
+  .details-date {
+    font-size: 12px;
+    white-space: nowrap;
+  }
+
+  .details-body {
+    gap: 15px;
+  }
+
+  .details-actions .apply-btn {
+    width: 100%;
+  }
+
+  .company-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .company-box-large {
+    grid-column: auto;
+  }
+
+  .company-about {
+    padding-left: 10px;
+  }
+
+  .job-skill-assessment {
+    padding: 15px;
+  }
+}

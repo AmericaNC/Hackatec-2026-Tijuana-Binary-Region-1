@@ -48,8 +48,7 @@
   text-transform: uppercase;
 }
 
-.skills-career-section,
-.skills-extraction-result {
+.skills-career-section {
   display: grid;
   gap: 1rem;
   min-width: 0;
@@ -169,59 +168,6 @@
   overflow-wrap: anywhere;
 }
 
-.skills-dropzone {
-  display: flex;
-  min-height: 170px;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding: 1.5rem;
-  border: 2px dashed var(--primary-400, #6881ca);
-  border-radius: 10px;
-  background: var(--primary-50, #eceff8);
-  text-align: center;
-  cursor: pointer;
-  transition: border-color 160ms ease, background-color 160ms ease, opacity 160ms ease;
-}
-
-.skills-dropzone:hover:not(.is-loading) {
-  border-color: var(--primary-600, #354e97);
-  background: var(--primary-100, #d9dff2);
-}
-
-.skills-dropzone.is-loading {
-  cursor: progress;
-  opacity: 0.65;
-}
-
-.skills-file-input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-  clip-path: inset(50%);
-}
-
-.skills-file-input:focus-visible + .skills-upload-icon {
-  outline: 2px solid var(--primary-700, #283a71);
-  outline-offset: 4px;
-}
-
-.skills-upload-icon {
-  font-size: 2rem;
-}
-
-.skills-upload-text {
-  color: var(--primary-700, #283a71);
-  font-size: 0.95rem;
-  font-weight: 700;
-  overflow-wrap: anywhere;
-}
-
-.skills-upload-hint,
 .skills-state {
   color: var(--text-700, #4d4d4d);
   font-size: 0.82rem;
@@ -280,25 +226,6 @@
   background: var(--primary-50, #eceff8);
 }
 
-.skills-extraction-result {
-  background: var(--background-50, #f2f2f2);
-}
-
-.skills-json-preview {
-  max-height: 360px;
-  margin: 0;
-  padding: 1rem;
-  overflow: auto;
-  border: 1px solid var(--secondary-200, #d6c6c2);
-  border-radius: 7px;
-  background: var(--background-100, #e6e6e6);
-  color: var(--text-800, #333333);
-  font-size: 0.78rem;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
 @media (max-width: 600px) {
   .skills-extract-page {
     width: min(100% - 1rem, 1100px);
@@ -314,8 +241,19 @@
     flex-direction: column;
   }
 
-  .skills-dropzone {
-    min-height: 145px;
-    padding: 1rem;
+  .skills-extract-card {
+    gap: 0.9rem;
+    padding: 0.85rem;
+    border-radius: 9px;
+  }
+
+  .skills-career-section,
+  .skills-course-card {
+    padding: 0.8rem;
+  }
+
+  .skills-button {
+    width: 100%;
+    min-height: 44px;
   }
 }

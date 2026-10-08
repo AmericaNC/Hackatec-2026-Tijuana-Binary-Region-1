@@ -308,3 +308,40 @@
   white-space: nowrap;
   border: 0;
 }
+
+@media (max-width: 560px) {
+  .skills-tracker {
+    margin: 1rem 0;
+    padding: 1rem;
+  }
+
+  .skills-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .skills-heading h4 {
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+
+  .skills-overall {
+    min-width: 0;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .skills-row-title {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 0.25rem 0.75rem;
+  }
+
+  .skills-row-actions {
+    flex-wrap: wrap;
+  }
+
+  .skills-row-actions button {
+    min-height: 40px;
+  }
+}

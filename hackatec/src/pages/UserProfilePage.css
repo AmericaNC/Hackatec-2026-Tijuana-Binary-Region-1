@@ -211,4 +211,19 @@
   .user-profile-details {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  .user-profile-company-form {
+    margin-inline: 1rem;
+    padding: 0.85rem;
+  }
+
+  .user-profile-company-form textarea {
+    min-height: 120px;
+    font-size: 16px;
+  }
+
+  .user-profile-company-form button {
+    width: 100%;
+    min-height: 44px;
+  }
 }
