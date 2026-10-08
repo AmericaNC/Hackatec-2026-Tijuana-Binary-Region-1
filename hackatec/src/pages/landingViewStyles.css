@@ -1,31 +1,520 @@
-/* Estilos para LandingView */
-.landing-container {
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600&display=swap');
+
+/* =========================================================
+   Landing – usa las variables de color del proyecto
+   (--text-*, --background-*, --primary-*, --accent-*)
+   y se adapta solo a modo claro / oscuro.
+   ========================================================= */
+
+.lv-page {
+  --lv-display: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  --lv-body: 'Figtree', 'Segoe UI', system-ui, sans-serif;
+  --lv-gap: clamp(20px, 5vw, 64px);
+
+  min-height: 100vh;
+  background: var(--background-50);
+  color: var(--text-900);
+  font-family: var(--lv-body);
+  line-height: 1.6;
+  text-align: left;
+}
+
+.lv-page *,
+.lv-page *::before,
+.lv-page *::after {
+  box-sizing: border-box;
+}
+
+.lv-wrap {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 var(--gap, var(--lv-gap));
+}
+
+/* ---------- Barra superior ---------- */
+.lv-nav {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 20px var(--lv-gap);
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  min-height: 80vh;
-  text-align: center;
-  padding: 20px;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.lv-brand {
+  font-family: var(--lv-display);
+  font-weight: 700;
+  font-size: 1.15rem;
   color: var(--text-900);
 }
 
-.landing-title {
-  font-size: 2.5rem;
-  color: var(--primary-600);
-  margin-bottom: 15px;
-}
-
-.landing-subtitle {
-  font-size: 1.2rem;
-  color: var(--text-700);
-  margin-bottom: 30px;
-  max-width: 600px;
-  line-height: 1.5;
-}
-
-.landing-cta {
-  font-size: 1.1rem;
-  padding: 15px 32px;
+/* ---------- Botones y enlaces ---------- */
+.lv-btn {
+  font-family: var(--lv-body);
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  padding: 14px 24px;
   border-radius: 8px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: filter 0.15s ease, background-color 0.15s ease;
+}
+
+.lv-btn-primary {
+  background: var(--primary-500);
+  color: #fff;
+}
+
+.lv-btn-primary:hover {
+  filter: brightness(0.92);
+}
+
+.lv-btn-ghost {
+  background: transparent;
+  color: var(--text-900);
+  border-color: var(--background-300);
+  padding: 10px 18px;
+}
+
+.lv-btn-ghost:hover {
+  background: var(--background-100);
+}
+
+.lv-btn-accent {
+  background: var(--accent-500);
+  color: #150d04;
+}
+
+.lv-btn-accent:hover {
+  filter: brightness(1.08);
+}
+
+.lv-link {
+  color: var(--primary-600);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.lv-link:hover {
+  color: var(--primary-700);
+}
+
+.lv-btn:focus-visible,
+.lv-link:focus-visible {
+  outline: 3px solid var(--accent-500);
+  outline-offset: 3px;
+}
+
+/* ---------- Hero ---------- */
+.lv-hero {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: clamp(24px, 6vw, 72px) var(--lv-gap) clamp(48px, 8vw, 104px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
+  gap: clamp(32px, 5vw, 72px);
+  align-items: center;
+}
+
+.lv-title {
+  font-family: var(--lv-display);
+  font-weight: 700;
+  font-size: clamp(2.2rem, 5vw, 3.8rem);
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  margin: 0 0 20px;
+  color: var(--text-950);
+  text-wrap: balance;
+}
+
+.lv-lead {
+  font-size: clamp(1.05rem, 1.6vw, 1.2rem);
+  color: var(--text-700);
+  max-width: 52ch;
+  margin: 0 0 32px;
+}
+
+.lv-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 20px 28px;
+}
+
+/* ---------- Tarjeta de ejemplo (lo memorable) ---------- */
+.lv-demo {
+  background: var(--background-100);
+  border: 1px solid var(--background-200);
+  border-radius: 16px;
+  padding: clamp(18px, 3vw, 28px);
+  box-shadow: 0 18px 40px -24px rgba(13, 19, 38, 0.45);
+}
+
+.lv-demo-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.lv-demo-company {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--text-600);
+}
+
+.lv-demo-role {
+  margin: 2px 0 0;
+  font-family: var(--lv-display);
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: var(--text-950);
+}
+
+.lv-demo-tag {
+  flex-shrink: 0;
+  font-size: 0.8rem;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--background-200);
+  color: var(--text-700);
+}
+
+.lv-skills {
+  list-style: none;
+  margin: 0 0 20px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lv-skill {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  background: var(--background-50);
+  border: 2px solid var(--background-200);
+  border-left-width: 6px;
+}
+
+.lv-skill-name {
+  font-weight: 600;
+  color: var(--text-900);
+}
+
+.lv-skill-state {
+  font-size: 0.9rem;
+  color: var(--text-700);
+}
+
+.lv-skill-ok {
+  border-left-color: var(--primary-500);
+}
+
+.lv-skill-gap {
+  border-left-color: var(--accent-500);
+  animation: lv-gap-resolved 0.4s ease 4.6s forwards;
+}
+
+/* "Te falta" y "Curso completado" ocupan el mismo lugar */
+.lv-stack {
+  display: grid;
+  justify-items: end;
+}
+
+.lv-stack > span {
+  grid-area: 1 / 1;
+}
+
+.lv-state-gap {
+  color: var(--accent-600);
+  font-weight: 600;
+  animation: lv-fade-out 0.3s ease 4.6s forwards;
+}
+
+.lv-state-done {
+  color: var(--primary-600);
+  font-weight: 600;
+  opacity: 0;
+  animation: lv-fade-in 0.3s ease 4.6s forwards;
+}
+
+/* Curso y barra de progreso */
+.lv-course {
+  margin-bottom: 18px;
+}
+
+.lv-course-title {
+  margin: 0 0 8px;
+  font-size: 0.92rem;
+  color: var(--text-700);
+}
+
+.lv-bar {
+  height: 10px;
+  border-radius: 999px;
+  background: var(--background-200);
+  overflow: hidden;
+}
+
+.lv-bar-fill {
+  display: block;
+  height: 100%;
+  width: 0;
+  border-radius: 999px;
+  background: var(--primary-500);
+  animation: lv-fill 3.4s ease-in-out 1.2s forwards;
+}
+
+.lv-demo-foot {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-800);
+}
+
+@keyframes lv-fill {
+  to { width: 100%; }
+}
+
+@keyframes lv-fade-out {
+  to { opacity: 0; }
+}
+
+@keyframes lv-fade-in {
+  to { opacity: 1; }
+}
+
+@keyframes lv-gap-resolved {
+  to { border-left-color: var(--primary-500); }
+}
+
+/* ---------- Secciones ---------- */
+.lv-section {
+  padding: clamp(48px, 8vw, 96px) 0;
+}
+
+.lv-section-alt {
+  background: var(--background-100);
+  border-top: 1px solid var(--background-200);
+  border-bottom: 1px solid var(--background-200);
+}
+
+.lv-h2 {
+  font-family: var(--lv-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3vw, 2.2rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0 0 24px;
+  color: var(--text-950);
+}
+
+.lv-h3 {
+  font-family: var(--lv-display);
+  font-weight: 600;
+  font-size: 1.15rem;
+  line-height: 1.25;
+  margin: 0 0 8px;
+  color: var(--text-950);
+}
+
+.lv-text {
+  margin: 0;
+  color: var(--text-700);
+  max-width: 60ch;
+}
+
+/* ---------- Pasos (sí es una secuencia, por eso van numerados) ---------- */
+.lv-steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.lv-step {
+  position: relative;
+  padding-top: 20px;
+  border-top: 2px solid var(--background-300);
+}
+
+.lv-step-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  border-radius: 50%;
+  background: var(--primary-500);
+  color: #fff;
+  font-family: var(--lv-display);
+  font-weight: 700;
+}
+
+/* El paso donde se genera el curso resalta con el acento */
+.lv-step:nth-child(3) {
+  border-top-color: var(--accent-500);
+}
+
+.lv-step:nth-child(3) .lv-step-num {
+  background: var(--accent-500);
+  color: #150d04;
+}
+
+/* ---------- Estudiantes / Empresas ---------- */
+.lv-audiences {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0;
+}
+
+.lv-audience {
+  padding: 0 clamp(0px, 4vw, 56px);
+}
+
+.lv-audience:first-child {
+  padding-left: 0;
+  border-right: 1px solid var(--background-300);
+}
+
+.lv-audience:last-child {
+  padding-right: 0;
+}
+
+.lv-list {
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lv-list li {
+  position: relative;
+  padding-left: 22px;
+  color: var(--text-800);
+}
+
+.lv-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  background: var(--accent-500);
+}
+
+/* ---------- Cierre ---------- */
+.lv-final {
+  background: var(--primary-500);
+  color: #fff;
+  padding: clamp(48px, 7vw, 88px) 0;
+}
+
+.lv-final-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.lv-final-title {
+  font-family: var(--lv-display);
+  font-weight: 700;
+  font-size: clamp(1.6rem, 3.4vw, 2.4rem);
+  line-height: 1.15;
+  margin: 0;
+  max-width: 24ch;
+  color: #fff;
+  text-wrap: balance;
+}
+
+.lv-footer {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 24px var(--lv-gap);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--text-600);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 900px) {
+  .lv-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .lv-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .lv-steps {
+    grid-template-columns: 1fr;
+  }
+
+  .lv-audiences {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .lv-audience,
+  .lv-audience:first-child,
+  .lv-audience:last-child {
+    padding: 0;
+    border-right: 0;
+  }
+
+  .lv-audience:first-child {
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--background-300);
+  }
+
+  .lv-actions .lv-btn,
+  .lv-final .lv-btn {
+    width: 100%;
+  }
+}
+
+/* ---------- Movimiento reducido: se muestra directo el estado final ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .lv-bar-fill {
+    animation: none;
+    width: 100%;
+  }
+
+  .lv-skill-gap {
+    animation: none;
+    border-left-color: var(--primary-500);
+  }
+
+  .lv-state-gap {
+    animation: none;
+    opacity: 0;
+  }
+
+  .lv-state-done {
+    animation: none;
+    opacity: 1;
+  }
 }

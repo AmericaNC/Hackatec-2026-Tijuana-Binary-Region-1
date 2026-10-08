@@ -1,127 +1,215 @@
 /* loginViewStyle.css */
 @import "main.css";
+@import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500..800&family=Figtree:wght@400;500;600&display=swap');
 
-.login-card {
-  max-width: 380px;
-  margin: 40px auto;
-  padding: 24px;
-  /* Usamos variables para el borde, asumiendo un gris neutro o secundario.
-     Si prefieres el color del tema principal, cámbialo a var(--primary-200) */
-  border: 1px solid var(--secondary-200); 
-  border-radius: 8px;
-  font-family: sans-serif;
-  /* Aplicamos el fondo y el color de texto del tema */
-  background-color: var(--background-50);
-  color: var(--text-900);
-}
+/* =========================================================
+   Login / Registro – mismo estilo que la landing.
+   Se conservan todas las clases existentes para que la vista
+   de registro siga funcionando con este mismo archivo.
+   ========================================================= */
 
-.login-card h2 {
-  /* Aseguramos que el título respete el color de texto */
-  color: var(--text-900);
-}
-
-.login-form {
+/* ---------- Página (solo la usa LoginView) ---------- */
+.login-page {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 24px 16px;
+  background-color: var(--background-50);
+  color: var(--text-900);
+  font-family: 'Figtree', 'Segoe UI', system-ui, sans-serif;
+  box-sizing: border-box;
+}
+
+.login-top {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   gap: 12px;
 }
 
-.login-input {
-  padding: 10px;
-  font-size: 14px;
-  border-radius: 4px;
-  /* Bordes de los inputs usando los tonos secundarios del tema */
-  border: 1px solid var(--secondary-300);
-  background-color: var(--background-100);
+.login-brand {
+  font-family: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
   color: var(--text-900);
 }
 
+/* ---------- Tarjeta ---------- */
+.login-card {
+  box-sizing: border-box;
+  max-width: 420px;
+  margin: 40px auto;
+  padding: clamp(20px, 5vw, 32px);
+  border: 1px solid var(--background-200);
+  border-radius: 16px;
+  font-family: 'Figtree', 'Segoe UI', system-ui, sans-serif;
+  line-height: 1.5;
+  background-color: var(--background-100);
+  color: var(--text-900);
+  box-shadow: 0 18px 40px -24px rgba(13, 19, 38, 0.45);
+}
+
+.login-page .login-card {
+  width: 100%;
+  margin: 0;
+}
+
+.login-card h2 {
+  margin: 0 0 8px;
+  font-family: 'Bricolage Grotesque', 'Segoe UI', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 1.7rem;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  color: var(--text-950);
+}
+
+.login-intro {
+  margin: 0 0 24px;
+  color: var(--text-700);
+}
+
+/* ---------- Formulario ---------- */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-900);
+}
+
+.login-form .login-label:not(:first-child) {
+  margin-top: 8px;
+}
+
+.login-input {
+  padding: 12px 14px;
+  font-family: inherit;
+  font-size: 1rem;
+  border-radius: 8px;
+  border: 2px solid var(--background-300);
+  background-color: var(--background-50);
+  color: var(--text-900);
+  transition: border-color 0.15s ease;
+}
+
+.login-input::placeholder {
+  color: var(--text-500);
+}
+
 .login-input:focus {
-  /* Resaltamos el input al hacer foco usando el color primario */
-  outline: none;
   border-color: var(--primary-500);
 }
 
+.login-input:focus-visible {
+  outline: 3px solid var(--accent-500);
+  outline-offset: 2px;
+}
+
+/* ---------- Botones ---------- */
 .login-button {
-  padding: 12px;
-  /* Botón con el color principal de la paleta */
-  background-color: var(--primary-500); 
-  /* Texto contrastante. Asumimos texto claro para botón oscuro (y viceversa según el tema) */
-  color: var(--primary-50); 
-  border: none;
-  border-radius: 4px;
+  margin-top: 16px;
+  padding: 14px 24px;
+  font-family: inherit;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1;
+  background-color: var(--primary-500);
+  color: #fff;
+  border: 2px solid transparent;
+  border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
+  transition: filter 0.15s ease;
 }
 
 .login-button:hover:not(:disabled) {
-  /* Efecto hover oscureciendo o aclarando el botón según el tema */
-  background-color: var(--primary-600);
+  filter: brightness(0.92);
 }
 
 .login-button:disabled {
-  opacity: 0.7;
+  opacity: 0.6;
   cursor: not-allowed;
-  background-color: var(--primary-300);
 }
 
-.login-error {
-  /* Si prefieres usar un color semántico de error en lugar del rosa/morado de la paleta,
-     puedes dejar el #dc2626 original, pero aquí uso el color de texto más intenso del tema */
-  color: #dc2626; /* Puedes cambiarlo a var(--text-600) si quieres que siga la paleta estrictamente */
-  font-size: 13px;
+.login-button:focus-visible,
+.login-btn-verify:focus-visible,
+.login-link-btn:focus-visible {
+  outline: 3px solid var(--accent-500);
+  outline-offset: 3px;
 }
 
 .login-footer {
-  margin-top: 15px;
-  font-size: 14px;
+  margin: 20px 0 0;
+  font-size: 0.95rem;
   text-align: center;
   color: var(--text-800);
 }
 
 .login-link-btn {
+  padding: 0;
   background: none;
   border: none;
-  /* Enlace usando el color de acento o el primario del tema */
-  color: var(--accent-500); 
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  color: var(--primary-600);
   cursor: pointer;
   text-decoration: underline;
-  font-weight: bold;
+  text-underline-offset: 4px;
 }
 
 .login-link-btn:hover {
-  color: var(--accent-600);
+  color: var(--primary-700);
 }
 
-/* extension */
-
-.login-label {
-  font-size: 13px;
-  font-weight: bold;
-  color: var(--text-900);
-}
-
-.login-btn-verify {
-  padding: 10px;
-  background-color: var(--accent-500);
-  color: var(--accent-50);
-  border: none;
+/* ---------- Mensajes ---------- */
+.login-error {
+  margin: 0 0 16px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #991b1b;
+  background-color: #fee2e2;
+  border-left: 4px solid #dc2626;
   border-radius: 4px;
-  font-weight: bold;
+}
+
+/* ---------- Extensión (registro) ---------- */
+.login-btn-verify {
+  padding: 12px 16px;
+  font-family: inherit;
+  font-weight: 600;
+  background-color: var(--accent-500);
+  color: #150d04;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: filter 0.15s ease;
 }
 
 .login-btn-verify:hover:not(:disabled) {
-  background-color: var(--accent-600);
+  filter: brightness(1.08);
+}
+
+.login-btn-verify:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .login-file-box {
-  padding: 10px;
-  background-color: var(--background-100);
-  border-radius: 6px;
-  border: 1px dashed var(--secondary-300);
+  padding: 12px;
+  background-color: var(--background-50);
+  border-radius: 8px;
+  border: 2px dashed var(--background-300);
 }
 
 .login-avatar {
@@ -134,10 +222,10 @@
 
 .login-badge {
   padding: 10px;
-  font-size: 12px;
+  font-size: 0.85rem;
   text-align: center;
-  border-radius: 4px;
-  font-weight: bold;
+  border-radius: 8px;
+  font-weight: 600;
 }
 
 /* Colores semánticos directos para éxito/error */
@@ -146,10 +234,18 @@
 
 .login-status {
   color: var(--primary-800);
-  font-size: 13px;
-  font-weight: bold;
+  font-size: 0.9rem;
+  font-weight: 600;
   text-align: center;
   background-color: var(--primary-100);
-  padding: 8px;
-  border-radius: 4px;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .login-input,
+  .login-button,
+  .login-btn-verify {
+    transition: none;
+  }
 }
