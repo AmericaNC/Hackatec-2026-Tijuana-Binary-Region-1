@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { obtenerSkillsCurriculares } from '../utils/skills.js';
-import SkillsTracker from './SkillsTracker';
+import SkillsTracker from './SkillsTracker.jsx';
 import './SavedSkillsPage.css';
 
 export default function SavedSkillsPage({ carrera }) {
