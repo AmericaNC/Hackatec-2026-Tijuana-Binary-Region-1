@@ -19,11 +19,11 @@ export default function Header({
         {/* Botones de navegación solo para usuarios no-empresa */}
         {perfil?.tipo_cuenta !== 'empresa' && (
           <>
-            {/* 💼 Mis Skills */}
+            {/* 💼 Mis Skills / Volver a DynamicJobBoard */}
             <button
               className={`icon-btn ${showSavedSkills ? 'active' : ''}`}
-              title={showSavedSkills ? "Volver al panel" : "Mis skills"}
-              aria-label="Mis skills"
+              title={showSavedSkills ? "Volver al panel de empleos" : "Mis skills"}
+              aria-label={showSavedSkills ? "Volver al panel de empleos" : "Mis skills"}
               onClick={onToggleSavedSkills}
             >
               💼
