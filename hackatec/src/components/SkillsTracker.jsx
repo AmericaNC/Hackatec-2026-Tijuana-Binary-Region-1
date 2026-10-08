@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
-import { resumirProgresoSkills } from '../../api/_lib/skills.js'
+import { resumirProgresoSkills } from '../utils/skills.js'
 import './SkillsTracker.css'
 
 export default function SkillsTracker({ competenciasCurriculares, refreshKey }) {

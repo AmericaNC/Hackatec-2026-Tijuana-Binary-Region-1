@@ -2,7 +2,7 @@ import { GoogleGenAI, Type } from '@google/genai';
 import { createClient } from '@supabase/supabase-js';
 import process from 'node:process';
 import { obtenerTemariosCarrera } from './_lib/temarios.js';
-import { obtenerSkillsCurriculares, resumirProgresoSkills } from './_lib/skills.js';
+import { obtenerSkillsCurriculares, resumirProgresoSkills } from '../src/utils/skills.js';
 
 const planSchema = {
   type: Type.OBJECT,
