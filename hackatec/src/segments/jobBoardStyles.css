@@ -259,6 +259,7 @@
 }
 
 .offer-item {
+  text-align: left;
   padding: 12px;
   border-bottom: 1px dashed var(--secondary-300);
   cursor: pointer;
@@ -334,7 +335,7 @@
 .details-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: 20px;
   flex-shrink: 0;
 }
@@ -342,6 +343,7 @@
 .details-title {
   margin: 0;
   color: var(--text-900);
+  text-align: left;
 }
 
 .details-meta {
@@ -361,6 +363,7 @@
   align-content: start;
   gap: 18px;
   width: 100%;
+  text-align: left;
 }
 
 .details-position {
@@ -372,12 +375,14 @@
 
 .details-information {
   min-width: 0;
+  text-align: left;
 }
 
 .details-information h2 {
   margin: 0 0 6px;
   color: var(--text-900);
   font-size: 15px;
+  text-align: left;
 }
 
 .details-content {
@@ -407,9 +412,15 @@
 
 .details-actions {
   display: flex;
-  justify-content: flex-end;
+  justify-content: flex-start;
   margin-top: 20px;
   flex-shrink: 0;
+}
+
+.job-application-error {
+  margin: 10px 0 0;
+  color: #a32d25;
+  font-size: 13px;
 }
 
 /* Componente 3: CompanyDetails */

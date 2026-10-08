@@ -111,6 +111,11 @@ export default function EmployerCandidatesPage({
                           Preparándose para esta vacante
                         </span>
                       )}
+                      {vacante.haAplicado && (
+                        <span className="employment-candidate-applied">
+                          Postulación recibida
+                        </span>
+                      )}
                     </div>
                   ))}
                 </div>

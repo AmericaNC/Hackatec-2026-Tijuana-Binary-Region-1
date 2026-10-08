@@ -73,6 +73,7 @@ export default async function handler(req, res) {
     const jobIds = (jobs || []).map(({ id }) => id);
     let skillsByStudent = {};
     let preparationByStudent = {};
+    let applicationsByStudent = {};
     if (studentIds.length) {
       const { data: skills, error: skillsError } = await supabase
         .from('skills')
@@ -108,6 +109,22 @@ export default async function handler(req, res) {
           result[plan.alumno_id].add(plan.empleo_id);
           return result;
         }, {});
+
+        const { data: applications, error: applicationsError } = await supabase
+          .from('solicitudes_empleo')
+          .select('alumno_id, empleo_id')
+          .in('alumno_id', studentIds)
+          .in('empleo_id', jobIds);
+
+        if (applicationsError) {
+          throw new Error(`No se pudieron consultar las postulaciones: ${applicationsError.message}`);
+        }
+
+        applicationsByStudent = (applications || []).reduce((result, application) => {
+          result[application.alumno_id] ||= new Set();
+          result[application.alumno_id].add(application.empleo_id);
+          return result;
+        }, {});
       }
     }
 
@@ -123,6 +140,7 @@ export default async function handler(req, res) {
           nombre_empleo,
           puesto_trabajo,
           enPreparacion: preparationByStudent[student.uid]?.has(id) || false,
+          haAplicado: applicationsByStudent[student.uid]?.has(id) || false,
         })),
     }));
 

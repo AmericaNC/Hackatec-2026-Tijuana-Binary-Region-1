@@ -199,6 +199,7 @@
 }
 
 .employment-item {
+  text-align: left;
   padding: 18px;
   border: 1px solid var(--secondary-300);
   border-radius: 6px;
@@ -311,6 +312,7 @@
   border: 1px solid var(--secondary-300);
   border-radius: 6px;
   background: var(--background-50);
+  text-align: left;
 }
 
 .employment-candidate-header h3 {
@@ -713,6 +715,17 @@
   border-radius: 4px;
   background: var(--primary-50);
   color: var(--primary-800);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.employment-candidate-matches .employment-candidate-applied {
+  width: fit-content;
+  padding: 4px 7px;
+  border: 1px solid var(--accent-200);
+  border-radius: 4px;
+  background: var(--accent-50);
+  color: var(--accent-800);
   font-size: 11px;
   font-weight: 700;
 }

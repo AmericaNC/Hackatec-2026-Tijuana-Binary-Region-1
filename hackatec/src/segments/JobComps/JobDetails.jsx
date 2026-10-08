@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
 import './../jobBoardStyles.css';
 
@@ -14,6 +14,73 @@ export default function JobDetails({
   const [assessmentLoading, setAssessmentLoading] = useState(false);
   const [savingPlan, setSavingPlan] = useState(false);
   const [planSaved, setPlanSaved] = useState(false);
+  const [applicationStatus, setApplicationStatus] = useState('loading');
+  const [applicationError, setApplicationError] = useState('');
+  const [applying, setApplying] = useState(false);
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function loadApplicationStatus() {
+      if (!job || !session?.user?.id) {
+        setApplicationStatus('signed-out');
+        return;
+      }
+
+      setApplicationStatus('loading');
+      setApplicationError('');
+      try {
+        const { data: { session: activeSession }, error: sessionError } = await supabase.auth.getSession();
+        if (sessionError) throw new Error(`No se pudo verificar tu sesión: ${sessionError.message}`);
+        if (!activeSession?.access_token) throw new Error('Inicia sesión para consultar tu postulación.');
+
+        const params = new URLSearchParams({ empleoId: job.id });
+        const response = await fetch(`/api/job-applications?${params}`, {
+          headers: { Authorization: `Bearer ${activeSession.access_token}` },
+        });
+        const result = await response.json();
+        if (!response.ok) throw new Error(result.error || 'No se pudo consultar tu postulación.');
+        if (isCurrent) setApplicationStatus(result.aplicada ? 'applied' : 'not-applied');
+      } catch (error) {
+        if (isCurrent) {
+          console.error('Error al consultar la postulación:', error);
+          setApplicationError(error.message || 'No se pudo consultar tu postulación.');
+          setApplicationStatus('error');
+        }
+      }
+    }
+
+    loadApplicationStatus();
+    return () => { isCurrent = false; };
+  }, [job, session?.user?.id]);
+
+  const applyToJob = async () => {
+    setApplying(true);
+    setApplicationError('');
+
+    try {
+      const { data: { session: activeSession }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error(`No se pudo verificar tu sesión: ${sessionError.message}`);
+      if (!activeSession?.access_token) throw new Error('Inicia sesión para aplicar a esta vacante.');
+
+      const response = await fetch('/api/job-applications', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${activeSession.access_token}`,
+        },
+        body: JSON.stringify({ empleoId: job.id }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo registrar tu postulación.');
+      setApplicationStatus('applied');
+    } catch (error) {
+      console.error('Error al aplicar a la vacante:', error);
+      setApplicationError(error.message || 'No se pudo registrar tu postulación.');
+    } finally {
+      setApplying(false);
+    }
+  };
 
   const requestAssessment = async (action) => {
     setAssessmentLoading(action === 'evaluate');
@@ -115,10 +182,22 @@ export default function JobDetails({
         </div>
 
       <div className="details-actions">
-        <button className="apply-btn">
-          ✉️ Apply
+        <button
+          className="apply-btn"
+          type="button"
+          onClick={applyToJob}
+          disabled={applying || applicationStatus === 'loading' || applicationStatus === 'applied' || !session?.user?.id}
+        >
+          {applying
+            ? 'Enviando postulación...'
+            : applicationStatus === 'applied'
+              ? '✓ Ya aplicaste'
+              : !session?.user?.id
+                ? 'Inicia sesión para aplicar'
+                : '✉️ Apply'}
         </button>
       </div>
+      {applicationError && <p className="job-application-error" role="alert">{applicationError}</p>}
 
       <section className="job-skill-assessment" aria-labelledby="job-skill-assessment-title">
         <div className="job-skill-assessment-heading">
