@@ -22,16 +22,6 @@ const DOMINIOS_PROHIBIDOS = [
   'icloud.com'
 ]
 
-// Helper para normalizar textos
-const normalizarTexto = (texto) => {
-  if (!texto) return ''
-  return texto
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/[^a-z0-9]/g, '')
-}
-
 export default function RegisterProfile({ userId, tipoCuenta = 'estudiante', onProfileComplete }) {
   // --- ESTADOS DE FORMULARIO ---
   const [correo, setCorreo] = useState('')
@@ -184,25 +174,37 @@ export default function RegisterProfile({ userId, tipoCuenta = 'estudiante', onP
       return
     }
 
+    if (!carrera?.trim()) {
+      setError('Selecciona una carrera para completar el registro.')
+      return
+    }
+
+    if (!academia?.trim()) {
+      setError('La academia o departamento es obligatorio.')
+      return
+    }
+
     setLoading(true)
     setError(null)
 
     try {
-      const { data: { user } } = await supabase.auth.getUser()
+      const { data: { user }, error: authError } = await supabase.auth.getUser()
+      if (authError) throw new Error(`No se pudo verificar tu sesión: ${authError.message}`)
       const targetUserId = user ? user.id : userId
+      if (!targetUserId || targetUserId !== user?.id) {
+        throw new Error('La sesión no corresponde al usuario que intenta completar este perfil.')
+      }
 
       // PASO 1: VERIFICAR CARRERA
-      const { data: listaCarreras } = await supabase.from('carreras').select('*')
-      if (listaCarreras) {
-        const normCarreraUI = normalizarTexto(carrera)
-        const carreraEncontrada = listaCarreras.find((item) => {
-          const normBD = normalizarTexto(item.nombre)
-          return normBD.includes(normCarreraUI) || normCarreraUI.includes(normBD)
-        })
-
-        if (carreraEncontrada && carreraEncontrada.permiso_acceso === false) {
-          throw new Error(`⛔ Acceso Denegado: La carrera "${carreraEncontrada.nombre}" no tiene permiso de acceso habilitado.`)
-        }
+      const { data: carreraData, error: carreraError } = await supabase
+        .from('carreras')
+        .select('nombre, permiso_acceso')
+        .eq('nombre', carrera.trim())
+        .maybeSingle()
+      if (carreraError) throw new Error(`No se pudo verificar la carrera: ${carreraError.message}`)
+      if (!carreraData) throw new Error('La carrera seleccionada no existe en el catálogo.')
+      if (carreraData.permiso_acceso === false) {
+        throw new Error(`⛔ Acceso denegado: la carrera "${carreraData.nombre}" no está habilitada para registro.`)
       }
 
       // PASO 2: SUBIR FOTO
@@ -226,33 +228,40 @@ export default function RegisterProfile({ userId, tipoCuenta = 'estudiante', onP
         }
       }
 
-      // PASO 3: ALUMNOS
-      const alumnoPayload = {
-        matricula: matricula.trim(),
-        nombre: nombre.trim(),
-        carrera: carrera,
-        academia: academia.trim(),
-        activo: activo,
-        uid: targetUserId || null
-      }
+      // PASO 3: ACTUALIZAR EL REGISTRO CREADO PARA EL UID AUTENTICADO.
+      const { data: alumnoActualizado, error: errAlumno } = await supabase
+        .from('alumnos')
+        .update({
+          matricula: matricula.trim(),
+          nombre: nombre.trim(),
+          carrera: carreraData.nombre,
+          academia: academia.trim(),
+          activo,
+        })
+        .eq('uid', targetUserId)
+        .select('uid')
+        .maybeSingle()
 
-      const { error: errAlumno } = await supabase.from('alumnos').upsert([alumnoPayload], { onConflict: 'matricula' })
-      if (errAlumno) throw new Error(`Error al registrar en tabla alumnos: ${errAlumno.message}`)
+      if (errAlumno) throw new Error(`Error al guardar los datos del alumno: ${errAlumno.message}`)
+      if (!alumnoActualizado) {
+        throw new Error(
+          'No existe un registro de alumno vinculado a esta cuenta. Completa el registro desde la pantalla de creación de cuenta o vuelve a iniciar sesión.',
+        )
+      }
 
       // PASO 4: PERFILES
-      if (targetUserId) {
-        const profilePayload = {
-          id: targetUserId,
-          nombre: nombre.trim(),
-          matricula: matricula.trim(),
-          carrera: carrera,
-          foto_url: fotoUrl || null,
-          verificado: true
-        }
-
-        const { error: errPerfil } = await supabase.from('perfiles').upsert([profilePayload], { onConflict: 'id' })
-        if (errPerfil) console.warn('Advertencia al guardar perfiles:', errPerfil.message)
+      const profilePayload = {
+        id: targetUserId,
+        nombre: nombre.trim(),
+        matricula: matricula.trim(),
+        carrera: carreraData.nombre,
+        foto_url: fotoUrl,
+        verificado: true
       }
+      const { error: errPerfil } = await supabase
+        .from('perfiles')
+        .upsert([profilePayload], { onConflict: 'id' })
+      if (errPerfil) throw new Error(`Error al guardar el perfil: ${errPerfil.message}`)
 
       setStatusMsg('✅ ¡Registro completado e información guardada exitosamente en la base de datos!')
 
@@ -261,7 +270,7 @@ export default function RegisterProfile({ userId, tipoCuenta = 'estudiante', onP
           tipo_cuenta: 'estudiante',
           nombre: nombre.trim(),
           matricula: matricula.trim(),
-          carrera: carrera,
+          carrera: carreraData.nombre,
           correo: correo
         })
       }

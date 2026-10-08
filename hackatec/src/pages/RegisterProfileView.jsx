@@ -1,4 +1,3 @@
-import React from 'react'
 import './loginViewStyle.css'
 import { carrerasDisponibles } from '../constants/carreras'
 
@@ -167,6 +166,7 @@ export default function RegisterProfileView({
               id="alumno-carrera"
               value={carrera}
               onChange={(e) => setCarrera(e.target.value)}
+              required
               className="login-input"
             >
               {carrerasDisponibles.map((opcionCarrera) => (
@@ -183,6 +183,7 @@ export default function RegisterProfileView({
               value={academia}
               onChange={(e) => setAcademia(e.target.value)}
               placeholder="Ej. Sistemas y Computación"
+              required
               className="login-input"
             />
           </div>
