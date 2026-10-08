@@ -13,20 +13,66 @@ export default function ActivityLog({ userId }) {
   const [error, setError] = useState('')
 
   const cargarEventos = useCallback(async () => {
-    if (!userId) return
-    const { data, error: queryError } = await supabase
-      .from('activity_logs')
-      .select('id, actor_name, affected_name, description, created_at')
-      .order('created_at', { ascending: false })
-      .limit(7)
-
-    if (queryError) {
-      setError(`No se pudo cargar la actividad: ${queryError.message}`)
-    } else {
-      setError('')
-      setEventos(data || [])
+    if (!userId) {
+      setEventos([])
+      setError('No se pudo identificar al usuario para consultar la actividad.')
+      setCargando(false)
+      return
     }
-    setCargando(false)
+
+    try {
+      const [
+        { data: activityRows, error: activityError },
+        { data: taskRows, error: tasksError },
+      ] = await Promise.all([
+        supabase
+          .from('activity_logs')
+          .select('id, actor_name, affected_name, description, created_at')
+          .order('created_at', { ascending: false })
+          .limit(7),
+        supabase
+          .from('tareas')
+          .select('id, titulo, materia, periodo, intentos_examen, ultimo_puntaje, updated_at, created_at')
+          .eq('alumno_id', userId)
+          .gt('intentos_examen', 0)
+          .order('updated_at', { ascending: false })
+          .limit(7),
+      ])
+
+      if (activityError || tasksError) {
+        const messages = [
+          activityError && `actividad: ${activityError.message}`,
+          tasksError && `intentos de examen: ${tasksError.message}`,
+        ].filter(Boolean)
+        throw new Error(messages.join('; '))
+      }
+
+      setError('')
+      const activityEvents = (activityRows || []).map((event) => ({
+        ...event,
+        type: 'activity',
+      }))
+      const examEvents = (taskRows || []).map((task) => ({
+        id: `task-${task.id}`,
+        type: 'exam-attempt',
+        actor_name: 'Tú',
+        affected_name: `${task.materia} · ${task.titulo}`,
+        description: `Intento ${task.intentos_examen} de 2${task.ultimo_puntaje !== null
+          ? ` · Último puntaje: ${task.ultimo_puntaje}%`
+          : ''} · Periodo ${task.periodo}`,
+        created_at: task.updated_at || task.created_at,
+      }))
+      setEventos(
+        [...activityEvents, ...examEvents]
+          .sort((left, right) => new Date(right.created_at) - new Date(left.created_at))
+          .slice(0, 7),
+      )
+    } catch (loadError) {
+      console.error('Error al cargar actividad e intentos de examen:', loadError)
+      setError(`No se pudo cargar la actividad: ${loadError.message}`)
+    } finally {
+      setCargando(false)
+    }
   }, [userId])
 
   const refrescarEventos = useCallback(() => {
@@ -59,6 +105,9 @@ export default function ActivityLog({ userId }) {
         <ol className="activity-log-list">
           {eventos.map((evento) => (
             <li className="activity-log-item" key={evento.id}>
+              {evento.type === 'exam-attempt' && (
+                <span className="activity-log-type">Intento de examen</span>
+              )}
               <div className="activity-log-participants">
                 <strong>{evento.actor_name}</strong>
                 <span aria-hidden="true">→</span>

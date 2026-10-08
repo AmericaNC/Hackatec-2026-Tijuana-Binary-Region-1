@@ -52,7 +52,8 @@ SET search_path = public
 AS $$
 BEGIN
   UPDATE public.tareas
-  SET intentos_examen = GREATEST(COALESCE(intentos_examen, 0), NEW.intento)
+  SET intentos_examen = GREATEST(COALESCE(intentos_examen, 0), NEW.intento),
+      updated_at = timezone('utc'::text, now())
   WHERE id = NEW.tarea_id
     AND alumno_id = NEW.alumno_id;
 
