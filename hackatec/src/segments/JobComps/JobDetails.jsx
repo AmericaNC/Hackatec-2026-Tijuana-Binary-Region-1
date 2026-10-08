@@ -77,16 +77,42 @@ export default function JobDetails({
       </div>
 
       <div className="details-body">
-        <div className="details-content">
-          {job.descripcion}
-          <br/><br/>
-          <strong>Localidad:</strong> {job.localidad || 'No especificada'}
+        {job.puesto_trabajo && (
+          <p className="details-position">{job.puesto_trabajo}</p>
+        )}
+
+        {job.descripcion && (
+          <section className="details-information">
+            <h2>Descripción del empleo</h2>
+            <p className="details-content">{job.descripcion}</p>
+          </section>
+        )}
+
+        {job.prestaciones && (
+          <section className="details-information">
+            <h2>Prestaciones</h2>
+            <p className="details-content">{job.prestaciones}</p>
+          </section>
+        )}
+
+        {job.areas_oportunidad && (
+          <section className="details-information">
+            <h2>Áreas de oportunidad</h2>
+            <p className="details-content">{job.areas_oportunidad}</p>
+          </section>
+        )}
+
+        {Array.isArray(job.carreras_dirigidas) && job.carreras_dirigidas.length > 0 && (
+          <section className="details-information">
+            <h2>Carreras dirigidas</h2>
+            <ul className="details-career-list">
+              {job.carreras_dirigidas.map((carrera) => (
+                <li key={carrera}>{carrera}</li>
+              ))}
+            </ul>
+          </section>
+        )}
         </div>
-        <div className="details-images-column">
-          <div className="details-image-placeholder">Img 1</div>
-          <div className="details-image-placeholder">Img 2</div>
-        </div>
-      </div>
 
       <div className="details-actions">
         <button className="apply-btn">

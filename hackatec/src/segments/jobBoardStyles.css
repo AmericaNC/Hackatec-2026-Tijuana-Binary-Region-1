@@ -357,35 +357,52 @@
 }
 
 .details-body {
-  display: flex;
-  gap: 20px;
-  flex: 1;
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  width: 100%;
+}
+
+.details-position {
+  margin: -8px 0 0;
+  color: var(--primary-700);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.details-information {
+  min-width: 0;
+}
+
+.details-information h2 {
+  margin: 0 0 6px;
+  color: var(--text-900);
+  font-size: 15px;
 }
 
 .details-content {
-  flex: 1;
+  margin: 0;
   white-space: pre-line;
   color: var(--text-800);
   line-height: 1.6;
 }
 
-.details-images-column {
+.details-career-list {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 160px;
-  flex-shrink: 0;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
-.details-image-placeholder {
-  height: 120px;
-  background-color: var(--background-100);
-  border: 2px dashed var(--secondary-300);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--text-700);
-  border-radius: 6px;
+.details-career-list li {
+  padding: 6px 10px;
+  border: 1px solid var(--primary-200);
+  border-radius: 999px;
+  background: var(--primary-50);
+  color: var(--primary-800);
+  font-size: 13px;
 }
 
 .details-actions {
