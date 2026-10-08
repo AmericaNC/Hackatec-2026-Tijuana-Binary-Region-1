@@ -2,6 +2,10 @@
 
 Aplicacion React/Vite con funciones serverless de Vercel.
 
+## Publicar vacantes como empresa
+
+En Supabase, asegúrate de haber aplicado `SQL/migracion_empresas.sql` y `SQL/migracion_empleos.sql`, y ejecuta `SQL/migracion_registro_empresas.sql`. Esta última crea el registro de empresa al crear una cuenta empresarial y repara cuentas previas cuando sus datos están disponibles en los metadatos de Auth. Las cuentas anteriores sin esos datos podrán completar el perfil empresarial al iniciar sesión.
+
 ## Generar planes de estudio
 
 1. Ejecuta `SQL/migracion_planes_estudio.sql` en el SQL Editor de Supabase.

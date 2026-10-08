@@ -3,7 +3,9 @@ import ThemeToggle from '../components/ThemeToggle'
 
 export default function RegisterView({
   email, setEmail, password, setPassword, tipoCuenta, setTipoCuenta,
-  nombre, setNombre, matricula, setMatricula, carrera, setCarrera,
+  nombre, setNombre, nombreEmpresa, setNombreEmpresa,
+  razonSocialRfc, setRazonSocialRfc, direccionEmpresa, setDireccionEmpresa,
+  matricula, setMatricula, carrera, setCarrera,
   academia, setAcademia, carreras, cargandoCarreras,
   loading, error, status, handleRegister, onGoToLogin, theme, onToggleTheme
 }) {
@@ -81,6 +83,46 @@ export default function RegisterView({
               value={academia}
               onChange={(event) => setAcademia(event.target.value)}
               placeholder="Academia / departamento"
+              required
+              className="login-input"
+            />
+          </>
+        )}
+
+        {tipoCuenta === 'empresa' && (
+          <>
+            <label className="login-label" htmlFor="empresa-nombre">Nombre de la empresa</label>
+            <input
+              id="empresa-nombre"
+              type="text"
+              value={nombreEmpresa}
+              onChange={(event) => setNombreEmpresa(event.target.value)}
+              placeholder="Nombre comercial"
+              autoComplete="organization"
+              maxLength={200}
+              required
+              className="login-input"
+            />
+            <label className="login-label" htmlFor="empresa-razon-social">Razón social o RFC</label>
+            <input
+              id="empresa-razon-social"
+              type="text"
+              value={razonSocialRfc}
+              onChange={(event) => setRazonSocialRfc(event.target.value)}
+              placeholder="Razón social o RFC"
+              maxLength={200}
+              required
+              className="login-input"
+            />
+            <label className="login-label" htmlFor="empresa-direccion">Dirección</label>
+            <input
+              id="empresa-direccion"
+              type="text"
+              value={direccionEmpresa}
+              onChange={(event) => setDireccionEmpresa(event.target.value)}
+              placeholder="Dirección de la empresa"
+              autoComplete="street-address"
+              maxLength={300}
               required
               className="login-input"
             />

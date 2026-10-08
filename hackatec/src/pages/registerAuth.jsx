@@ -7,6 +7,9 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin, theme, onTogg
   const [password, setPassword] = useState('')
   const [tipoCuenta, setTipoCuenta] = useState('estudiante')
   const [nombre, setNombre] = useState('')
+  const [nombreEmpresa, setNombreEmpresa] = useState('')
+  const [razonSocialRfc, setRazonSocialRfc] = useState('')
+  const [direccionEmpresa, setDireccionEmpresa] = useState('')
   const [matricula, setMatricula] = useState('')
   const [carrera, setCarrera] = useState('')
   const [academia, setAcademia] = useState('')
@@ -82,6 +85,10 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin, theme, onTogg
         setLoading(false)
         return
       }
+    } else if (!nombreEmpresa.trim() || !razonSocialRfc.trim() || !direccionEmpresa.trim()) {
+      setError('Completa el nombre de la empresa, la razón social o RFC y la dirección para crear la cuenta.')
+      setLoading(false)
+      return
     }
 
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -95,7 +102,11 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin, theme, onTogg
             matricula: matricula.trim(),
             carrera,
             academia: academia.trim(),
-          } : {}),
+          } : {
+            empresa_nombre: nombreEmpresa.trim(),
+            razon_social_rfc: razonSocialRfc.trim(),
+            direccion: direccionEmpresa.trim(),
+          }),
         },
       },
     })
@@ -108,9 +119,15 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin, theme, onTogg
 
     if (data?.user) {
       onAuthSuccess?.(data.user.id, tipoCuenta)
-      setStatus(data.session
-        ? 'Cuenta creada. Tu perfil académico ya está guardado.'
-        : 'Cuenta creada. Confirma tu correo para iniciar sesión; tus datos académicos ya quedaron registrados.')
+      if (tipoCuenta === 'empresa') {
+        setStatus(data.session
+          ? 'Cuenta de empresa creada y lista para publicar vacantes.'
+          : 'Cuenta de empresa creada. Confirma tu correo para iniciar sesión y publicar vacantes.')
+      } else {
+        setStatus(data.session
+          ? 'Cuenta creada. Tu perfil académico ya está guardado.'
+          : 'Cuenta creada. Confirma tu correo para iniciar sesión; tus datos académicos ya quedaron registrados.')
+      }
     }
     setLoading(false)
   }
@@ -121,6 +138,9 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin, theme, onTogg
       password={password} setPassword={setPassword}
       tipoCuenta={tipoCuenta} setTipoCuenta={setTipoCuenta}
       nombre={nombre} setNombre={setNombre}
+      nombreEmpresa={nombreEmpresa} setNombreEmpresa={setNombreEmpresa}
+      razonSocialRfc={razonSocialRfc} setRazonSocialRfc={setRazonSocialRfc}
+      direccionEmpresa={direccionEmpresa} setDireccionEmpresa={setDireccionEmpresa}
       matricula={matricula} setMatricula={setMatricula}
       carrera={carrera} setCarrera={setCarrera}
       academia={academia} setAcademia={setAcademia}

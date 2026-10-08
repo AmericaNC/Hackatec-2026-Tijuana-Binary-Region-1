@@ -8,6 +8,7 @@ import SavedSkillsPage from './components/SavedSkillsPage';
 import MyClassroom from './segments/MyClassroom';
 import StudyTaskExam from './segments/StudyTaskExam';
 import UserProfilePage from './pages/UserProfilePage';
+import RegisterProfile from './pages/registerProfile';
 
 // Importación de componentes de Autenticación
 import LandingView from './pages/landingView'; // O la ruta donde guardaste LandingView
@@ -25,6 +26,7 @@ export default function App() {
   const theme = themePreference === 'system' ? systemTheme : themePreference;
   const [session, setSession] = useState(null);
   const [perfil, setPerfil] = useState(null);
+  const [empresaRegistroPendiente, setEmpresaRegistroPendiente] = useState(false);
   const [loading, setLoading] = useState(true);
 
   // Estado para controlar la vista antes de iniciar sesión: 'landing' | 'login' | 'register'
@@ -79,6 +81,7 @@ export default function App() {
       if (error) console.error('Error al cargar perfil:', error);
 
       let empresa = null;
+      let consultaEmpresaExitosa = true;
       if (
         data?.tipo_cuenta === 'empresa'
         || authUser?.user_metadata?.tipo_cuenta === 'empresa'
@@ -90,7 +93,10 @@ export default function App() {
           .eq('id', userId)
           .maybeSingle();
 
-        if (companyError) console.error('Error al verificar cuenta de empresa:', companyError);
+        if (companyError) {
+          console.error('Error al verificar cuenta de empresa:', companyError);
+          consultaEmpresaExitosa = false;
+        }
         else empresa = companyData;
       }
 
@@ -98,6 +104,9 @@ export default function App() {
         || authUser?.user_metadata?.tipo_cuenta
         || (empresa ? 'empresa' : 'estudiante');
 
+      setEmpresaRegistroPendiente(
+        tipoCuenta === 'empresa' && consultaEmpresaExitosa && !empresa,
+      );
       setPerfil({
         ...data,
         tipo_cuenta: tipoCuenta,
@@ -127,6 +136,7 @@ export default function App() {
         fetchPerfil(session.user.id, session.user);
       } else {
         setPerfil(null);
+        setEmpresaRegistroPendiente(false);
         setAuthView('landing'); // Regresar a landing si cierra sesión
         setLoading(false);
       }
@@ -273,7 +283,18 @@ export default function App() {
           onBack={() => setShowUserProfile(false)}
         />
       ) : perfil?.tipo_cuenta === 'empresa' ? (
-        <EmploymentBoard user={session.user} tipoCuenta="empresa" />
+        empresaRegistroPendiente ? (
+          <RegisterProfile
+            userId={session.user.id}
+            tipoCuenta="empresa"
+            onProfileComplete={() => {
+              setEmpresaRegistroPendiente(false);
+              fetchPerfil(session.user.id, session.user);
+            }}
+          />
+        ) : (
+          <EmploymentBoard user={session.user} tipoCuenta="empresa" />
+        )
       ) : examTaskId ? (
         <StudyTaskExam
           key={examTaskId}
