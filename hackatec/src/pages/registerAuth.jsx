@@ -5,6 +5,7 @@ import RegisterView from './RegisterView'
 export default function RegisterAuth({ onAuthSuccess, onGoToLogin }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [tipoCuenta, setTipoCuenta] = useState('estudiante')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -16,6 +17,7 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin }) {
     const { data, error: signUpError } = await supabase.auth.signUp({
       email,
       password,
+      options: { data: { tipo_cuenta: tipoCuenta } },
     })
 
     if (signUpError) {
@@ -25,7 +27,7 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin }) {
     }
 
     if (data?.user) {
-      onAuthSuccess(data.user.id)
+      onAuthSuccess(data.user.id, tipoCuenta)
     }
     setLoading(false)
   }
@@ -34,6 +36,7 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin }) {
     <RegisterView
       email={email} setEmail={setEmail}
       password={password} setPassword={setPassword}
+      tipoCuenta={tipoCuenta} setTipoCuenta={setTipoCuenta}
       loading={loading} error={error}
       handleRegister={handleRegister} onGoToLogin={onGoToLogin}
     />

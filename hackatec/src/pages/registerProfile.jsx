@@ -32,7 +32,7 @@ const normalizarTexto = (texto) => {
     .replace(/[^a-z0-9]/g, '')
 }
 
-export default function RegisterProfile({ userId, onProfileComplete }) {
+export default function RegisterProfile({ userId, tipoCuenta = 'estudiante', onProfileComplete }) {
   // --- ESTADOS DE FORMULARIO ---
   const [correo, setCorreo] = useState('')
   const [nombre, setNombre] = useState('')
@@ -40,6 +40,8 @@ export default function RegisterProfile({ userId, onProfileComplete }) {
   const [carrera, setCarrera] = useState('Ingeniería en Sistemas Computacionales')
   const [academia, setAcademia] = useState('Sistemas y Computación')
   const [activo, setActivo] = useState(true)
+  const [razonSocialRfc, setRazonSocialRfc] = useState('')
+  const [direccion, setDireccion] = useState('')
 
   // --- ESTADOS DE CONTROL Y UI ---
   const [loading, setLoading] = useState(false)
@@ -129,6 +131,41 @@ export default function RegisterProfile({ userId, onProfileComplete }) {
   // ==========================================
   const handleRegistrarAlumno = async (e) => {
     e.preventDefault()
+
+    if (tipoCuenta === 'empresa') {
+      if (!nombre.trim() || !razonSocialRfc.trim() || !direccion.trim()) {
+        setError('El nombre, la razón social o RFC y la dirección son obligatorios.')
+        return
+      }
+
+      setLoading(true)
+      setError(null)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        const targetUserId = user ? user.id : userId
+        if (!targetUserId) throw new Error('No se encontró el usuario de la sesión.')
+
+        const empresaPayload = {
+          id: targetUserId,
+          nombre: nombre.trim(),
+          razon_social_rfc: razonSocialRfc.trim(),
+          direccion: direccion.trim()
+        }
+        const { error: errEmpresa } = await supabase
+          .from('empresas')
+          .upsert([empresaPayload], { onConflict: 'id' })
+        if (errEmpresa) throw new Error(`Error al registrar la empresa: ${errEmpresa.message}`)
+
+        setStatusMsg('Registro de empresa completado y guardado en la base de datos.')
+        onProfileComplete?.({ ...empresaPayload, tipo_cuenta: 'empresa' })
+      } catch (err) {
+        console.error('Error durante el registro de empresa:', err)
+        setError(err.message || 'Error al guardar la información de la empresa.')
+      } finally {
+        setLoading(false)
+      }
+      return
+    }
 
     const checkDominio = validarDominioInstitucional(correo)
     if (!checkDominio.esValido) {
@@ -221,6 +258,7 @@ export default function RegisterProfile({ userId, onProfileComplete }) {
 
       if (onProfileComplete) {
         onProfileComplete({
+          tipo_cuenta: 'estudiante',
           nombre: nombre.trim(),
           matricula: matricula.trim(),
           carrera: carrera,
@@ -245,6 +283,9 @@ export default function RegisterProfile({ userId, onProfileComplete }) {
       carrera={carrera} setCarrera={setCarrera}
       academia={academia} setAcademia={setAcademia}
       activo={activo} setActivo={setActivo}
+      tipoCuenta={tipoCuenta}
+      razonSocialRfc={razonSocialRfc} setRazonSocialRfc={setRazonSocialRfc}
+      direccion={direccion} setDireccion={setDireccion}
       loading={loading} validando={validando}
       error={error} statusMsg={statusMsg}
       fotoPreview={fotoPreview} correoValidado={correoValidado}

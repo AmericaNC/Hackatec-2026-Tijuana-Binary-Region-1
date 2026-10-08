@@ -6,12 +6,14 @@ import RegisterProfile from './pages/registerProfile'
 import DocumentUploader from './pages/skills-extract'
 import SistemasDashboard from './segments/sistemasComputacionales'
 import ElectronicaDashboard from './segments/electronica'
+import EmploymentBoard from './components/EmploymentBoard'
 import LandingView from './pages/landingView.jsx' // <-- Importamos la nueva Landing
 
 function App() {
   const [session, setSession] = useState(null)
   const [perfil, setPerfil] = useState(null)
   const [registeredUid, setRegisteredUid] = useState(null)
+  const [registeredAccountType, setRegisteredAccountType] = useState(null)
   
   // Estados de navegación
   const [showLanding, setShowLanding] = useState(true) // <-- Nuevo estado para la Landing
@@ -29,7 +31,16 @@ function App() {
 
     if (!error && data) {
       setPerfil(data)
+      setLoading(false)
+      return
     }
+
+    const { data: empresa, error: empresaError } = await supabase
+      .from('empresas')
+      .select('*')
+      .eq('id', uid)
+      .maybeSingle()
+    if (!empresaError && empresa) setPerfil({ ...empresa, tipo_cuenta: 'empresa' })
     setLoading(false)
   }
 
@@ -66,9 +77,11 @@ function App() {
     return (
       <RegisterProfile
         userId={registeredUid}
+        tipoCuenta={registeredAccountType || 'estudiante'}
         onProfileComplete={(datosPerfil) => {
           setPerfil(datosPerfil)
           setRegisteredUid(null)
+          setRegisteredAccountType(null)
         }}
       />
     )
@@ -79,6 +92,7 @@ function App() {
     return (
       <RegisterProfile
         userId={session.user.id}
+        tipoCuenta={session.user.user_metadata?.tipo_cuenta || 'estudiante'}
         onProfileComplete={(datosPerfil) => {
           setPerfil(datosPerfil)
         }}
@@ -96,8 +110,9 @@ function App() {
     // 3.2: Mostrar Login o Registro según corresponda
     return isRegisterView ? (
       <RegisterAuth
-        onAuthSuccess={(uid) => {
+        onAuthSuccess={(uid, tipoCuenta) => {
           setRegisteredUid(uid)
+          setRegisteredAccountType(tipoCuenta)
         }}
         onGoToLogin={() => setIsRegisterView(false)}
       />
@@ -112,28 +127,35 @@ function App() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '10px' }}>
-        <button className="login-button" style={{ padding: '8px 16px' }} onClick={() => setShowSkillExtractor((current) => !current)}>
-          {showSkillExtractor ? 'Volver al panel' : 'Extraer competencias'}
-        </button>
+        {perfil?.tipo_cuenta !== 'empresa' && (
+          <button className="login-button" style={{ padding: '8px 16px' }} onClick={() => setShowSkillExtractor((current) => !current)}>
+            {showSkillExtractor ? 'Volver al panel' : 'Extraer competencias'}
+          </button>
+        )}
         <button className="login-btn-verify" style={{ backgroundColor: '#dc2626' }} onClick={() => {
           supabase.auth.signOut()
           setShowLanding(true) // Regresar a la landing al cerrar sesión
         }}>Cerrar Sesión</button>
       </div>
 
-      {showSkillExtractor ? (
+      {perfil?.tipo_cuenta === 'empresa' ? (
+        <EmploymentBoard user={session.user} tipoCuenta="empresa" />
+      ) : showSkillExtractor ? (
         <DocumentUploader carrera={perfil?.carrera} matricula={perfil?.matricula} />
       ) : (
-        perfil?.carrera === 'Ingeniería en Sistemas Computacionales' ? (
-          <SistemasDashboard user={session.user} perfil={perfil} />
-        ) : perfil?.carrera === 'Ingeniería Electrónica' ? (
-          <ElectronicaDashboard user={session.user} perfil={perfil} />
-        ) : (
-          <div style={{ padding: '20px', color: 'var(--text-900)' }}>
-            <h2>Panel General</h2>
-            <p>Bienvenido, {perfil?.nombre}</p>
-          </div>
-        )
+        <>
+          {perfil?.carrera === 'Ingeniería en Sistemas Computacionales' ? (
+            <SistemasDashboard user={session.user} perfil={perfil} />
+          ) : perfil?.carrera === 'Ingeniería Electrónica' ? (
+            <ElectronicaDashboard user={session.user} perfil={perfil} />
+          ) : (
+            <div style={{ padding: '20px', color: 'var(--text-900)' }}>
+              <h2>Panel General</h2>
+              <p>Bienvenido, {perfil?.nombre}</p>
+            </div>
+          )}
+          <EmploymentBoard user={session.user} tipoCuenta="estudiante" carrera={perfil?.carrera} />
+        </>
       )}
     </div>
   )

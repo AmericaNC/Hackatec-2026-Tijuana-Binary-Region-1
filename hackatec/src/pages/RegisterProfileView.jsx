@@ -1,12 +1,68 @@
 import React from 'react'
 import './loginViewStyle.css'
+import { carrerasDisponibles } from '../constants/carreras'
 
 export default function RegisterProfileView({
   correo, setCorreo, nombre, setNombre, matricula, setMatricula,
   carrera, setCarrera, academia, setAcademia, activo, setActivo,
+  tipoCuenta, razonSocialRfc, setRazonSocialRfc, direccion, setDireccion,
   loading, validando, error, statusMsg, fotoPreview, correoValidado,
   handleVerificarCorreo, handleFileInput, handleRegistrarAlumno
 }) {
+  if (tipoCuenta === 'empresa') {
+    return (
+      <div className="login-card" style={{ maxWidth: '420px' }}>
+        <h2>Registro de Empresa o Empleador</h2>
+        {error && <p className="login-error" style={{ backgroundColor: '#fef2f2', padding: '8px' }}>{error}</p>}
+        {statusMsg && <p className="login-status">{statusMsg}</p>}
+
+        <form onSubmit={handleRegistrarAlumno} className="login-form">
+          <div>
+            <label className="login-label" htmlFor="empresa-nombre">Nombre:</label>
+            <input
+              id="empresa-nombre"
+              type="text"
+              value={nombre}
+              onChange={(e) => setNombre(e.target.value)}
+              required
+              className="login-input"
+              style={{ width: '100%', marginTop: '4px' }}
+            />
+          </div>
+
+          <div>
+            <label className="login-label" htmlFor="empresa-razon">Razón social o RFC:</label>
+            <input
+              id="empresa-razon"
+              type="text"
+              value={razonSocialRfc}
+              onChange={(e) => setRazonSocialRfc(e.target.value)}
+              required
+              className="login-input"
+              style={{ width: '100%', marginTop: '4px' }}
+            />
+          </div>
+
+          <div>
+            <label className="login-label" htmlFor="empresa-direccion">Dirección de la empresa:</label>
+            <textarea
+              id="empresa-direccion"
+              value={direccion}
+              onChange={(e) => setDireccion(e.target.value)}
+              required
+              className="login-input"
+              style={{ width: '100%', marginTop: '4px', minHeight: '80px', resize: 'vertical' }}
+            />
+          </div>
+
+          <button type="submit" disabled={loading} className="login-button">
+            {loading ? 'Guardando en BD...' : 'Registrar empresa'}
+          </button>
+        </form>
+      </div>
+    )
+  }
+
   return (
     <div className="login-card" style={{ maxWidth: '420px' }}>
       <h2>Registro Institucional</h2>
@@ -74,11 +130,9 @@ export default function RegisterProfileView({
             className="login-input"
             style={{ width: '100%', marginTop: '4px' }}
           >
-            <option value="Ingeniería en Sistemas Computacionales">Ingeniería en Sistemas Computacionales</option>
-            <option value="Ingeniería Electrónica">Ingeniería Electrónica</option>
-            <option value="Ingeniería en Inteligencia Artificial">Ingeniería en Inteligencia Artificial</option>
-            <option value="Ingeniería Industrial">Ingeniería Industrial</option>
-            <option value="Ingeniería Mecatrónica">Ingeniería Mecatrónica</option>
+            {carrerasDisponibles.map((opcionCarrera) => (
+              <option key={opcionCarrera} value={opcionCarrera}>{opcionCarrera}</option>
+            ))}
           </select>
         </div>
 

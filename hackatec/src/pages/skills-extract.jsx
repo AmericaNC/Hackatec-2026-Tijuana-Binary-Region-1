@@ -193,6 +193,12 @@ export default function DocumentUploader({ carrera, matricula, onExtractSuccess 
                   clave: contenido.asignatura?.clave || claveMateria,
                   nombre: contenido.asignatura?.nombre || claveMateria,
                 }))}
+                competenciasCurriculares={temarios.flatMap(({ claveMateria, contenido }) => (
+                  (contenido.competencias || []).map((competencia) => ({
+                    ...competencia,
+                    materiaClave: contenido.asignatura?.clave || claveMateria,
+                  }))
+                ))}
               />
             )}
           </>

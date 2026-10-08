@@ -2,7 +2,8 @@ import React from 'react'
 import './loginViewStyle.css'
 
 export default function RegisterView({
-  email, setEmail, password, setPassword, loading, error, handleRegister, onGoToLogin
+  email, setEmail, password, setPassword, tipoCuenta, setTipoCuenta,
+  loading, error, handleRegister, onGoToLogin
 }) {
   return (
     <div className="login-card">
@@ -10,6 +11,17 @@ export default function RegisterView({
       {error && <p className="login-error">{error}</p>}
 
       <form onSubmit={handleRegister} className="login-form">
+        <label className="login-label" htmlFor="tipo-cuenta">Tipo de cuenta:</label>
+        <select
+          id="tipo-cuenta"
+          value={tipoCuenta}
+          onChange={(e) => setTipoCuenta(e.target.value)}
+          className="login-input"
+        >
+          <option value="estudiante">Estudiante universitario</option>
+          <option value="empresa">Empresa o empleador</option>
+        </select>
+
         <input
           type="email"
           placeholder="Correo electrónico"

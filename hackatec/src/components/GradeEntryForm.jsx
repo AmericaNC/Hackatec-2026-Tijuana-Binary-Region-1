@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { supabase } from '../supabaseClient';
+import SkillsTracker from './SkillsTracker';
+import { obtenerSkillsCurriculares } from '../../api/_lib/skills.js';
 
-export default function GradeEntryForm({ carreraId, matricula, materias }) {
+export default function GradeEntryForm({ carreraId, matricula, materias, competenciasCurriculares = [] }) {
   const [periodo, setPeriodo] = useState('');
   const [calificaciones, setCalificaciones] = useState({});
   const [saving, setSaving] = useState(false);
@@ -171,6 +173,7 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
   };
 
   return (
+    <>
     <form onSubmit={handleSubmit} noValidate style={styles.form}>
       <h4 style={styles.title}>Registrar calificaciones</h4>
       <p style={styles.description}>
@@ -282,6 +285,14 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
         </section>
       )}
     </form>
+    <SkillsTracker
+      competenciasCurriculares={obtenerSkillsCurriculares(competenciasCurriculares.map((competencia) => ({
+        claveMateria: competencia.materiaClave,
+        contenido: { competencias: [competencia], asignatura: { clave: competencia.materiaClave } },
+      })))}
+      refreshKey={studyPlan?.updated_at}
+    />
+    </>
   );
 }
 
