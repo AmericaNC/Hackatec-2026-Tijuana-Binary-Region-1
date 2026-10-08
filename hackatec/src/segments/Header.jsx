@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { BookOpen, Briefcase, IdCard, Lightbulb, LogOut, UserRound } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Header({
   title = "Demands / Offers",
@@ -11,7 +12,9 @@ export default function Header({
   onToggleSavedSkills,
   onToggleStudyPlans,
   onOpenProfile,
-  onLogout
+  onLogout,
+  theme,
+  onToggleTheme,
 }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const profileMenuRef = useRef(null);
@@ -41,6 +44,7 @@ export default function Header({
       <div className="board-header-title">{title}</div>
 
       <div className="board-header-icons">
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
         {/* Botones de navegación solo para usuarios no-empresa */}
         {perfil?.tipo_cuenta !== 'empresa' && (
           <>

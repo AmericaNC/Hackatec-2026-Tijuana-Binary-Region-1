@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabaseClient'
 import LoginView from './loginView'
 
-export default function LoginAuth({ onGoToRegister }) {
+export default function LoginAuth({ onGoToRegister, theme, onToggleTheme }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
@@ -39,6 +39,8 @@ export default function LoginAuth({ onGoToRegister }) {
       error={error}
       handleLogin={handleLogin}
       onGoToRegister={onGoToRegister}
+      theme={theme}
+      onToggleTheme={onToggleTheme}
     />
   )
 }

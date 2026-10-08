@@ -1,5 +1,5 @@
-import React from 'react'
 import './landingViewStyles.css'
+import ThemeToggle from '../components/ThemeToggle'
 
 // Cambia aquí el nombre de tu aplicación
 const APP_NAME = 'Demands / Offers'
@@ -23,14 +23,17 @@ const STEPS = [
   },
 ]
 
-export default function LandingView({ onEnterApp }) {
+export default function LandingView({ onEnterApp, theme, onToggleTheme }) {
   return (
     <div className="lv-page">
       <header className="lv-nav">
         <span className="lv-brand">{APP_NAME}</span>
-        <button type="button" onClick={onEnterApp} className="lv-btn lv-btn-ghost">
-          Iniciar sesión
-        </button>
+        <div className="lv-nav-actions">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+          <button type="button" onClick={onEnterApp} className="lv-btn lv-btn-ghost">
+            Iniciar sesión
+          </button>
+        </div>
       </header>
 
       <main>
@@ -38,7 +41,7 @@ export default function LandingView({ onEnterApp }) {
         <section className="lv-hero">
           <div className="lv-hero-text">
             <h1 className="lv-title">
-              Estudia lo que te falta. Demuéstraselo a la empresa.
+              No lo digas. Demuéstralo. 
             </h1>
             <p className="lv-lead">
               Aplica a proyectos reales de empresas. La IA compara tus habilidades

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabaseClient'
 import RegisterView from './RegisterView'
 
-export default function RegisterAuth({ onAuthSuccess, onGoToLogin }) {
+export default function RegisterAuth({ onAuthSuccess, onGoToLogin, theme, onToggleTheme }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [tipoCuenta, setTipoCuenta] = useState('estudiante')
@@ -127,6 +127,7 @@ export default function RegisterAuth({ onAuthSuccess, onGoToLogin }) {
       carreras={carreras} cargandoCarreras={cargandoCarreras}
       loading={loading} error={error} status={status}
       handleRegister={handleRegister} onGoToLogin={onGoToLogin}
+      theme={theme} onToggleTheme={onToggleTheme}
     />
   )
 }

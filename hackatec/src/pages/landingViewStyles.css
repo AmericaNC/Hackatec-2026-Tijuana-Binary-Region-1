@@ -42,6 +42,12 @@
   gap: 16px;
 }
 
+.lv-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .lv-brand {
   font-family: var(--lv-display);
   font-weight: 700;

@@ -1,15 +1,18 @@
-import React from 'react'
 import './loginViewStyle.css'
+import ThemeToggle from '../components/ThemeToggle'
 
 export default function RegisterView({
   email, setEmail, password, setPassword, tipoCuenta, setTipoCuenta,
   nombre, setNombre, matricula, setMatricula, carrera, setCarrera,
   academia, setAcademia, carreras, cargandoCarreras,
-  loading, error, status, handleRegister, onGoToLogin
+  loading, error, status, handleRegister, onGoToLogin, theme, onToggleTheme
 }) {
   return (
     <div className="login-card">
-      <h2>Crear Cuenta</h2>
+      <div className="register-card-heading">
+        <h2>Crear Cuenta</h2>
+        <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+      </div>
       {error && <p className="login-error">{error}</p>}
       {status && <p className="login-status" role="status">{status}</p>}
 

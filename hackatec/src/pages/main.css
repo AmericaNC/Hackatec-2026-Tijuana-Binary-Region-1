@@ -1,5 +1,5 @@
-@media (prefers-color-scheme: light) {
-  :root {
+:root[data-theme='light'] {
+    color-scheme: light;
     --text-50: #f2f2f2;
     --text-100: #e6e6e6;
     --text-200: #cccccc;
@@ -60,10 +60,9 @@
     --accent-900: #2b1b08;
     --accent-950: #150d04;
 
-  }
 }
-@media (prefers-color-scheme: dark) {
-  :root {
+:root[data-theme='dark'] {
+    color-scheme: dark;
     --text-50: #0d0d0d;
     --text-100: #1a1a1a;
     --text-200: #333333;
@@ -124,5 +123,4 @@
     --accent-900: #f7e7d4;
     --accent-950: #fbf3ea;
 
-  }
 }

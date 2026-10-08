@@ -9,6 +9,8 @@ import './jobBoardStyles.css';
 export default function DynamicJobBoard({
   perfil,
   session,
+  theme,
+  onToggleTheme,
   showSkillExtractor,
   showSavedSkills,
   showStudyPlans,
@@ -89,6 +91,8 @@ export default function DynamicJobBoard({
       <Header
         title={currentArea}
         perfil={perfil}
+        theme={theme}
+        onToggleTheme={onToggleTheme}
         showSkillExtractor={showSkillExtractor}
         showSavedSkills={showSavedSkills}
         showStudyPlans={showStudyPlans}

@@ -1,5 +1,5 @@
-import React from 'react'
 import './loginViewStyle.css'
+import ThemeToggle from '../components/ThemeToggle'
 
 // Cambia aquí el nombre de tu aplicación (el mismo que en la landing)
 const APP_NAME = 'Demands / Offers'
@@ -13,17 +13,22 @@ export default function LoginView({
   error,
   handleLogin,
   onGoToRegister,
-  onGoBack // opcional: si lo pasas, aparece el botón "Volver al inicio"
+  onGoBack, // opcional: si lo pasas, aparece el botón "Volver al inicio"
+  theme,
+  onToggleTheme,
 }) {
   return (
     <div className="login-page">
       <div className="login-top">
         <span className="login-brand">{APP_NAME}</span>
-        {onGoBack && (
-          <button type="button" onClick={onGoBack} className="login-link-btn">
-            Volver al inicio
-          </button>
-        )}
+        <div className="login-top-actions">
+          <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
+          {onGoBack && (
+            <button type="button" onClick={onGoBack} className="login-link-btn">
+              Volver al inicio
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="login-card">

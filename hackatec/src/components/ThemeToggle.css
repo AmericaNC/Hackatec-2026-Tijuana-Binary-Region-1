@@ -1,0 +1,39 @@
+.theme-toggle {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border: 1px solid var(--background-300);
+  border-radius: 8px;
+  background: var(--background-50);
+  color: var(--text-900);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 140ms ease, border-color 140ms ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--primary-500);
+  background: var(--background-100);
+}
+
+.theme-toggle:focus-visible {
+  outline: 3px solid var(--accent-500);
+  outline-offset: 2px;
+}
+
+.theme-toggle-compact {
+  width: 40px;
+  min-width: 40px;
+  padding: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle {
+    transition: none;
+  }
+}

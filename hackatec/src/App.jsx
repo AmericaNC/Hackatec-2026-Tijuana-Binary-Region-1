@@ -15,6 +15,14 @@ import LoginAuth from './pages/loginAuth';
 import RegisterAuth from './pages/registerAuth'; // Si tienes vista de registro
 
 export default function App() {
+  const [themePreference, setThemePreference] = useState(() => {
+    const savedTheme = window.localStorage.getItem('hackatec-theme');
+    return savedTheme === 'light' || savedTheme === 'dark' ? savedTheme : 'system';
+  });
+  const [systemTheme, setSystemTheme] = useState(() => (
+    window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+  ));
+  const theme = themePreference === 'system' ? systemTheme : themePreference;
   const [session, setSession] = useState(null);
   const [perfil, setPerfil] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -28,6 +36,25 @@ export default function App() {
   const [showStudyPlans, setShowStudyPlans] = useState(false);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [examTaskId, setExamTaskId] = useState(() => new URLSearchParams(window.location.search).get('examen'));
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = (event) => setSystemTheme(event.matches ? 'dark' : 'light');
+
+    mediaQuery.addEventListener('change', handleSystemThemeChange);
+    return () => mediaQuery.removeEventListener('change', handleSystemThemeChange);
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    document.documentElement.style.colorScheme = theme;
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    window.localStorage.setItem('hackatec-theme', nextTheme);
+    setThemePreference(nextTheme);
+  };
 
   useEffect(() => {
     const syncExamRoute = (event) => {
@@ -188,12 +215,20 @@ export default function App() {
   // 3. SI NO HAY SESIÓN ACTIVA -> Navegación no autenticada (Landing / Login / Register)
   if (!session) {
     if (authView === 'landing') {
-      return <LandingView onEnterApp={() => setAuthView('login')} />;
+      return (
+        <LandingView
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
+          onEnterApp={() => setAuthView('login')}
+        />
+      );
     }
 
     if (authView === 'login') {
       return (
         <LoginAuth
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
           onGoToRegister={() => setAuthView('register')}
           onGoBack={() => setAuthView('landing')} // Opcional por si quieres botón de volver
         />
@@ -203,6 +238,8 @@ export default function App() {
     if (authView === 'register') {
       return (
         <RegisterAuth
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
           onGoToLogin={() => setAuthView('login')}
         />
       );
@@ -216,6 +253,8 @@ export default function App() {
         <Header
           title={getHeaderTitle()}
           perfil={perfil}
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
           showSkillExtractor={showSkillExtractor}
           showSavedSkills={showSavedSkills}
           showStudyPlans={showStudyPlans || Boolean(examTaskId)}
@@ -252,6 +291,8 @@ export default function App() {
         <DynamicJobBoard
           perfil={perfil}
           session={session}
+          theme={theme}
+          onToggleTheme={handleToggleTheme}
           showSkillExtractor={showSkillExtractor}
           showSavedSkills={showSavedSkills}
           showStudyPlans={showStudyPlans}

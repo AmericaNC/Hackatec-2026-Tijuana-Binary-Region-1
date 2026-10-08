@@ -39,6 +39,22 @@
   color: var(--text-900);
 }
 
+.login-top-actions,
+.register-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.register-card-heading {
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.register-card-heading h2 {
+  margin-bottom: 0;
+}
+
 /* ---------- Tarjeta ---------- */
 .login-card {
   box-sizing: border-box;
