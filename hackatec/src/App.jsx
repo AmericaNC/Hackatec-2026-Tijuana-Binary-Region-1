@@ -39,7 +39,7 @@ export default function App() {
     return () => window.removeEventListener('popstate', syncExamRoute);
   }, []);
 
-  async function fetchPerfil(userId) {
+  async function fetchPerfil(userId, authUser) {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -49,7 +49,32 @@ export default function App() {
         .maybeSingle();
 
       if (error) console.error('Error al cargar perfil:', error);
-      else setPerfil(data);
+
+      let empresa = null;
+      if (
+        data?.tipo_cuenta === 'empresa'
+        || authUser?.user_metadata?.tipo_cuenta === 'empresa'
+        || (!data?.tipo_cuenta && !authUser?.user_metadata?.tipo_cuenta)
+      ) {
+        const { data: companyData, error: companyError } = await supabase
+          .from('empresas')
+          .select('id, nombre')
+          .eq('id', userId)
+          .maybeSingle();
+
+        if (companyError) console.error('Error al verificar cuenta de empresa:', companyError);
+        else empresa = companyData;
+      }
+
+      const tipoCuenta = data?.tipo_cuenta
+        || authUser?.user_metadata?.tipo_cuenta
+        || (empresa ? 'empresa' : 'estudiante');
+
+      setPerfil({
+        ...data,
+        tipo_cuenta: tipoCuenta,
+        nombre: data?.nombre || empresa?.nombre || authUser?.user_metadata?.nombre || '',
+      });
     } catch (err) {
       console.error('Error inesperado cargando perfil:', err);
     } finally {
@@ -62,7 +87,7 @@ export default function App() {
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       if (session) {
-        fetchPerfil(session.user.id);
+        fetchPerfil(session.user.id, session.user);
       } else {
         setLoading(false);
       }
@@ -71,7 +96,7 @@ export default function App() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session);
       if (session) {
-        fetchPerfil(session.user.id);
+        fetchPerfil(session.user.id, session.user);
       } else {
         setPerfil(null);
         setAuthView('landing'); // Regresar a landing si cierra sesión
@@ -225,7 +250,9 @@ export default function App() {
           currentArea={getHeaderTitle()}
         />
       )}
-      {!showStudyPlans && !examTaskId && <ActivityLog userId={session.user.id} />}
+      {perfil?.tipo_cuenta !== 'empresa' && !showStudyPlans && !examTaskId && (
+        <ActivityLog userId={session.user.id} />
+      )}
     </div>
   );
 }

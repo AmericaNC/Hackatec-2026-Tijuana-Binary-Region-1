@@ -21,6 +21,12 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
   const [error, setError] = useState('')
   const [statusMsg, setStatusMsg] = useState('')
   const [refresh, setRefresh] = useState(0)
+  const [candidatos, setCandidatos] = useState([])
+  const [candidatosLoading, setCandidatosLoading] = useState(false)
+  const [candidatosError, setCandidatosError] = useState('')
+  const [filtroCandidato, setFiltroCandidato] = useState('')
+  const [filtroVacante, setFiltroVacante] = useState('')
+  const [busquedaCandidato, setBusquedaCandidato] = useState('')
   const esEmpresa = tipoCuenta === 'empresa'
 
   useEffect(() => {
@@ -58,6 +64,43 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
     if (user?.id) cargarEmpleos()
     return () => { isCurrent = false }
   }, [user?.id, esEmpresa, carrera, refresh])
+
+  useEffect(() => {
+    if (!esEmpresa || !user?.id) {
+      setCandidatos([])
+      setCandidatosLoading(false)
+      return undefined
+    }
+
+    let isCurrent = true
+
+    async function cargarCandidatos() {
+      setCandidatosLoading(true)
+      setCandidatosError('')
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError) throw new Error(`No se pudo verificar tu sesión: ${sessionError.message}`)
+        if (!session?.access_token) throw new Error('Inicia sesión para consultar candidatos.')
+
+        const params = new URLSearchParams()
+        if (filtroCandidato) params.set('carrera', filtroCandidato)
+        const response = await fetch(`/api/employer-candidates?${params.toString()}`, {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        })
+        const result = await response.json()
+        if (!response.ok) throw new Error(result.error || 'No se pudieron cargar los candidatos.')
+
+        if (isCurrent) setCandidatos(result.candidatos || [])
+      } catch (loadError) {
+        if (isCurrent) setCandidatosError(loadError.message || 'No se pudieron cargar los candidatos.')
+      } finally {
+        if (isCurrent) setCandidatosLoading(false)
+      }
+    }
+
+    cargarCandidatos()
+    return () => { isCurrent = false }
+  }, [user?.id, esEmpresa, filtroCandidato, refresh])
 
   const actualizarCampo = (campo, valor) => {
     setFormulario((actual) => ({ ...actual, [campo]: valor }))
@@ -119,6 +162,7 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
       setError(`No se pudo eliminar la vacante: ${deleteError.message}`)
     } else {
       setEmpleos((actual) => actual.filter((empleo) => empleo.id !== empleoId))
+      setRefresh((actual) => actual + 1)
       if (empleoEliminado) {
         await registrarActividad({
           eventType: 'job_deleted',
@@ -130,6 +174,20 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
       }
     }
   }
+
+  const candidatosFiltrados = candidatos.filter((estudiante) => {
+    if (filtroVacante && !estudiante.vacantesAfin.some(({ id }) => String(id) === filtroVacante)) {
+      return false
+    }
+    const term = busquedaCandidato.trim().toLocaleLowerCase('es-MX')
+    if (!term) return true
+    const searchableText = [
+      estudiante.nombre,
+      estudiante.carrera,
+      ...estudiante.competencias.flatMap(({ nombre, descripcion }) => [nombre, descripcion]),
+    ].join(' ').toLocaleLowerCase('es-MX')
+    return searchableText.includes(term)
+  })
 
   return (
     <section className="employment-board">
@@ -218,6 +276,95 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
             </article>
           ))}
         </div>
+      )}
+
+      {esEmpresa && (
+        <section className="employment-candidates" aria-labelledby="employment-candidates-title">
+          <header className="employment-candidates-heading">
+            <div>
+              <p className="employment-eyebrow">Talento relacionado</p>
+              <h2 id="employment-candidates-title">Estudiantes afines</h2>
+            </div>
+            {!candidatosLoading && <span>{candidatosFiltrados.length} perfiles</span>}
+          </header>
+
+          <div className="employment-candidate-filters">
+            <label className="employment-field">
+              <span>Carrera</span>
+              <select value={filtroCandidato} onChange={(event) => setFiltroCandidato(event.target.value)}>
+                <option value="">Carreras de mis vacantes</option>
+                {carrerasDisponibles.map((opcionCarrera) => (
+                  <option value={opcionCarrera} key={opcionCarrera}>{opcionCarrera}</option>
+                ))}
+              </select>
+            </label>
+            <label className="employment-field">
+              <span>Vacante</span>
+              <select value={filtroVacante} onChange={(event) => setFiltroVacante(event.target.value)}>
+                <option value="">Todas las vacantes</option>
+                {empleos.map((empleo) => (
+                  <option value={String(empleo.id)} key={empleo.id}>{empleo.nombre_empleo}</option>
+                ))}
+              </select>
+            </label>
+            <label className="employment-field employment-candidate-search">
+              <span>Buscar perfil o competencia</span>
+              <input
+                type="search"
+                value={busquedaCandidato}
+                onChange={(event) => setBusquedaCandidato(event.target.value)}
+                placeholder="Nombre, carrera o competencia"
+              />
+            </label>
+          </div>
+
+          {candidatosError && <p className="employment-message employment-error" role="alert">{candidatosError}</p>}
+          {candidatosLoading ? (
+            <p className="employment-empty" role="status">Buscando estudiantes afines...</p>
+          ) : candidatosFiltrados.length === 0 ? (
+            <p className="employment-empty">
+              {candidatosError
+                ? 'No se pudieron mostrar perfiles en este momento.'
+                : filtroCandidato || empleos.length
+                  ? 'No hay estudiantes activos que coincidan con esos filtros.'
+                  : 'Selecciona una carrera para buscar perfiles o publica una vacante para ver coincidencias automáticamente.'}
+            </p>
+          ) : (
+            <div className="employment-candidate-list">
+              {candidatosFiltrados.map((estudiante) => (
+                <article className="employment-candidate" key={estudiante.id}>
+                  <div className="employment-candidate-header">
+                    <div>
+                      <h3>{estudiante.nombre}</h3>
+                      <p>{estudiante.carrera}</p>
+                    </div>
+                    <span>{estudiante.vacantesAfin.length ? 'Afin a vacante' : 'Búsqueda por carrera'}</span>
+                  </div>
+                  {estudiante.competencias.length > 0 ? (
+                    <div className="employment-candidate-skills">
+                      <strong>Competencias curriculares</strong>
+                      <ul>
+                        {estudiante.competencias.slice(0, 4).map((competencia) => (
+                          <li key={competencia.nombre}>
+                            <span>{competencia.nombre}</span>
+                            <small>Avance estimado: {competencia.progreso_pct}%</small>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : <p className="employment-candidate-no-skills">Aún no hay competencias curriculares registradas.</p>}
+                  {estudiante.vacantesAfin.length > 0 && (
+                    <div className="employment-candidate-matches">
+                      {estudiante.vacantesAfin.map((vacante) => (
+                        <span key={vacante.id}>{vacante.nombre_empleo} · {vacante.puesto_trabajo}</span>
+                      ))}
+                    </div>
+                  )}
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
       )}
     </section>
   )

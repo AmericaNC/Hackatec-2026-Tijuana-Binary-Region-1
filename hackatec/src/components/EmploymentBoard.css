@@ -202,6 +202,133 @@
   cursor: pointer;
 }
 
+.employment-candidates {
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid var(--secondary-300);
+}
+
+.employment-candidates-heading,
+.employment-candidate-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.employment-candidates-heading h2 {
+  margin: 2px 0 0;
+  font-size: 21px;
+}
+
+.employment-candidates-heading > span,
+.employment-candidate-header > span {
+  color: var(--text-700);
+  font-size: 12px;
+}
+
+.employment-candidate-filters {
+  display: grid;
+  grid-template-columns: minmax(180px, 0.85fr) minmax(180px, 0.85fr) minmax(240px, 1.3fr);
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.employment-candidate-filters select {
+  min-height: 40px;
+  padding: 9px;
+  border: 1px solid var(--secondary-300);
+  border-radius: 4px;
+  background: var(--background-100);
+  color: var(--text-900);
+  font: inherit;
+  font-weight: 400;
+}
+
+.employment-candidate-filters .employment-field input[type='search'] {
+  min-height: 40px;
+}
+
+.employment-candidate-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+  gap: 12px;
+}
+
+.employment-candidate {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--secondary-300);
+  border-radius: 6px;
+  background: var(--background-50);
+}
+
+.employment-candidate-header h3 {
+  margin: 0;
+  font-size: 16px;
+  overflow-wrap: anywhere;
+}
+
+.employment-candidate-header p {
+  margin: 4px 0 0;
+  color: var(--text-700);
+  font-size: 13px;
+}
+
+.employment-candidate-header > span {
+  flex: 0 0 auto;
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: var(--primary-100);
+  color: var(--primary-800);
+}
+
+.employment-candidate-skills {
+  margin-top: 14px;
+  font-size: 12px;
+}
+
+.employment-candidate-skills ul {
+  display: grid;
+  gap: 7px;
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.employment-candidate-skills li {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  line-height: 1.4;
+}
+
+.employment-candidate-skills li small {
+  flex: 0 0 auto;
+  color: var(--text-700);
+}
+
+.employment-candidate-no-skills {
+  margin-top: 12px;
+  color: var(--text-700);
+  font-size: 12px;
+}
+
+.employment-candidate-matches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 13px;
+}
+
+.employment-candidate-matches span {
+  padding: 4px 7px;
+  border-radius: 4px;
+  background: var(--secondary-100);
+  color: var(--text-700);
+  font-size: 11px;
+}
+
 @media (max-width: 640px) {
   .employment-board {
     margin-top: 12px;
@@ -214,7 +341,8 @@
   }
 
   .employment-form,
-  .employment-details {
+  .employment-details,
+  .employment-candidate-filters {
     grid-template-columns: 1fr;
   }
 
@@ -224,5 +352,14 @@
 
   .employment-field-wide {
     grid-column: auto;
+  }
+
+  .employment-candidate-header,
+  .employment-candidate-skills li {
+    flex-direction: column;
+  }
+
+  .employment-candidate-skills li small {
+    flex: initial;
   }
 }
