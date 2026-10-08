@@ -94,6 +94,8 @@
   min-height: 0;
   flex: 1;
   overflow-y: auto;
+  scrollbar-color: var(--primary-400) var(--background-200);
+  scrollbar-width: thin;
 }
 
 .log-panel .activity-log {
@@ -101,14 +103,22 @@
   margin: 0;
   padding: 0;
   border: 0;
+  border-radius: 0;
+  background: transparent;
 }
 
 .log-panel .activity-log-heading {
   align-items: flex-start;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--secondary-200);
 }
 
 .log-panel .activity-log-count {
   display: none;
+}
+
+.log-panel .activity-log-list {
+  padding-top: 0.75rem;
 }
 
 .plans-panel {
