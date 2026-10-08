@@ -113,7 +113,7 @@ export default function EmployerCandidatesPage({
                       )}
                       {vacante.haAplicado && (
                         <span className="employment-candidate-applied">
-                          Postulación recibida
+                          Aplicado
                         </span>
                       )}
                     </div>
