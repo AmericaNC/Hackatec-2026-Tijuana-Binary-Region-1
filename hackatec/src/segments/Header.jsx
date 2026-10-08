@@ -41,7 +41,7 @@ export default function Header({
 
   return (
     <header className="board-header">
-      <div className="board-header-title">{title}</div>
+      <div className="board-header-title">CATALYST · {title}</div>
 
       <div className="board-header-icons">
         <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />

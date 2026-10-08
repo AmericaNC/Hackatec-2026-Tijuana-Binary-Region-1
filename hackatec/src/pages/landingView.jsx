@@ -1,8 +1,7 @@
 import './landingViewStyles.css'
 import ThemeToggle from '../components/ThemeToggle'
 
-// Cambia aquí el nombre de tu aplicación
-const APP_NAME = 'Demands / Offers'
+const APP_NAME = 'CATALYST'
 
 const STEPS = [
   {
