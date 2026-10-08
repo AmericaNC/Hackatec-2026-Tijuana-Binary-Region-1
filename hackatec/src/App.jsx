@@ -7,7 +7,6 @@ import DocumentUploader from './pages/skills-extract';
 import SavedSkillsPage from './components/SavedSkillsPage';
 import MyClassroom from './segments/MyClassroom';
 import StudyTaskExam from './segments/StudyTaskExam';
-import ActivityLog from './components/ActivityLog';
 import UserProfilePage from './pages/UserProfilePage';
 
 // Importación de componentes de Autenticación
@@ -263,9 +262,6 @@ export default function App() {
           onLogout={handleLogout}
           currentArea={getHeaderTitle()}
         />
-      )}
-      {perfil?.tipo_cuenta !== 'empresa' && !showStudyPlans && !examTaskId && !showUserProfile && (
-        <ActivityLog userId={session.user.id} />
       )}
     </div>
   );

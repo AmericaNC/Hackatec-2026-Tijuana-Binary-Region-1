@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import ActivityLog from '../components/ActivityLog';
 import './UserProfilePage.css';
 
 function getInitials(name = '') {
@@ -148,6 +149,7 @@ export default function UserProfilePage({ session, perfil, onBack }) {
           </dl>
         )}
       </section>
+      {!isCompany && <ActivityLog userId={session.user.id} />}
     </main>
   );
 }
