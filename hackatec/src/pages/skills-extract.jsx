@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import GradeEntryForm from '../components/GradeEntryForm';
 
-export default function DocumentUploader({ carrera, onExtractSuccess }) {
+export default function DocumentUploader({ carrera, matricula, onExtractSuccess }) {
   const [loading, setLoading] = useState(false);
   const [fileName, setFileName] = useState('');
   const [error, setError] = useState(null);
@@ -10,6 +11,7 @@ export default function DocumentUploader({ carrera, onExtractSuccess }) {
   const [carreraLoading, setCarreraLoading] = useState(true);
   const [carreraError, setCarreraError] = useState(null);
   const [claveCarrera, setClaveCarrera] = useState('');
+  const [carreraId, setCarreraId] = useState(null);
 
   useEffect(() => {
     let isCurrent = true;
@@ -19,6 +21,7 @@ export default function DocumentUploader({ carrera, onExtractSuccess }) {
       setCarreraError(null);
       setTemarios([]);
       setClaveCarrera('');
+      setCarreraId(null);
 
       if (!carrera) {
         setCarreraError('No se encontró la carrera del perfil.');
@@ -50,6 +53,7 @@ export default function DocumentUploader({ carrera, onExtractSuccess }) {
 
         if (isCurrent) {
           setClaveCarrera(data.claveCarrera);
+          setCarreraId(carreraData.id);
           setTemarios(data.materias);
         }
       } catch (err) {
@@ -180,6 +184,16 @@ export default function DocumentUploader({ carrera, onExtractSuccess }) {
                   </article>
                 ))}
               </div>
+            )}
+            {temarios.length > 0 && (
+              <GradeEntryForm
+                carreraId={carreraId}
+                matricula={matricula}
+                materias={temarios.map(({ claveMateria, contenido }) => ({
+                  clave: contenido.asignatura?.clave || claveMateria,
+                  nombre: contenido.asignatura?.nombre || claveMateria,
+                }))}
+              />
             )}
           </>
         )}
