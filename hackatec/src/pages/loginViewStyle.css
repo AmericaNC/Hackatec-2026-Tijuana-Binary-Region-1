@@ -1,0 +1,155 @@
+/* loginViewStyle.css */
+@import "main.css";
+
+.login-card {
+  max-width: 380px;
+  margin: 40px auto;
+  padding: 24px;
+  /* Usamos variables para el borde, asumiendo un gris neutro o secundario.
+     Si prefieres el color del tema principal, cámbialo a var(--primary-200) */
+  border: 1px solid var(--secondary-200); 
+  border-radius: 8px;
+  font-family: sans-serif;
+  /* Aplicamos el fondo y el color de texto del tema */
+  background-color: var(--background-50);
+  color: var(--text-900);
+}
+
+.login-card h2 {
+  /* Aseguramos que el título respete el color de texto */
+  color: var(--text-900);
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.login-input {
+  padding: 10px;
+  font-size: 14px;
+  border-radius: 4px;
+  /* Bordes de los inputs usando los tonos secundarios del tema */
+  border: 1px solid var(--secondary-300);
+  background-color: var(--background-100);
+  color: var(--text-900);
+}
+
+.login-input:focus {
+  /* Resaltamos el input al hacer foco usando el color primario */
+  outline: none;
+  border-color: var(--primary-500);
+}
+
+.login-button {
+  padding: 12px;
+  /* Botón con el color principal de la paleta */
+  background-color: var(--primary-500); 
+  /* Texto contrastante. Asumimos texto claro para botón oscuro (y viceversa según el tema) */
+  color: var(--primary-50); 
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.login-button:hover:not(:disabled) {
+  /* Efecto hover oscureciendo o aclarando el botón según el tema */
+  background-color: var(--primary-600);
+}
+
+.login-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  background-color: var(--primary-300);
+}
+
+.login-error {
+  /* Si prefieres usar un color semántico de error en lugar del rosa/morado de la paleta,
+     puedes dejar el #dc2626 original, pero aquí uso el color de texto más intenso del tema */
+  color: #dc2626; /* Puedes cambiarlo a var(--text-600) si quieres que siga la paleta estrictamente */
+  font-size: 13px;
+}
+
+.login-footer {
+  margin-top: 15px;
+  font-size: 14px;
+  text-align: center;
+  color: var(--text-800);
+}
+
+.login-link-btn {
+  background: none;
+  border: none;
+  /* Enlace usando el color de acento o el primario del tema */
+  color: var(--accent-500); 
+  cursor: pointer;
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.login-link-btn:hover {
+  color: var(--accent-600);
+}
+
+/* extension */
+
+.login-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: var(--text-900);
+}
+
+.login-btn-verify {
+  padding: 10px;
+  background-color: var(--accent-500);
+  color: var(--accent-50);
+  border: none;
+  border-radius: 4px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.login-btn-verify:hover:not(:disabled) {
+  background-color: var(--accent-600);
+}
+
+.login-file-box {
+  padding: 10px;
+  background-color: var(--background-100);
+  border-radius: 6px;
+  border: 1px dashed var(--secondary-300);
+}
+
+.login-avatar {
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--primary-500);
+}
+
+.login-badge {
+  padding: 10px;
+  font-size: 12px;
+  text-align: center;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+/* Colores semánticos directos para éxito/error */
+.badge-success { background-color: #dcfce7; color: #166534; }
+.badge-error { background-color: #fee2e2; color: #991b1b; }
+
+.login-status {
+  color: var(--primary-800);
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  background-color: var(--primary-100);
+  padding: 8px;
+  border-radius: 4px;
+}
