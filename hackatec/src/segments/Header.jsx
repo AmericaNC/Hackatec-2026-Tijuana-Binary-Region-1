@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 export default function Header({
   title = "Demands / Offers",
   perfil,
   showSkillExtractor,
   showSavedSkills,
+  showStudyPlans,
   onToggleExtractor,
   onToggleSavedSkills,
+  onToggleStudyPlans,
   onLogout
 }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -27,6 +29,15 @@ export default function Header({
               onClick={onToggleSavedSkills}
             >
               💼
+            </button>
+
+            <button
+              className={`icon-btn ${showStudyPlans ? 'active' : ''}`}
+              title={showStudyPlans ? "Volver al panel" : "Mis planes de estudio"}
+              aria-label="Mis planes de estudio"
+              onClick={onToggleStudyPlans}
+            >
+              📚
             </button>
 
             {/* 💡 Extraer Competencias */}

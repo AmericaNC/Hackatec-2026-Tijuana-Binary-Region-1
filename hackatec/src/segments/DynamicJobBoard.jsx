@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import Header from './Header'; // Adjust import path if Header is in another folder (e.g., '../segments/Header')
 import OffersList from './JobComps/OffersList';
@@ -10,8 +10,10 @@ export default function DynamicJobBoard({
   perfil,
   showSkillExtractor,
   showSavedSkills,
+  showStudyPlans,
   onToggleExtractor,
   onToggleSavedSkills,
+  onToggleStudyPlans,
   onLogout,
   currentArea = "Demands / Offers"
 }) {
@@ -86,8 +88,10 @@ export default function DynamicJobBoard({
         perfil={perfil}
         showSkillExtractor={showSkillExtractor}
         showSavedSkills={showSavedSkills}
+        showStudyPlans={showStudyPlans}
         onToggleExtractor={onToggleExtractor}
         onToggleSavedSkills={onToggleSavedSkills}
+        onToggleStudyPlans={onToggleStudyPlans}
         onLogout={onLogout}
       />
 

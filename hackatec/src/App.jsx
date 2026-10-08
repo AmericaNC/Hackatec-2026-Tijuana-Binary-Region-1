@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from './supabaseClient';
 import Header from './segments/Header';
 import DynamicJobBoard from './segments/DynamicJobBoard';
 import EmploymentBoard from './components/EmploymentBoard';
 import DocumentUploader from './pages/skills-extract';
 import SavedSkillsPage from './components/SavedSkillsPage';
+import MyStudyPlansPage from './components/MyStudyPlansPage';
 
 // Importación de componentes de Autenticación
 import LandingView from './pages/landingView'; // O la ruta donde guardaste LandingView
@@ -22,6 +23,25 @@ export default function App() {
   // Estados de navegación dentro de la app logueada
   const [showSkillExtractor, setShowSkillExtractor] = useState(false);
   const [showSavedSkills, setShowSavedSkills] = useState(false);
+  const [showStudyPlans, setShowStudyPlans] = useState(false);
+
+  async function fetchPerfil(userId) {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('perfiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (error) console.error('Error al cargar perfil:', error);
+      else setPerfil(data);
+    } catch (err) {
+      console.error('Error inesperado cargando perfil:', err);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   // 1. Escuchar la sesión de Supabase
   useEffect(() => {
@@ -48,32 +68,23 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  const fetchPerfil = async (userId) => {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('perfiles')
-        .select('*')
-        .eq('id', userId)
-        .maybeSingle();
-
-      if (error) console.error('Error al cargar perfil:', error);
-      else setPerfil(data);
-    } catch (err) {
-      console.error('Error inesperado cargando perfil:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const handleToggleExtractor = () => {
     setShowSkillExtractor((curr) => !curr);
     setShowSavedSkills(false);
+    setShowStudyPlans(false);
   };
 
   const handleToggleSavedSkills = () => {
     setShowSavedSkills((curr) => !curr);
     setShowSkillExtractor(false);
+    setShowStudyPlans(false);
+  };
+
+  const handleToggleStudyPlans = () => {
+    setShowStudyPlans((curr) => !curr);
+    setShowSkillExtractor(false);
+    setShowSavedSkills(false);
+    setShowStudyPlans(false);
   };
 
   const handleLogout = async () => {
@@ -88,6 +99,7 @@ export default function App() {
   const getHeaderTitle = () => {
     if (showSkillExtractor) return 'Extraer Competencias';
     if (showSavedSkills) return 'Mis Skills Guardadas';
+    if (showStudyPlans) return 'Mis planes de estudio';
     if (perfil?.tipo_cuenta === 'empresa') return 'Panel de Empresa';
     return 'Demands / Offers';
   };
@@ -124,14 +136,16 @@ export default function App() {
   // 4. SI HAY SESIÓN ACTIVA -> Tableros de la aplicación
   return (
     <div className="app-container">
-      {(showSkillExtractor || showSavedSkills || perfil?.tipo_cuenta === 'empresa') && (
+      {(showSkillExtractor || showSavedSkills || showStudyPlans || perfil?.tipo_cuenta === 'empresa') && (
         <Header
           title={getHeaderTitle()}
           perfil={perfil}
           showSkillExtractor={showSkillExtractor}
           showSavedSkills={showSavedSkills}
+          showStudyPlans={showStudyPlans}
           onToggleExtractor={handleToggleExtractor}
           onToggleSavedSkills={handleToggleSavedSkills}
+          onToggleStudyPlans={handleToggleStudyPlans}
           onLogout={handleLogout}
         />
       )}
@@ -142,14 +156,18 @@ export default function App() {
         <DocumentUploader carrera={perfil?.carrera} matricula={perfil?.matricula} />
       ) : showSavedSkills ? (
         <SavedSkillsPage carrera={perfil?.carrera} />
+      ) : showStudyPlans ? (
+        <MyStudyPlansPage />
       ) : (
         <DynamicJobBoard
           perfil={perfil}
           session={session}
           showSkillExtractor={showSkillExtractor}
           showSavedSkills={showSavedSkills}
+          showStudyPlans={showStudyPlans}
           onToggleExtractor={handleToggleExtractor}
           onToggleSavedSkills={handleToggleSavedSkills}
+          onToggleStudyPlans={handleToggleStudyPlans}
           onLogout={handleLogout}
           currentArea={getHeaderTitle()}
         />
