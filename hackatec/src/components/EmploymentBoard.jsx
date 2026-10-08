@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { BriefcaseBusiness, UsersRound } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { ArrowRight, Bell, BriefcaseBusiness, UsersRound, X } from 'lucide-react'
 import { supabase } from '../supabaseClient'
 import { registrarActividad } from '../utils/activityLogs'
 import EmployerJobsPage from './EmployerJobsPage'
@@ -26,6 +26,11 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
   const [candidatos, setCandidatos] = useState([])
   const [candidatosLoading, setCandidatosLoading] = useState(false)
   const [candidatosError, setCandidatosError] = useState('')
+  const [postulaciones, setPostulaciones] = useState([])
+  const [postulacionesLoading, setPostulacionesLoading] = useState(false)
+  const [postulacionesError, setPostulacionesError] = useState('')
+  const [nuevasPostulaciones, setNuevasPostulaciones] = useState([])
+  const postulacionesVistas = useRef(null)
   const [filtroCandidato, setFiltroCandidato] = useState('')
   const [filtroVacante, setFiltroVacante] = useState('')
   const [busquedaCandidato, setBusquedaCandidato] = useState('')
@@ -104,6 +109,65 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
     cargarCandidatos()
     return () => { isCurrent = false }
   }, [user?.id, esEmpresa, filtroCandidato, refresh])
+
+  useEffect(() => {
+    if (!esEmpresa || !user?.id) {
+      setPostulaciones([])
+      setPostulacionesLoading(false)
+      postulacionesVistas.current = null
+      return undefined
+    }
+
+    let isCurrent = true
+    let requestInProgress = false
+
+    async function cargarPostulaciones() {
+      if (requestInProgress) return
+      requestInProgress = true
+      setPostulacionesLoading(true)
+      setPostulacionesError('')
+
+      try {
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        if (sessionError) throw new Error(`No se pudo verificar tu sesión: ${sessionError.message}`)
+        if (!session?.access_token) throw new Error('Inicia sesión para consultar postulaciones.')
+
+        const response = await fetch('/api/employer-applications', {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        })
+        const result = await response.json()
+        if (!response.ok) throw new Error(result.error || 'No se pudieron cargar las postulaciones.')
+
+        if (isCurrent) {
+          const incomingApplications = result.postulaciones || []
+          const incomingIds = new Set(incomingApplications.map(({ id }) => id))
+          if (postulacionesVistas.current) {
+            const newApplications = incomingApplications.filter(({ id }) => !postulacionesVistas.current.has(id))
+            if (newApplications.length) {
+              setNuevasPostulaciones((current) => {
+                const merged = new Map([...current, ...newApplications].map((application) => [application.id, application]))
+                return [...merged.values()].slice(0, 5)
+              })
+            }
+          }
+          postulacionesVistas.current = incomingIds
+          setPostulaciones(incomingApplications)
+        }
+      } catch (loadError) {
+        if (isCurrent) setPostulacionesError(loadError.message || 'No se pudieron cargar las postulaciones.')
+      } finally {
+        if (isCurrent) setPostulacionesLoading(false)
+        requestInProgress = false
+      }
+    }
+
+    cargarPostulaciones()
+    const intervalId = window.setInterval(cargarPostulaciones, 30000)
+    return () => {
+      isCurrent = false
+      window.clearInterval(intervalId)
+    }
+  }, [user?.id, esEmpresa])
 
   const actualizarCampo = (campo, valor) => {
     setFormulario((actual) => ({ ...actual, [campo]: valor }))
@@ -202,6 +266,35 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
         {!esEmpresa && carrera && <span className="employment-career-tag">{carrera}</span>}
       </header>
 
+      {esEmpresa && nuevasPostulaciones.length > 0 && (
+        <aside className="employment-application-notice" role="status" aria-live="polite">
+          <span className="employment-application-notice-icon"><Bell size={18} aria-hidden="true" /></span>
+          <div className="employment-application-notice-copy">
+            <strong>{nuevasPostulaciones.length === 1 ? 'Nueva postulación recibida' : `${nuevasPostulaciones.length} nuevas postulaciones`}</strong>
+            <span>
+              {nuevasPostulaciones.length === 1
+                ? `${nuevasPostulaciones[0].alumnoNombre} aplicó a ${nuevasPostulaciones[0].empleoNombre}.`
+                : `${nuevasPostulaciones[0].alumnoNombre} y más personas aplicaron a tus vacantes.`}
+            </span>
+          </div>
+          <button
+            className="employment-application-notice-action"
+            type="button"
+            onClick={() => setVistaEmpresa('talento')}
+          >
+            Ver <ArrowRight size={15} aria-hidden="true" />
+          </button>
+          <button
+            className="employment-application-notice-dismiss"
+            type="button"
+            aria-label="Cerrar aviso de postulaciones"
+            onClick={() => setNuevasPostulaciones([])}
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+        </aside>
+      )}
+
       {esEmpresa && (
         <nav className="employment-tabs" aria-label="Secciones del panel de empleador">
           <button
@@ -222,7 +315,7 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
           >
             <UsersRound size={17} aria-hidden="true" />
             <span>Talento</span>
-            <small>{candidatosLoading ? '...' : candidatosFiltrados.length}</small>
+            <small>{postulacionesLoading ? '...' : postulaciones.length}</small>
           </button>
         </nav>
       )}
@@ -248,6 +341,9 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
           candidatosFiltrados={candidatosFiltrados}
           candidatosLoading={candidatosLoading}
           candidatosError={candidatosError}
+          postulaciones={postulaciones}
+          postulacionesLoading={postulacionesLoading}
+          postulacionesError={postulacionesError}
           filtroCandidato={filtroCandidato}
           setFiltroCandidato={setFiltroCandidato}
           filtroVacante={filtroVacante}

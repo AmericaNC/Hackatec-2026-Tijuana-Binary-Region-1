@@ -1,10 +1,13 @@
 import { carrerasDisponibles } from '../constants/carreras'
-import { BriefcaseBusiness, GraduationCap, Search, UsersRound } from 'lucide-react'
+import { Bell, BriefcaseBusiness, GraduationCap, Search, UsersRound } from 'lucide-react'
 
 export default function EmployerCandidatesPage({
   candidatosFiltrados,
   candidatosLoading,
   candidatosError,
+  postulaciones,
+  postulacionesLoading,
+  postulacionesError,
   filtroCandidato,
   setFiltroCandidato,
   filtroVacante,
@@ -27,6 +30,41 @@ export default function EmployerCandidatesPage({
           </span>
         )}
       </header>
+
+      <section className="employment-applications" aria-labelledby="employment-applications-title">
+        <header className="employment-applications-heading">
+          <div>
+            <Bell size={17} aria-hidden="true" />
+            <h3 id="employment-applications-title">Postulaciones recibidas</h3>
+          </div>
+          {!postulacionesLoading && <span>{postulaciones.length}</span>}
+        </header>
+        {postulacionesError && <p className="employment-message employment-error" role="alert">{postulacionesError}</p>}
+        {postulacionesLoading ? (
+          <p className="employment-applications-empty" role="status">Cargando postulaciones...</p>
+        ) : postulaciones.length === 0 ? (
+          <p className="employment-applications-empty">Aún no recibes postulaciones para tus vacantes.</p>
+        ) : (
+          <ol className="employment-application-list">
+            {postulaciones.map((postulacion) => (
+              <li className="employment-application-item" key={postulacion.id}>
+                <span className="employment-candidate-avatar"><GraduationCap size={18} aria-hidden="true" /></span>
+                <div className="employment-application-student">
+                  <strong>{postulacion.alumnoNombre}</strong>
+                  <span>{postulacion.carrera}</span>
+                </div>
+                <div className="employment-application-job">
+                  <strong>{postulacion.empleoNombre}</strong>
+                  <span>{postulacion.puestoTrabajo}</span>
+                </div>
+                <time dateTime={postulacion.createdAt}>
+                  {new Date(postulacion.createdAt).toLocaleString('es-MX', { dateStyle: 'medium', timeStyle: 'short' })}
+                </time>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
 
       <div className="employment-candidate-filters">
         <label className="employment-field">

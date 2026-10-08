@@ -735,3 +735,192 @@
     align-items: flex-start;
   }
 }
+
+.employment-application-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: -4px 0 18px;
+  padding: 12px 14px;
+  border: 1px solid var(--accent-200);
+  border-left: 4px solid var(--accent-500);
+  border-radius: 8px;
+  background: var(--accent-50);
+  color: var(--accent-900);
+}
+
+.employment-application-notice-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-100);
+  color: var(--accent-700);
+}
+
+.employment-application-notice-copy {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+  flex: 1 1 auto;
+  font-size: 13px;
+}
+
+.employment-application-notice-copy span {
+  overflow-wrap: anywhere;
+}
+
+.employment-application-notice-action,
+.employment-application-notice-dismiss {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--accent-900);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.employment-application-notice-action {
+  padding: 0 9px;
+  background: var(--accent-100);
+}
+
+.employment-application-notice-action:hover,
+.employment-application-notice-dismiss:hover {
+  background: var(--accent-200);
+}
+
+.employment-applications {
+  margin: 0 0 22px;
+  padding: 14px;
+  border: 1px solid var(--secondary-200);
+  border-radius: 8px;
+  background: var(--background-50);
+}
+
+.employment-applications-heading,
+.employment-applications-heading > div {
+  display: flex;
+  align-items: center;
+}
+
+.employment-applications-heading {
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.employment-applications-heading > div {
+  gap: 8px;
+  color: var(--accent-700);
+}
+
+.employment-applications-heading h3 {
+  margin: 0;
+  color: var(--text-900);
+  font-size: 14px;
+}
+
+.employment-applications-heading > span {
+  display: grid;
+  min-width: 24px;
+  height: 24px;
+  place-items: center;
+  border-radius: 12px;
+  background: var(--accent-100);
+  color: var(--accent-800);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.employment-applications-empty {
+  margin: 0;
+  padding: 12px 0 2px;
+  color: var(--text-700);
+  font-size: 13px;
+}
+
+.employment-application-list {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.employment-application-item {
+  display: grid;
+  grid-template-columns: 38px minmax(140px, 1fr) minmax(140px, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-top: 1px solid var(--secondary-200);
+}
+
+.employment-application-student,
+.employment-application-job {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  font-size: 12px;
+}
+
+.employment-application-student strong,
+.employment-application-job strong {
+  color: var(--text-900);
+  overflow-wrap: anywhere;
+}
+
+.employment-application-student span,
+.employment-application-job span,
+.employment-application-item time {
+  color: var(--text-700);
+  font-size: 11px;
+  overflow-wrap: anywhere;
+}
+
+.employment-application-item time {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.employment-application-notice-action:focus-visible,
+.employment-application-notice-dismiss:focus-visible {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .employment-application-notice {
+    flex-wrap: wrap;
+  }
+
+  .employment-application-notice-copy {
+    flex-basis: calc(100% - 50px);
+  }
+
+  .employment-application-notice-action {
+    margin-left: 44px;
+  }
+
+  .employment-application-item {
+    grid-template-columns: 38px minmax(0, 1fr) auto;
+  }
+
+  .employment-application-job {
+    grid-column: 2 / 3;
+  }
+
+  .employment-application-item time {
+    grid-column: 2 / -1;
+    text-align: left;
+  }
+}
