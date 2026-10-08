@@ -1,11 +1,20 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
+import Header from './Header'; // Adjust import path if Header is in another folder (e.g., '../segments/Header')
 import OffersList from './JobComps/OffersList';
 import JobDetails from './JobComps/JobDetails';
 import CompanyDetails from './JobComps/CompanyDetails';
 import './jobBoardStyles.css';
 
-export default function DynamicJobBoard({ perfil }) {
+export default function DynamicJobBoard({
+  perfil,
+  showSkillExtractor,
+  showSavedSkills,
+  onToggleExtractor,
+  onToggleSavedSkills,
+  onLogout,
+  currentArea = "Demands / Offers"
+}) {
   const [jobs, setJobs] = useState([]);
   const [selectedJob, setSelectedJob] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -14,39 +23,45 @@ export default function DynamicJobBoard({ perfil }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-
     async function fetchJobs() {
-      setLoading(true);
-      
-      // Consulta ajustada a las tablas 'empleos' y 'empresas'
-      const { data, error } = await supabase
-        .from('empleos')
-        .select(`
-          id, 
-          empresa_id,
-          nombre_empleo, 
-          puesto_trabajo, 
-          descripcion, 
-          prestaciones, 
-          areas_oportunidad, 
-          carreras_dirigidas, 
-          created_at
-        `);
-
-      if (error) {
-        console.error('Error al cargar ofertas:', error);
-      } else if (data) {
-        setJobs(data);
-        if (data.length > 0) {
-          setSelectedJob(data[0]);
-        }
+      if (!perfil) {
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      setLoading(true);
+
+      try {
+        const { data, error } = await supabase
+          .from('empleos')
+          .select(`
+            id, 
+            empresa_id,
+            nombre_empleo, 
+            puesto_trabajo, 
+            descripcion, 
+            prestaciones, 
+            areas_oportunidad, 
+            carreras_dirigidas, 
+            created_at
+          `);
+
+        if (error) {
+          console.error('Error al cargar ofertas:', error);
+        } else if (data) {
+          setJobs(data);
+          if (data.length > 0) {
+            setSelectedJob(data[0]);
+          }
+        }
+      } catch (err) {
+        console.error('Error inesperado al conectar con Supabase:', err);
+      } finally {
+        setLoading(false);
+      }
     }
 
-    if (perfil) {
-      fetchJobs();
-    }
+    fetchJobs();
   }, [perfil]);
 
   const toggleBookmark = (type, id) => {
@@ -61,42 +76,46 @@ export default function DynamicJobBoard({ perfil }) {
     }
   };
 
-  if (loading) {
-    return <div className="board-loading">Cargando ofertas de trabajo...</div>;
-  }
-
   const companyId = selectedJob?.empresa_id;
 
   return (
     <div className="board-container">
-      <header className="board-header">
-        <div className="board-header-title">Demands / Offers</div>
-        <div className="board-header-icons">
-          <span>📁</span> <span>📁</span> <span>✉️</span> <span>💼</span> <span>💡</span> <span>👤</span>
-        </div>
-      </header>
+      {/* Replaced raw inline header with Header component */}
+      <Header
+        title={currentArea}
+        perfil={perfil}
+        showSkillExtractor={showSkillExtractor}
+        showSavedSkills={showSavedSkills}
+        onToggleExtractor={onToggleExtractor}
+        onToggleSavedSkills={onToggleSavedSkills}
+        onLogout={onLogout}
+      />
 
-      <main className="board-main">
-        <OffersList 
-          jobs={jobs} 
-          selectedJob={selectedJob}
-          onSelectJob={setSelectedJob} 
-          searchQuery={searchQuery} 
-          setSearchQuery={setSearchQuery}
-        />
+      {loading ? (
+        <div className="board-loading">Cargando ofertas de trabajo...</div>
+      ) : (
+        <main className="board-main">
+          <OffersList 
+            jobs={jobs} 
+            selectedJob={selectedJob}
+            onSelectJob={setSelectedJob} 
+            searchQuery={searchQuery} 
+            setSearchQuery={setSearchQuery}
+          />
 
-        <JobDetails 
-          job={selectedJob} 
-          isBookmarked={selectedJob ? bookmarkedJobs.has(selectedJob.id) : false} 
-          onToggleBookmark={toggleBookmark}
-        />
+          <JobDetails 
+            job={selectedJob} 
+            isBookmarked={selectedJob ? bookmarkedJobs.has(selectedJob.id) : false} 
+            onToggleBookmark={toggleBookmark}
+          />
 
-        <CompanyDetails 
-          company={companyId}
-          isBookmarked={companyId ? bookmarkedCompanies.has(companyId) : false}
-          onToggleBookmark={toggleBookmark}
-        />
-      </main>
+          <CompanyDetails 
+            company={companyId}
+            isBookmarked={companyId ? bookmarkedCompanies.has(companyId) : false}
+            onToggleBookmark={toggleBookmark}
+          />
+        </main>
+      )}
     </div>
   );
 }

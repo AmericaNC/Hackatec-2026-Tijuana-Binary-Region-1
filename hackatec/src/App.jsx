@@ -1,162 +1,140 @@
-import { useEffect, useState } from 'react'
-import { supabase } from './supabaseClient'
-import LoginAuth from './pages/loginAuth'
-import RegisterAuth from './pages/registerAuth'
-import RegisterProfile from './pages/registerProfile'
-import DocumentUploader from './pages/skills-extract'
-import DynamicJobBoard from './segments/DynamicJobBoard'
-import EmploymentBoard from './components/EmploymentBoard'
-import SavedSkillsPage from './components/SavedSkillsPage'
-import LandingView from './pages/landingView.jsx' // <-- Importamos la nueva Landing
+import React, { useState, useEffect } from 'react';
+import { supabase } from './supabaseClient';
+import Header from './segments/Header';
+import DynamicJobBoard from './segments/DynamicJobBoard';
+import EmploymentBoard from './components/EmploymentBoard';
+import DocumentUploader from './pages/skills-extract';
+import SavedSkillsPage from './components/SavedSkillsPage';
 
-function App() {
-  const [session, setSession] = useState(null)
-  const [perfil, setPerfil] = useState(null)
-  const [registeredUid, setRegisteredUid] = useState(null)
-  const [registeredAccountType, setRegisteredAccountType] = useState(null)
-  
-  // Estados de navegación
-  const [showLanding, setShowLanding] = useState(true) // <-- Nuevo estado para la Landing
-  const [isRegisterView, setIsRegisterView] = useState(false)
-  const [showSkillExtractor, setShowSkillExtractor] = useState(false)
-  const [showSavedSkills, setShowSavedSkills] = useState(false)
-  
-  const [loading, setLoading] = useState(true)
+// Importación de componentes de Autenticación
+import LandingView from './pages/LandingView'; // O la ruta donde guardaste LandingView
+import LoginAuth from './pages/loginAuth';
+import RegisterAuth from './pages/registerAuth'; // Si tienes vista de registro
 
-  async function cargarPerfil(uid) {
-    const { data, error } = await supabase
-      .from('perfiles')
-      .select('*')
-      .eq('id', uid)
-      .maybeSingle()
+export default function App() {
+  const [session, setSession] = useState(null);
+  const [perfil, setPerfil] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-    if (!error && data) {
-      setPerfil(data)
-      setLoading(false)
-      return
-    }
+  // Estado para controlar la vista antes de iniciar sesión: 'landing' | 'login' | 'register'
+  const [authView, setAuthView] = useState('landing');
 
-    const { data: empresa, error: empresaError } = await supabase
-      .from('empresas')
-      .select('*')
-      .eq('id', uid)
-      .maybeSingle()
-    if (!empresaError && empresa) setPerfil({ ...empresa, tipo_cuenta: 'empresa' })
-    setLoading(false)
-  }
+  // Estados de navegación dentro de la app logueada
+  const [showSkillExtractor, setShowSkillExtractor] = useState(false);
+  const [showSavedSkills, setShowSavedSkills] = useState(false);
 
+  // 1. Escuchar la sesión de Supabase
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-      if (session?.user) {
-        cargarPerfil(session.user.id)
+      setSession(session);
+      if (session) {
+        fetchPerfil(session.user.id);
       } else {
-        setLoading(false)
+        setLoading(false);
       }
-    })
+    });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-      if (session?.user) {
-        cargarPerfil(session.user.id)
+      setSession(session);
+      if (session) {
+        fetchPerfil(session.user.id);
       } else {
-        setPerfil(null)
-        setRegisteredUid(null)
-        setLoading(false)
+        setPerfil(null);
+        setAuthView('landing'); // Regresar a landing si cierra sesión
+        setLoading(false);
       }
-    })
+    });
 
-    return () => subscription.unsubscribe()
-  }, [])
+    return () => subscription.unsubscribe();
+  }, []);
 
+  const fetchPerfil = async (userId) => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('perfiles')
+        .select('*')
+        .eq('id', userId)
+        .maybeSingle();
+
+      if (error) console.error('Error al cargar perfil:', error);
+      else setPerfil(data);
+    } catch (err) {
+      console.error('Error inesperado cargando perfil:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleToggleExtractor = () => {
+    setShowSkillExtractor((curr) => !curr);
+    setShowSavedSkills(false);
+  };
+
+  const handleToggleSavedSkills = () => {
+    setShowSavedSkills((curr) => !curr);
+    setShowSkillExtractor(false);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    setSession(null);
+    setPerfil(null);
+    setAuthView('landing');
+    setShowSkillExtractor(false);
+    setShowSavedSkills(false);
+  };
+
+  const getHeaderTitle = () => {
+    if (showSkillExtractor) return 'Extraer Competencias';
+    if (showSavedSkills) return 'Mis Skills Guardadas';
+    if (perfil?.tipo_cuenta === 'empresa') return 'Panel de Empresa';
+    return 'Demands / Offers';
+  };
+
+  // 2. Cargando sesión inicial
   if (loading) {
-    return <div style={{ textAlign: 'center', marginTop: '50px', color: 'var(--text-900)' }}>Cargando aplicación...</div>
+    return <div className="board-loading">Cargando aplicación...</div>;
   }
 
-  // CASO 1: Transición INMEDIATA tras el registro -> Formulario de perfil
-  if (registeredUid && !perfil) {
-    return (
-      <RegisterProfile
-        userId={registeredUid}
-        tipoCuenta={registeredAccountType || 'estudiante'}
-        onProfileComplete={(datosPerfil) => {
-          setPerfil(datosPerfil)
-          setRegisteredUid(null)
-          setRegisteredAccountType(null)
-        }}
-      />
-    )
-  }
-
-  // CASO 2: Usuario autenticado pero sin registro en BD
-  if (session?.user && !perfil) {
-    return (
-      <RegisterProfile
-        userId={session.user.id}
-        tipoCuenta={session.user.user_metadata?.tipo_cuenta || 'estudiante'}
-        onProfileComplete={(datosPerfil) => {
-          setPerfil(datosPerfil)
-        }}
-      />
-    )
-  }
-
-  // CASO 3: Sin sesión activa (Flujo público)
+  // 3. SI NO HAY SESIÓN ACTIVA -> Navegación no autenticada (Landing / Login / Register)
   if (!session) {
-    // 3.1: Mostrar Landing Page por defecto
-    if (showLanding) {
-      return <LandingView onEnterApp={() => setShowLanding(false)} />
+    if (authView === 'landing') {
+      return <LandingView onEnterApp={() => setAuthView('login')} />;
     }
 
-    // 3.2: Mostrar Login o Registro según corresponda
-    return isRegisterView ? (
-      <RegisterAuth
-        onAuthSuccess={(uid, tipoCuenta) => {
-          setRegisteredUid(uid)
-          setRegisteredAccountType(tipoCuenta)
-        }}
-        onGoToLogin={() => setIsRegisterView(false)}
-      />
-    ) : (
-      <LoginAuth
-        onGoToRegister={() => setIsRegisterView(true)}
-      />
-    )
+    if (authView === 'login') {
+      return (
+        <LoginAuth
+          onGoToRegister={() => setAuthView('register')}
+          onGoBack={() => setAuthView('landing')} // Opcional por si quieres botón de volver
+        />
+      );
+    }
+
+    if (authView === 'register') {
+      return (
+        <RegisterAuth
+          onGoToLogin={() => setAuthView('login')}
+        />
+      );
+    }
   }
 
-  // CASO 4: Sesión iniciada y Perfil completo -> Discriminación por Carrera
+  // 4. SI HAY SESIÓN ACTIVA -> Tableros de la aplicación
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '10px', backgroundColor: '#fff', position: 'absolute', top: 0, right: 0, zIndex: 100 }}>
-        {perfil?.tipo_cuenta !== 'empresa' && (
-          <>
-            <button
-              className="login-button"
-              style={{ padding: '8px 16px' }}
-              onClick={() => {
-                setShowSkillExtractor((current) => !current)
-                setShowSavedSkills(false)
-              }}
-            >
-              {showSkillExtractor ? 'Volver al panel' : 'Extraer competencias'}
-            </button>
-            <button
-              className="login-button"
-              style={{ padding: '8px 16px' }}
-              onClick={() => {
-                setShowSavedSkills((current) => !current)
-                setShowSkillExtractor(false)
-              }}
-            >
-              {showSavedSkills ? 'Volver al panel' : 'Mis skills'}
-            </button>
-          </>
-        )}
-        <button className="login-btn-verify" style={{ backgroundColor: '#dc2626' }} onClick={() => {
-          supabase.auth.signOut()
-          setShowLanding(true) // Regresar a la landing al cerrar sesión
-        }}>Cerrar Sesión</button>
-      </div>
+    <div className="app-container">
+      {(showSkillExtractor || showSavedSkills || perfil?.tipo_cuenta === 'empresa') && (
+        <Header
+          title={getHeaderTitle()}
+          perfil={perfil}
+          showSkillExtractor={showSkillExtractor}
+          showSavedSkills={showSavedSkills}
+          onToggleExtractor={handleToggleExtractor}
+          onToggleSavedSkills={handleToggleSavedSkills}
+          onLogout={handleLogout}
+        />
+      )}
 
       {perfil?.tipo_cuenta === 'empresa' ? (
         <EmploymentBoard user={session.user} tipoCuenta="empresa" />
@@ -165,11 +143,17 @@ function App() {
       ) : showSavedSkills ? (
         <SavedSkillsPage carrera={perfil?.carrera} />
       ) : (
-        /* Reemplazamos los dashboards estáticos por el nuevo Dashboard Dinámico */
-        <DynamicJobBoard perfil={perfil} session={session} />
+        <DynamicJobBoard
+          perfil={perfil}
+          session={session}
+          showSkillExtractor={showSkillExtractor}
+          showSavedSkills={showSavedSkills}
+          onToggleExtractor={handleToggleExtractor}
+          onToggleSavedSkills={handleToggleSavedSkills}
+          onLogout={handleLogout}
+          currentArea={getHeaderTitle()}
+        />
       )}
     </div>
-  )
+  );
 }
-
-export default App
