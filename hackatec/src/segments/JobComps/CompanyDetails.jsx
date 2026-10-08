@@ -35,7 +35,7 @@ export default function CompanyDetails({
 
         const { data, error: companyError } = await supabase
           .from('empresas_publicas')
-          .select('id, nombre, direccion, created_at')
+          .select('id, nombre, direccion, descripcion, created_at')
           .eq('id', company)
           .maybeSingle();
 
@@ -121,6 +121,10 @@ export default function CompanyDetails({
         <div className="company-box-large">
           <strong>Empresa</strong>
           <p>{companyData.nombre}</p>
+        </div>
+        <div className="company-box-large">
+          <strong>Sobre la empresa</strong>
+          <p>{companyData.descripcion || 'La empresa aún no ha agregado una descripción.'}</p>
         </div>
         <div className="company-box-small">
           <strong>Ubicación</strong>

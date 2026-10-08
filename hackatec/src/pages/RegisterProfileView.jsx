@@ -8,6 +8,7 @@ export default function RegisterProfileView({
   correo, setCorreo, nombre, setNombre, matricula, setMatricula,
   carrera, setCarrera, academia, setAcademia, activo, setActivo,
   tipoCuenta, razonSocialRfc, setRazonSocialRfc, direccion, setDireccion,
+  descripcionEmpresa, setDescripcionEmpresa,
   loading, validando, error, statusMsg, fotoPreview, correoValidado,
   handleVerificarCorreo, handleFileInput, handleRegistrarAlumno
 }) {
@@ -74,6 +75,19 @@ export default function RegisterProfileView({
                 value={direccion}
                 onChange={(e) => setDireccion(e.target.value)}
                 required
+                className="login-input login-textarea"
+              />
+            </div>
+
+            <div className="login-field">
+              <label className="login-label" htmlFor="empresa-descripcion">Descripción de la empresa (opcional)</label>
+              <textarea
+                id="empresa-descripcion"
+                value={descripcionEmpresa}
+                onChange={(e) => setDescripcionEmpresa(e.target.value)}
+                maxLength={1000}
+                rows={4}
+                placeholder="Cuéntanos sobre tu empresa, su misión y los proyectos que desarrolla."
                 className="login-input login-textarea"
               />
             </div>

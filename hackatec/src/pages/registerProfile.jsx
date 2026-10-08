@@ -32,6 +32,7 @@ export default function RegisterProfile({ userId, tipoCuenta = 'estudiante', onP
   const [activo, setActivo] = useState(true)
   const [razonSocialRfc, setRazonSocialRfc] = useState('')
   const [direccion, setDireccion] = useState('')
+  const [descripcionEmpresa, setDescripcionEmpresa] = useState('')
 
   // --- ESTADOS DE CONTROL Y UI ---
   const [loading, setLoading] = useState(false)
@@ -139,7 +140,8 @@ export default function RegisterProfile({ userId, tipoCuenta = 'estudiante', onP
           id: targetUserId,
           nombre: nombre.trim(),
           razon_social_rfc: razonSocialRfc.trim(),
-          direccion: direccion.trim()
+          direccion: direccion.trim(),
+          descripcion: descripcionEmpresa.trim() || null,
         }
         const { error: errEmpresa } = await supabase
           .from('empresas')
@@ -295,6 +297,7 @@ export default function RegisterProfile({ userId, tipoCuenta = 'estudiante', onP
       tipoCuenta={tipoCuenta}
       razonSocialRfc={razonSocialRfc} setRazonSocialRfc={setRazonSocialRfc}
       direccion={direccion} setDireccion={setDireccion}
+      descripcionEmpresa={descripcionEmpresa} setDescripcionEmpresa={setDescripcionEmpresa}
       loading={loading} validando={validando}
       error={error} statusMsg={statusMsg}
       fotoPreview={fotoPreview} correoValidado={correoValidado}

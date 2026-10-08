@@ -11,6 +11,10 @@ export default function UserProfilePage({ session, perfil, onBack }) {
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [companyDescription, setCompanyDescription] = useState('');
+  const [savingDescription, setSavingDescription] = useState(false);
+  const [descriptionMessage, setDescriptionMessage] = useState('');
+  const [descriptionError, setDescriptionError] = useState('');
   const isCompany = perfil?.tipo_cuenta === 'empresa';
 
   useEffect(() => {
@@ -26,13 +30,16 @@ export default function UserProfilePage({ session, perfil, onBack }) {
         if (isCompany) {
           const { data, error: companyError } = await supabase
             .from('empresas')
-            .select('nombre, razon_social_rfc, direccion, created_at')
+            .select('nombre, razon_social_rfc, direccion, descripcion, created_at')
             .eq('id', session.user.id)
             .maybeSingle();
 
           if (companyError) throw new Error(`No se pudo cargar el perfil de empresa: ${companyError.message}`);
           if (!data) throw new Error('No se encontró el registro de esta empresa.');
-          if (isCurrent) setDetails(data);
+          if (isCurrent) {
+            setDetails(data);
+            setCompanyDescription(data.descripcion || '');
+          }
         } else {
           const [profileResult, studentResult] = await Promise.all([
             supabase
@@ -74,6 +81,29 @@ export default function UserProfilePage({ session, perfil, onBack }) {
     loadProfile();
     return () => { isCurrent = false; };
   }, [isCompany, perfil, session?.user?.id]);
+
+  const saveCompanyDescription = async (event) => {
+    event.preventDefault();
+    setSavingDescription(true);
+    setDescriptionError('');
+    setDescriptionMessage('');
+
+    try {
+      const { error: updateError } = await supabase
+        .from('empresas')
+        .update({ descripcion: companyDescription.trim() || null })
+        .eq('id', session.user.id);
+
+      if (updateError) throw new Error(`No se pudo actualizar la descripción: ${updateError.message}`);
+      setDetails((current) => ({ ...current, descripcion: companyDescription.trim() }));
+      setDescriptionMessage('La descripción pública se guardó correctamente.');
+    } catch (saveError) {
+      console.error('Error al actualizar la descripción de empresa:', saveError);
+      setDescriptionError(saveError.message || 'No se pudo guardar la descripción de empresa.');
+    } finally {
+      setSavingDescription(false);
+    }
+  };
 
   const displayName = details?.nombre || perfil?.nombre || session?.user?.email || 'Mi perfil';
   const photoUrl = details?.foto_url || perfil?.foto_url || perfil?.avatar_url;
@@ -118,6 +148,10 @@ export default function UserProfilePage({ session, perfil, onBack }) {
                   <dd>{details.direccion}</dd>
                 </div>
                 <div>
+                  <dt>Descripción pública</dt>
+                  <dd>{details.descripcion || 'Aún no agregas una descripción.'}</dd>
+                </div>
+                <div>
                   <dt>Tipo de cuenta</dt>
                   <dd>Empresa o empleador</dd>
                 </div>
@@ -147,6 +181,30 @@ export default function UserProfilePage({ session, perfil, onBack }) {
               </>
             )}
           </dl>
+        )}
+
+        {!loading && !error && details && isCompany && (
+          <form className="user-profile-company-form" onSubmit={saveCompanyDescription}>
+            <label htmlFor="company-description">Descripción pública de la empresa</label>
+            <p>Esta información se mostrará a estudiantes en las vacantes publicadas por tu empresa.</p>
+            <textarea
+              id="company-description"
+              value={companyDescription}
+              onChange={(event) => {
+                setCompanyDescription(event.target.value);
+                setDescriptionMessage('');
+              }}
+              maxLength={1000}
+              rows={5}
+              placeholder="Describe la misión, experiencia, cultura o proyectos de tu empresa."
+            />
+            <small>{companyDescription.length}/1000 caracteres</small>
+            {descriptionError && <p className="user-profile-error" role="alert">{descriptionError}</p>}
+            {descriptionMessage && <p className="user-profile-save-message" role="status">{descriptionMessage}</p>}
+            <button type="submit" disabled={savingDescription}>
+              {savingDescription ? 'Guardando...' : 'Guardar descripción'}
+            </button>
+          </form>
         )}
       </section>
       {!isCompany && <ActivityLog userId={session.user.id} />}
