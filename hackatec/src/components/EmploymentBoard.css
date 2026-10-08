@@ -690,6 +690,33 @@
   gap: 5px;
 }
 
+.employment-candidate-match {
+  display: grid;
+  gap: 6px;
+  padding: 8px;
+  border-radius: 6px;
+  background: var(--secondary-100);
+  color: var(--secondary-800);
+  font-size: 11px;
+}
+
+.employment-candidate-match-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.employment-candidate-matches .employment-candidate-preparing {
+  width: fit-content;
+  padding: 4px 7px;
+  border: 1px solid var(--primary-200);
+  border-radius: 4px;
+  background: var(--primary-50);
+  color: var(--primary-800);
+  font-size: 11px;
+  font-weight: 700;
+}
+
 @media (max-width: 640px) {
   .employment-candidate-header > div:first-child {
     align-items: flex-start;

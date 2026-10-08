@@ -100,7 +100,18 @@ export default function EmployerCandidatesPage({
               {estudiante.vacantesAfin.length > 0 && (
                 <div className="employment-candidate-matches">
                   {estudiante.vacantesAfin.map((vacante) => (
-                    <span key={vacante.id}><BriefcaseBusiness size={13} aria-hidden="true" />{vacante.nombre_empleo} · {vacante.puesto_trabajo}</span>
+                    <div className="employment-candidate-match" key={vacante.id}>
+                      <span className="employment-candidate-match-title">
+                        <BriefcaseBusiness size={13} aria-hidden="true" />
+                        {vacante.nombre_empleo} · {vacante.puesto_trabajo}
+                      </span>
+                      {vacante.enPreparacion && (
+                        <span className="employment-candidate-preparing">
+                          <GraduationCap size={13} aria-hidden="true" />
+                          Preparándose para esta vacante
+                        </span>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}

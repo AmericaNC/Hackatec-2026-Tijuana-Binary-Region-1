@@ -70,7 +70,9 @@ export default async function handler(req, res) {
     if (studentsError) throw new Error(`No se pudieron consultar los estudiantes: ${studentsError.message}`);
 
     const studentIds = (students || []).map(({ uid }) => uid).filter(Boolean);
+    const jobIds = (jobs || []).map(({ id }) => id);
     let skillsByStudent = {};
+    let preparationByStudent = {};
     if (studentIds.length) {
       const { data: skills, error: skillsError } = await supabase
         .from('skills')
@@ -88,6 +90,25 @@ export default async function handler(req, res) {
         });
         return result;
       }, {});
+
+      if (jobIds.length) {
+        const { data: preparationPlans, error: plansError } = await supabase
+          .from('planes_estudio')
+          .select('alumno_id, empleo_id')
+          .eq('origen', 'laboral')
+          .in('alumno_id', studentIds)
+          .in('empleo_id', jobIds);
+
+        if (plansError) {
+          throw new Error(`No se pudo consultar la preparación para las vacantes: ${plansError.message}`);
+        }
+
+        preparationByStudent = (preparationPlans || []).reduce((result, plan) => {
+          result[plan.alumno_id] ||= new Set();
+          result[plan.alumno_id].add(plan.empleo_id);
+          return result;
+        }, {});
+      }
     }
 
     const candidates = (students || []).map((student) => ({
@@ -97,7 +118,12 @@ export default async function handler(req, res) {
       competencias: skillsByStudent[student.uid] || [],
       vacantesAfin: (jobs || [])
         .filter(({ carreras_dirigidas: careers }) => careers?.includes(student.carrera))
-        .map(({ id, nombre_empleo, puesto_trabajo }) => ({ id, nombre_empleo, puesto_trabajo })),
+        .map(({ id, nombre_empleo, puesto_trabajo }) => ({
+          id,
+          nombre_empleo,
+          puesto_trabajo,
+          enPreparacion: preparationByStudent[student.uid]?.has(id) || false,
+        })),
     }));
 
     return res.status(200).json({ vacantes: jobs || [], candidatos: candidates });
