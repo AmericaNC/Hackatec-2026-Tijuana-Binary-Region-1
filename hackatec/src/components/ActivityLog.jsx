@@ -14,7 +14,6 @@ export default function ActivityLog({ userId }) {
 
   const cargarEventos = useCallback(async () => {
     if (!userId) return
-    setCargando(true)
     const { data, error: queryError } = await supabase
       .from('activity_logs')
       .select('id, actor_name, affected_name, description, created_at')
@@ -30,11 +29,16 @@ export default function ActivityLog({ userId }) {
     setCargando(false)
   }, [userId])
 
-  useEffect(() => {
+  const refrescarEventos = useCallback(() => {
+    setCargando(true)
     cargarEventos()
-    window.addEventListener('activity-log-updated', cargarEventos)
-    return () => window.removeEventListener('activity-log-updated', cargarEventos)
   }, [cargarEventos])
+
+  useEffect(() => {
+    Promise.resolve().then(cargarEventos)
+    window.addEventListener('activity-log-updated', refrescarEventos)
+    return () => window.removeEventListener('activity-log-updated', refrescarEventos)
+  }, [cargarEventos, refrescarEventos])
 
   return (
     <aside className="activity-log" aria-labelledby="activity-log-title">

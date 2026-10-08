@@ -5,7 +5,7 @@ import DynamicJobBoard from './segments/DynamicJobBoard';
 import EmploymentBoard from './components/EmploymentBoard';
 import DocumentUploader from './pages/skills-extract';
 import SavedSkillsPage from './components/SavedSkillsPage';
-import MyStudyPlansPage from './components/MyStudyPlansPage';
+import MyClassroom from './segments/MyClassroom';
 import ActivityLog from './components/ActivityLog';
 
 // Importación de componentes de Autenticación
@@ -158,7 +158,7 @@ export default function App() {
       ) : showSavedSkills ? (
         <SavedSkillsPage carrera={perfil?.carrera} />
       ) : showStudyPlans ? (
-        <MyStudyPlansPage />
+        <MyClassroom session={session} />
       ) : (
         <DynamicJobBoard
           perfil={perfil}
@@ -173,7 +173,7 @@ export default function App() {
           currentArea={getHeaderTitle()}
         />
       )}
-      <ActivityLog userId={session.user.id} />
+      {!showStudyPlans && <ActivityLog userId={session.user.id} />}
     </div>
   );
 }
