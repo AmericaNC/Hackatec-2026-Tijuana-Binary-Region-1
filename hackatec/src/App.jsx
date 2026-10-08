@@ -4,8 +4,7 @@ import LoginAuth from './pages/loginAuth'
 import RegisterAuth from './pages/registerAuth'
 import RegisterProfile from './pages/registerProfile'
 import DocumentUploader from './pages/skills-extract'
-import SistemasDashboard from './segments/sistemasComputacionales'
-import ElectronicaDashboard from './segments/electronica'
+import DynamicJobBoard from './segments/DynamicJobBoard'
 import EmploymentBoard from './components/EmploymentBoard'
 import SavedSkillsPage from './components/SavedSkillsPage'
 import LandingView from './pages/landingView.jsx' // <-- Importamos la nueva Landing
@@ -128,7 +127,7 @@ function App() {
   // CASO 4: Sesión iniciada y Perfil completo -> Discriminación por Carrera
   return (
     <div>
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '10px' }}>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '10px', backgroundColor: '#fff', position: 'absolute', top: 0, right: 0, zIndex: 100 }}>
         {perfil?.tipo_cuenta !== 'empresa' && (
           <>
             <button
@@ -166,19 +165,8 @@ function App() {
       ) : showSavedSkills ? (
         <SavedSkillsPage carrera={perfil?.carrera} />
       ) : (
-        <>
-          {perfil?.carrera === 'Ingeniería en Sistemas Computacionales' ? (
-            <SistemasDashboard user={session.user} perfil={perfil} />
-          ) : perfil?.carrera === 'Ingeniería Electrónica' ? (
-            <ElectronicaDashboard user={session.user} perfil={perfil} />
-          ) : (
-            <div style={{ padding: '20px', color: 'var(--text-900)' }}>
-              <h2>Panel General</h2>
-              <p>Bienvenido, {perfil?.nombre}</p>
-            </div>
-          )}
-          <EmploymentBoard user={session.user} tipoCuenta="estudiante" carrera={perfil?.carrera} />
-        </>
+        /* Reemplazamos los dashboards estáticos por el nuevo Dashboard Dinámico */
+        <DynamicJobBoard perfil={perfil} session={session} />
       )}
     </div>
   )

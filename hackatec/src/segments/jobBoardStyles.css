@@ -1,0 +1,312 @@
+@import "./../pages/main.css";
+
+/* Reset de caja y contenedor principal */
+.board-container *,
+.board-container *::before,
+.board-container *::after {
+  box-sizing: border-box;
+}
+
+.board-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  max-width: 100%;
+  background-color: var(--background-50);
+  color: var(--text-900);
+  font-family: sans-serif;
+  overflow: hidden;
+}
+
+/* Barra Superior */
+.board-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: var(--background-100);
+  border-bottom: 1px solid var(--secondary-200);
+  height: 60px;
+  flex-shrink: 0;
+}
+
+.board-header-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--primary-600);
+}
+
+.board-header-icons {
+  display: flex;
+  gap: 15px;
+  font-size: 18px;
+  color: var(--text-800);
+}
+
+/* Contenido Principal */
+.board-main {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 60px);
+  width: 100%;
+  overflow: hidden;
+}
+
+.board-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: var(--text-800);
+  background-color: var(--background-50);
+}
+
+/* Componente 1: OffersList */
+.offers-section {
+  width: 25%;
+  min-width: 220px;
+  max-width: 25%;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--secondary-200);
+  background-color: var(--background-100);
+  height: 100%;
+}
+
+.offers-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.offers-header-title {
+  text-align: center;
+  margin: 10px 0;
+  color: var(--text-900);
+}
+
+.offers-empty {
+  text-align: center;
+  color: var(--text-500);
+  font-size: 14px;
+}
+
+.offer-item {
+  padding: 12px;
+  border-bottom: 1px dashed var(--secondary-300);
+  cursor: pointer;
+  color: var(--text-900);
+  background-color: transparent;
+  transition: background-color 0.2s ease;
+  border-radius: 4px;
+}
+
+.offer-item:hover {
+  background-color: var(--background-200);
+}
+
+.offer-item.selected {
+  background-color: var(--background-200);
+  border-left: 4px solid var(--primary-500);
+}
+
+.offer-tags {
+  font-size: 12px;
+  color: var(--text-700);
+  margin-top: 5px;
+}
+
+.offers-search-footer {
+  padding: 12px;
+  border-top: 1px solid var(--secondary-200);
+  background-color: var(--background-100);
+  flex-shrink: 0;
+}
+
+.offer-search-input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 4px;
+  border: 1px solid var(--secondary-300);
+  background-color: var(--background-50);
+  color: var(--text-900);
+}
+
+.offer-search-input:focus {
+  outline: none;
+  border-color: var(--primary-500);
+}
+
+/* Componente 2: JobDetails */
+.job-details-section {
+  width: 50%;
+  min-width: 300px;
+  max-width: 50%;
+  padding: 20px;
+  overflow-y: auto;
+  border-right: 1px solid var(--secondary-200);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background-50);
+  height: 100%;
+}
+
+.job-details-empty {
+  width: 50%;
+  min-width: 300px;
+  padding: 20px;
+  border-right: 1px solid var(--secondary-200);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--text-600);
+  background-color: var(--background-50);
+  height: 100%;
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.details-title {
+  margin: 0;
+  color: var(--text-900);
+}
+
+.details-meta {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.details-date {
+  font-size: 16px;
+  font-weight: bold;
+  color: var(--text-800);
+}
+
+.details-body {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+}
+
+.details-content {
+  flex: 1;
+  white-space: pre-line;
+  color: var(--text-800);
+  line-height: 1.6;
+}
+
+.details-images-column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 160px;
+  flex-shrink: 0;
+}
+
+.details-image-placeholder {
+  height: 120px;
+  background-color: var(--background-100);
+  border: 2px dashed var(--secondary-300);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-700);
+  border-radius: 6px;
+}
+
+.details-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+  flex-shrink: 0;
+}
+
+/* Componente 3: CompanyDetails */
+.company-details-section {
+  width: 25%;
+  min-width: 220px;
+  max-width: 25%;
+  padding: 20px;
+  overflow-y: auto;
+  background-color: var(--background-100);
+  height: 100%;
+}
+
+.company-details-empty {
+  width: 25%;
+  min-width: 220px;
+  padding: 20px;
+  background-color: var(--background-100);
+  height: 100%;
+}
+
+.company-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.company-box-large {
+  grid-column: span 2;
+  height: 110px;
+  background-color: var(--background-50);
+  border: 2px dashed var(--secondary-300);
+  border-radius: 6px;
+}
+
+.company-box-small {
+  height: 75px;
+  background-color: var(--background-50);
+  border: 2px dashed var(--secondary-300);
+  border-radius: 6px;
+}
+
+.company-description {
+  color: var(--text-800);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Botones */
+.bookmark-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.bookmark-btn.active {
+  opacity: 1;
+}
+
+.bookmark-btn.inactive {
+  opacity: 0.3;
+  filter: grayscale(100%);
+}
+
+.apply-btn {
+  background-color: var(--primary-500);
+  color: var(--primary-50);
+  padding: 10px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.apply-btn:hover {
+  background-color: var(--primary-600);
+}
