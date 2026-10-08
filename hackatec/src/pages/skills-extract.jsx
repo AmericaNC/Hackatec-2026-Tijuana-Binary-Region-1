@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import GradeEntryForm from '../components/GradeEntryForm';
 
@@ -12,6 +12,10 @@ export default function DocumentUploader({ carrera, matricula, onExtractSuccess 
   const [carreraError, setCarreraError] = useState(null);
   const [claveCarrera, setClaveCarrera] = useState('');
   const [carreraId, setCarreraId] = useState(null);
+  const materias = useMemo(() => temarios.map(({ claveMateria, contenido }) => ({
+    clave: contenido.asignatura?.clave || claveMateria,
+    nombre: contenido.asignatura?.nombre || claveMateria,
+  })), [temarios]);
 
   useEffect(() => {
     let isCurrent = true;
@@ -189,16 +193,7 @@ export default function DocumentUploader({ carrera, matricula, onExtractSuccess 
               <GradeEntryForm
                 carreraId={carreraId}
                 matricula={matricula}
-                materias={temarios.map(({ claveMateria, contenido }) => ({
-                  clave: contenido.asignatura?.clave || claveMateria,
-                  nombre: contenido.asignatura?.nombre || claveMateria,
-                }))}
-                competenciasCurriculares={temarios.flatMap(({ claveMateria, contenido }) => (
-                  (contenido.competencias || []).map((competencia) => ({
-                    ...competencia,
-                    materiaClave: contenido.asignatura?.clave || claveMateria,
-                  }))
-                ))}
+                materias={materias}
               />
             )}
           </>

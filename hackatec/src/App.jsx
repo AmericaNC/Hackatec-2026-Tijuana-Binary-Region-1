@@ -7,6 +7,7 @@ import DocumentUploader from './pages/skills-extract'
 import SistemasDashboard from './segments/sistemasComputacionales'
 import ElectronicaDashboard from './segments/electronica'
 import EmploymentBoard from './components/EmploymentBoard'
+import SavedSkillsPage from './components/SavedSkillsPage'
 import LandingView from './pages/landingView.jsx' // <-- Importamos la nueva Landing
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
   const [showLanding, setShowLanding] = useState(true) // <-- Nuevo estado para la Landing
   const [isRegisterView, setIsRegisterView] = useState(false)
   const [showSkillExtractor, setShowSkillExtractor] = useState(false)
+  const [showSavedSkills, setShowSavedSkills] = useState(false)
   
   const [loading, setLoading] = useState(true)
 
@@ -128,9 +130,28 @@ function App() {
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '10px' }}>
         {perfil?.tipo_cuenta !== 'empresa' && (
-          <button className="login-button" style={{ padding: '8px 16px' }} onClick={() => setShowSkillExtractor((current) => !current)}>
-            {showSkillExtractor ? 'Volver al panel' : 'Extraer competencias'}
-          </button>
+          <>
+            <button
+              className="login-button"
+              style={{ padding: '8px 16px' }}
+              onClick={() => {
+                setShowSkillExtractor((current) => !current)
+                setShowSavedSkills(false)
+              }}
+            >
+              {showSkillExtractor ? 'Volver al panel' : 'Extraer competencias'}
+            </button>
+            <button
+              className="login-button"
+              style={{ padding: '8px 16px' }}
+              onClick={() => {
+                setShowSavedSkills((current) => !current)
+                setShowSkillExtractor(false)
+              }}
+            >
+              {showSavedSkills ? 'Volver al panel' : 'Mis skills'}
+            </button>
+          </>
         )}
         <button className="login-btn-verify" style={{ backgroundColor: '#dc2626' }} onClick={() => {
           supabase.auth.signOut()
@@ -142,6 +163,8 @@ function App() {
         <EmploymentBoard user={session.user} tipoCuenta="empresa" />
       ) : showSkillExtractor ? (
         <DocumentUploader carrera={perfil?.carrera} matricula={perfil?.matricula} />
+      ) : showSavedSkills ? (
+        <SavedSkillsPage carrera={perfil?.carrera} />
       ) : (
         <>
           {perfil?.carrera === 'Ingeniería en Sistemas Computacionales' ? (

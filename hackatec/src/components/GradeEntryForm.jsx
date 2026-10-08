@@ -1,19 +1,100 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
-import SkillsTracker from './SkillsTracker';
-import { obtenerSkillsCurriculares } from '../../api/_lib/skills.js';
 
-export default function GradeEntryForm({ carreraId, matricula, materias, competenciasCurriculares = [] }) {
+export default function GradeEntryForm({ carreraId, matricula, materias }) {
   const [periodo, setPeriodo] = useState('');
   const [calificaciones, setCalificaciones] = useState({});
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState('');
   const [step, setStep] = useState('');
-  const [savedGradesPeriod, setSavedGradesPeriod] = useState('');
   const [generatingPlan, setGeneratingPlan] = useState(false);
   const [planError, setPlanError] = useState(null);
   const [studyPlan, setStudyPlan] = useState(null);
+  const [gradeHistory, setGradeHistory] = useState([]);
+  const [historyLoading, setHistoryLoading] = useState(true);
+  const [historyError, setHistoryError] = useState(null);
+  const materiasClaves = new Set(materias.map(({ clave }) => clave));
+  const calificacionesDelPeriodo = gradeHistory.filter((registro) => (
+    registro.periodo === periodo.trim() && materiasClaves.has(registro.claveMateria)
+  ));
+  const savedGradeByKey = Object.fromEntries(calificacionesDelPeriodo.map((registro) => [
+    registro.claveMateria,
+    registro.calificacion === null ? '' : String(registro.calificacion),
+  ]));
+  const savedMateriaKeys = Object.keys(savedGradeByKey);
+  const savedGradesPeriod = calificacionesDelPeriodo.length ? periodo.trim() : '';
+  const hasUnsavedGrades = materias.some(({ clave }) => (
+    !savedMateriaKeys.includes(clave)
+    && calificaciones[clave] !== undefined
+    && calificaciones[clave] !== ''
+  ));
+
+  useEffect(() => {
+    let isCurrent = true;
+
+    async function cargarHistorialCalificaciones() {
+      setStudyPlan(null);
+      setPlanError(null);
+      setHistoryLoading(true);
+      setHistoryError(null);
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser();
+        if (authError) throw new Error(`No se pudo verificar tu sesión: ${authError.message}`);
+        if (!user) throw new Error('Inicia sesión para consultar tus calificaciones.');
+
+        const registros = [];
+        for (let from = 0; ; from += 1000) {
+          const { data, error: registrosError } = await supabase
+            .from('calificaciones')
+            .select('materia_id, calificacion, periodo, updated_at')
+            .eq('alumno_id', user.id)
+            .order('periodo', { ascending: false })
+            .range(from, from + 999);
+          if (registrosError) {
+            throw new Error(`No se pudieron consultar tus calificaciones: ${registrosError.message}`);
+          }
+          registros.push(...(data || []));
+          if (!data || data.length < 1000) break;
+        }
+
+        const materiaIds = [...new Set(registros.map(({ materia_id }) => materia_id))];
+        let materiasDb = [];
+        if (materiaIds.length) {
+          const { data, error: materiasError } = await supabase
+            .from('materias')
+            .select('id, clave, nombre')
+            .in('id', materiaIds);
+          if (materiasError) {
+            throw new Error(`No se pudieron consultar las materias de tus calificaciones: ${materiasError.message}`);
+          }
+          materiasDb = data || [];
+        }
+
+        const materiaPorId = new Map(materiasDb.map((materia) => [materia.id, materia]));
+        if (isCurrent) {
+          setGradeHistory(registros.map((registro) => {
+            const materia = materiaPorId.get(registro.materia_id);
+            return {
+              ...registro,
+              claveMateria: materia?.clave || `ID ${registro.materia_id}`,
+              nombreMateria: materia?.nombre || 'Materia no disponible',
+            };
+          }));
+        }
+      } catch (periodError) {
+        if (isCurrent) {
+          console.error('Error consultando historial de calificaciones:', periodError);
+          setHistoryError(periodError.message || 'No se pudo consultar tu historial de calificaciones.');
+        }
+      } finally {
+        if (isCurrent) setHistoryLoading(false);
+      }
+    }
+
+    cargarHistorialCalificaciones();
+    return () => { isCurrent = false; };
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -25,6 +106,14 @@ export default function GradeEntryForm({ carreraId, matricula, materias, compete
 
     if (!carreraId) {
       setError('No se pudo identificar la carrera. Cierra y vuelve a abrir esta sección para cargarla de nuevo.');
+      return;
+    }
+    if (historyLoading) {
+      setError('Espera a que termine la carga de tu historial de calificaciones.');
+      return;
+    }
+    if (historyError) {
+      setError('No se pudo validar el historial; no se guardó nada. Recarga la sección e inténtalo de nuevo.');
       return;
     }
     if (!matricula?.trim()) {
@@ -43,11 +132,15 @@ export default function GradeEntryForm({ carreraId, matricula, materias, compete
     }
 
     const calificacionesIngresadas = materias
-      .filter(({ clave }) => calificaciones[clave] !== undefined && calificaciones[clave] !== '')
+      .filter(({ clave }) => (
+        !savedMateriaKeys.includes(clave)
+        && calificaciones[clave] !== undefined
+        && calificaciones[clave] !== ''
+      ))
       .map(({ clave }) => ({ clave, calificacion: Number(calificaciones[clave]) }));
 
     if (calificacionesIngresadas.length === 0) {
-      setError('Ingresa al menos una calificación antes de guardar.');
+      setError('No hay calificaciones nuevas para guardar. Las materias del periodo ya están registradas.');
       return;
     }
 
@@ -117,16 +210,49 @@ export default function GradeEntryForm({ carreraId, matricula, materias, compete
         };
       });
 
+      setStep('Verificando que las materias no tengan una calificación previa en este periodo...');
+      const { data: duplicados, error: duplicadosError } = await supabase
+        .from('calificaciones')
+        .select('materia_id')
+        .eq('alumno_id', alumno.uid)
+        .eq('periodo', periodoNormalizado)
+        .in('materia_id', registros.map(({ materia_id }) => materia_id));
+      if (duplicadosError) {
+        throw new Error(`No se pudo validar si hay calificaciones previas: ${duplicadosError.message}`);
+      }
+      if (duplicados?.length) {
+        const clavesDuplicadas = new Set(duplicados.map(({ materia_id }) => (
+          [...idsPorClave.entries()].find(([, id]) => id === materia_id)?.[0]
+        )));
+        throw new Error(
+          `Ya existe una calificación para ${[...clavesDuplicadas].filter(Boolean).join(', ')} en ${periodoNormalizado}.`,
+        );
+      }
+
       setStep('Guardando calificaciones...');
       const { error: calificacionesError } = await supabase
         .from('calificaciones')
-        .upsert(registros, { onConflict: 'alumno_id,materia_id,periodo' });
+        .insert(registros);
 
       if (calificacionesError) {
+        if (calificacionesError.code === '23505') {
+          throw new Error('Ya existe una calificación para una o más materias en este periodo. Se conservaron las notas existentes.');
+        }
         throw new Error(`No se pudieron guardar las calificaciones: ${calificacionesError.message}`);
       }
 
-      setSavedGradesPeriod(periodoNormalizado);
+      const materiaPorIdGuardado = new Map(materiasGuardadas.map((materia) => [materia.id, materia]));
+      setGradeHistory((actuales) => [
+        ...registros.map((registro) => {
+          const materia = materiaPorIdGuardado.get(registro.materia_id);
+          return {
+            ...registro,
+            claveMateria: materia?.clave || `ID ${registro.materia_id}`,
+            nombreMateria: materia?.nombre || 'Materia no disponible',
+          };
+        }),
+        ...actuales,
+      ]);
       setSuccess(`Se guardaron ${registros.length} calificaciones para el periodo ${periodoNormalizado}.`);
       setStep('');
     } catch (submitError) {
@@ -188,7 +314,7 @@ export default function GradeEntryForm({ carreraId, matricula, materias, compete
           value={periodo}
           onChange={(event) => {
             setPeriodo(event.target.value);
-            setSavedGradesPeriod('');
+            setCalificaciones({});
             setStudyPlan(null);
             setPlanError(null);
             setError(null);
@@ -214,10 +340,10 @@ export default function GradeEntryForm({ carreraId, matricula, materias, compete
               max="100"
               step="0.01"
               inputMode="decimal"
-              value={calificaciones[clave] ?? ''}
+              value={savedMateriaKeys.includes(clave) ? savedGradeByKey[clave] : (calificaciones[clave] ?? '')}
+              disabled={savedMateriaKeys.includes(clave) || historyLoading}
               onChange={(event) => {
                 setCalificaciones((current) => ({ ...current, [clave]: event.target.value }));
-                setSavedGradesPeriod('');
                 setStudyPlan(null);
                 setPlanError(null);
                 setError(null);
@@ -226,6 +352,9 @@ export default function GradeEntryForm({ carreraId, matricula, materias, compete
               aria-label={`Calificación de ${nombre}`}
               style={styles.gradeInput}
             />
+            {savedMateriaKeys.includes(clave) && (
+              <small style={styles.savedGrade}>Ya registrada en este periodo</small>
+            )}
           </label>
         ))}
       </div>
@@ -234,19 +363,25 @@ export default function GradeEntryForm({ carreraId, matricula, materias, compete
       {success && <p role="status" style={styles.success}>{success}</p>}
       {step && <p role="status" style={styles.progress}>{step}</p>}
 
-      <button type="submit" disabled={saving} style={styles.submit}>
+      <button type="submit" disabled={saving || historyLoading} style={styles.submit}>
         {saving ? 'Guardando...' : 'Guardar calificaciones'}
       </button>
 
       <button
         type="button"
         onClick={generarPlan}
-        disabled={generatingPlan || !periodo.trim() || savedGradesPeriod !== periodo.trim()}
+        disabled={
+          generatingPlan
+          || historyLoading
+          || hasUnsavedGrades
+          || !periodo.trim()
+          || savedGradesPeriod !== periodo.trim()
+        }
         style={styles.planButton}
       >
         {generatingPlan ? 'Generando plan con Gemini...' : 'Generar plan de estudio'}
       </button>
-      {savedGradesPeriod !== periodo.trim() && (
+      {(savedGradesPeriod !== periodo.trim() || hasUnsavedGrades) && (
         <p style={styles.description}>Guarda primero las calificaciones de este periodo para generar el plan.</p>
       )}
       {planError && <p role="alert" style={styles.error}>{planError}</p>}
@@ -285,13 +420,47 @@ export default function GradeEntryForm({ carreraId, matricula, materias, compete
         </section>
       )}
     </form>
-    <SkillsTracker
-      competenciasCurriculares={obtenerSkillsCurriculares(competenciasCurriculares.map((competencia) => ({
-        claveMateria: competencia.materiaClave,
-        contenido: { competencias: [competencia], asignatura: { clave: competencia.materiaClave } },
-      })))}
-      refreshKey={studyPlan?.updated_at}
-    />
+    <section style={styles.history}>
+      <h4>Calificaciones registradas</h4>
+      {historyLoading && <p role="status">Cargando tu historial...</p>}
+      {historyError && <p role="alert" style={styles.error}>{historyError}</p>}
+      {!historyLoading && !historyError && gradeHistory.length === 0 && (
+        <p>Aún no tienes calificaciones registradas.</p>
+      )}
+      {!historyLoading && !historyError && gradeHistory.length > 0 && (
+        [...new Set(gradeHistory.map(({ periodo: gradePeriod }) => gradePeriod))]
+          .sort((left, right) => right.localeCompare(left))
+          .map((gradePeriod) => (
+            <div key={gradePeriod} style={styles.historyPeriod}>
+              <h5>Periodo {gradePeriod}</h5>
+              <div style={styles.historyTableWrapper}>
+                <table style={styles.historyTable}>
+                  <thead>
+                    <tr>
+                      <th style={styles.historyCell}>Materia</th>
+                      <th style={styles.historyCell}>Clave</th>
+                      <th style={styles.historyCell}>Calificación</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {gradeHistory
+                      .filter(({ periodo: rowPeriod }) => rowPeriod === gradePeriod)
+                      .map((registro) => (
+                        <tr key={`${registro.materia_id}-${registro.periodo}`}>
+                          <td style={styles.historyCell}>{registro.nombreMateria}</td>
+                          <td style={styles.historyCell}>{registro.claveMateria}</td>
+                          <td style={styles.historyCell}>
+                            {registro.calificacion === null ? 'Sin calificación' : registro.calificacion}
+                          </td>
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))
+      )}
+    </section>
     </>
   );
 }
@@ -349,6 +518,10 @@ const styles = {
     borderRadius: '6px',
     font: 'inherit',
   },
+  savedGrade: {
+    color: '#5b6470',
+    fontSize: '0.75rem',
+  },
   error: {
     color: '#b00020',
   },
@@ -385,5 +558,26 @@ const styles = {
     borderRadius: '8px',
     backgroundColor: '#f8fafd',
     border: '1px solid #d8e5f2',
+  },
+  history: {
+    marginTop: '1.5rem',
+    paddingTop: '1.25rem',
+    borderTop: '1px solid #e0e0e0',
+  },
+  historyPeriod: {
+    marginTop: '1rem',
+  },
+  historyTableWrapper: {
+    overflowX: 'auto',
+  },
+  historyTable: {
+    width: '100%',
+    borderCollapse: 'collapse',
+    textAlign: 'left',
+    backgroundColor: '#ffffff',
+  },
+  historyCell: {
+    padding: '0.65rem',
+    border: '1px solid #e0e0e0',
   },
 };
