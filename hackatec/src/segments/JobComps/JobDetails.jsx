@@ -1,7 +1,56 @@
-import React from 'react';
+import { useState } from 'react';
+import { supabase } from '../../supabaseClient';
 import './../jobBoardStyles.css';
 
-export default function JobDetails({ job, isBookmarked, onToggleBookmark }) {
+export default function JobDetails({
+  job,
+  isBookmarked,
+  onToggleBookmark,
+  session,
+  onOpenStudyPlans,
+}) {
+  const [assessment, setAssessment] = useState(null);
+  const [assessmentError, setAssessmentError] = useState('');
+  const [assessmentLoading, setAssessmentLoading] = useState(false);
+  const [savingPlan, setSavingPlan] = useState(false);
+  const [planSaved, setPlanSaved] = useState(false);
+
+  const requestAssessment = async (action) => {
+    setAssessmentLoading(action === 'evaluate');
+    setSavingPlan(action === 'create-plan');
+    setAssessmentError('');
+
+    try {
+      const { data: { session: activeSession }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error(`No se pudo verificar tu sesión: ${sessionError.message}`);
+      if (!activeSession?.access_token) throw new Error('Inicia sesión para evaluar tus skills.');
+
+      const response = await fetch('/api/job-skill-assessment', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${activeSession.access_token}`,
+        },
+        body: JSON.stringify({ action, empleoId: job.id }),
+      });
+      const result = await response.json();
+      if (!response.ok) throw new Error(result.error || 'No se pudo completar la solicitud.');
+
+      if (action === 'evaluate') {
+        setAssessment(result.evaluacion);
+        setPlanSaved(Boolean(result.planExistente));
+      } else {
+        setPlanSaved(true);
+      }
+    } catch (error) {
+      console.error('Error al evaluar skills de la vacante:', error);
+      setAssessmentError(error.message || 'No se pudo completar la solicitud.');
+    } finally {
+      setAssessmentLoading(false);
+      setSavingPlan(false);
+    }
+  };
+
   if (!job) {
     return (
       <section className="job-details-empty">
@@ -44,6 +93,94 @@ export default function JobDetails({ job, isBookmarked, onToggleBookmark }) {
           ✉️ Apply
         </button>
       </div>
+
+      <section className="job-skill-assessment" aria-labelledby="job-skill-assessment-title">
+        <div className="job-skill-assessment-heading">
+          <div>
+            <p className="job-skill-assessment-eyebrow">AI Catalyst</p>
+            <h2 id="job-skill-assessment-title">Evalúa tu compatibilidad</h2>
+          </div>
+          <span className="job-skill-assessment-icon" aria-hidden="true">✦</span>
+        </div>
+        <p className="job-skill-assessment-intro">
+          Compara tus skills registradas con las responsabilidades y áreas de oportunidad de esta vacante.
+        </p>
+        <button
+          type="button"
+          className="job-skill-assessment-button"
+          onClick={() => requestAssessment('evaluate')}
+          disabled={assessmentLoading || savingPlan || !session?.user?.id}
+        >
+          {assessmentLoading ? 'Evaluando tus skills...' : 'Evaluar mis skills con IA'}
+        </button>
+
+        {assessmentError && <p className="job-skill-assessment-error" role="alert">{assessmentError}</p>}
+        {assessmentLoading && <p className="job-skill-assessment-status" role="status">Analizando tu perfil y la vacante...</p>}
+
+        {assessment && (
+          <div className="job-skill-assessment-result">
+            <div className="job-skill-score">
+              <strong>{assessment.compatibilidad}%</strong>
+              <span>compatibilidad estimada</span>
+            </div>
+            <p className="job-skill-summary">{assessment.resumen}</p>
+
+            {assessment.fortalezas?.length > 0 && (
+              <div className="job-skill-result-group">
+                <h3>Skills que ya aportas</h3>
+                <ul>
+                  {assessment.fortalezas.map((item, index) => (
+                    <li key={`${item.skill}-${index}`}>
+                      <strong>{item.skill}</strong>
+                      {item.evidencia && <span>{item.evidencia}</span>}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {assessment.brechas?.length > 0 && (
+              <div className="job-skill-result-group">
+                <h3>Oportunidades de desarrollo</h3>
+                <ul>
+                  {assessment.brechas.map((item, index) => (
+                    <li key={`${item.requisito}-${index}`}>
+                      <strong>{item.requisito}</strong>
+                      <span>{item.recomendacion}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {assessment.recomendaciones?.length > 0 && (
+              <div className="job-skill-result-group">
+                <h3>Recomendaciones</h3>
+                <ul>
+                  {assessment.recomendaciones.map((item, index) => <li key={`${index}-${item}`}>{item}</li>)}
+                </ul>
+              </div>
+            )}
+
+            {planSaved ? (
+              <div className="job-skill-plan-saved">
+                <p>El plan de mejora para esta vacante ya está guardado en Mis planes.</p>
+                <button type="button" onClick={onOpenStudyPlans}>Ver mis planes</button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="job-skill-assessment-button job-skill-plan-button"
+                onClick={() => requestAssessment('create-plan')}
+                disabled={assessmentLoading || savingPlan}
+              >
+                {savingPlan ? 'Generando y guardando plan...' : 'Generar y agregar plan de mejora'}
+              </button>
+            )}
+            {savingPlan && <p className="job-skill-assessment-status" role="status">Creando una ruta personalizada para esta vacante...</p>}
+          </div>
+        )}
+      </section>
     </section>
   );
 }

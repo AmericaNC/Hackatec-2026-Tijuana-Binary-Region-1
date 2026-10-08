@@ -488,3 +488,163 @@
 .apply-btn:hover {
   background-color: var(--primary-600);
 }
+
+.job-skill-assessment {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+  padding: 20px;
+  border: 1px solid var(--secondary-200);
+  border-radius: 12px;
+  background: var(--background-100);
+}
+
+.job-skill-assessment-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.job-skill-assessment-heading h2 {
+  margin: 0;
+  color: var(--text-900);
+  font-size: 20px;
+}
+
+.job-skill-assessment-eyebrow {
+  margin: 0 0 4px;
+  color: var(--primary-700);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.job-skill-assessment-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--primary-100);
+  color: var(--primary-700);
+  font-size: 20px;
+}
+
+.job-skill-assessment-intro,
+.job-skill-summary,
+.job-skill-plan-saved p {
+  margin: 0;
+  color: var(--text-700);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.job-skill-assessment-button,
+.job-skill-plan-saved button {
+  min-height: 42px;
+  padding: 10px 16px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--primary-600);
+  color: var(--primary-50);
+  font: inherit;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 140ms ease, opacity 140ms ease;
+}
+
+.job-skill-assessment-button:hover,
+.job-skill-plan-saved button:hover {
+  background: var(--primary-700);
+}
+
+.job-skill-assessment-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.job-skill-plan-button {
+  width: 100%;
+}
+
+.job-skill-assessment-result {
+  display: grid;
+  gap: 16px;
+  padding-top: 4px;
+}
+
+.job-skill-score {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--primary-700);
+}
+
+.job-skill-score strong {
+  font-size: 30px;
+  line-height: 1;
+}
+
+.job-skill-score span {
+  color: var(--text-700);
+  font-size: 13px;
+}
+
+.job-skill-result-group {
+  display: grid;
+  gap: 8px;
+}
+
+.job-skill-result-group h3 {
+  margin: 0;
+  color: var(--text-900);
+  font-size: 15px;
+}
+
+.job-skill-result-group ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.job-skill-result-group li {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--background-50);
+  color: var(--text-700);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.job-skill-result-group li strong {
+  color: var(--text-900);
+}
+
+.job-skill-assessment-error {
+  margin: 0;
+  color: #a32d25;
+  font-size: 13px;
+}
+
+.job-skill-assessment-status {
+  margin: 0;
+  color: var(--primary-700);
+  font-size: 13px;
+}
+
+.job-skill-plan-saved {
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--primary-200);
+  border-radius: 8px;
+  background: var(--primary-50);
+}

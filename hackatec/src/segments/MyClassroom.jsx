@@ -7,6 +7,13 @@ function getPlanWeeks(plan) {
   return Array.isArray(plan?.planSemanal) ? plan.planSemanal : [];
 }
 
+function getPlanTitle(plan) {
+  if (plan.origen === 'laboral') {
+    return `Vacante · ${plan.plan?.vacante?.puesto_trabajo || plan.plan?.vacante?.nombre_empleo || 'Plan de mejora'}`;
+  }
+  return `Periodo ${plan.periodo}`;
+}
+
 export default function MyClassroom({ session, onOpenExam }) {
   const [plans, setPlans] = useState([]);
   const [selectedPlanId, setSelectedPlanId] = useState('');
@@ -30,7 +37,7 @@ export default function MyClassroom({ session, onOpenExam }) {
         for (let from = 0; ; from += 1000) {
           const { data, error: plansError } = await supabase
             .from('planes_estudio')
-            .select('id, alumno_id, periodo, plan, calificaciones, created_at, updated_at')
+            .select('id, alumno_id, periodo, origen, empleo_id, plan, calificaciones, created_at, updated_at')
             .eq('alumno_id', userId)
             .order('created_at', { ascending: false })
             .range(from, from + 999);
@@ -168,7 +175,7 @@ export default function MyClassroom({ session, onOpenExam }) {
         <div className="classroom-panel plans-panel">
           <header className="classroom-section-heading">
             <div>
-              <p className="classroom-eyebrow">Tu ruta académica</p>
+              <p className="classroom-eyebrow">Tu ruta de aprendizaje</p>
               <h1 id="classroom-title">Mis planes de estudio</h1>
             </div>
             <span className="classroom-plan-count">{plans.length} {plans.length === 1 ? 'plan' : 'planes'}</span>
@@ -210,8 +217,10 @@ export default function MyClassroom({ session, onOpenExam }) {
                     aria-pressed={isSelected}
                   >
                     <span className="classroom-plan-heading">
-                      <small className="classroom-plan-label">Plan académico</small>
-                      <strong id={`plan-title-${plan.id}`}>Periodo {plan.periodo}</strong>
+                      <small className="classroom-plan-label">
+                        {plan.origen === 'laboral' ? 'Plan de mejora profesional' : 'Plan académico'}
+                      </small>
+                      <strong id={`plan-title-${plan.id}`}>{getPlanTitle(plan)}</strong>
                     </span>
                     <span className="classroom-plan-meta">
                       <small className="classroom-plan-date">
@@ -228,7 +237,7 @@ export default function MyClassroom({ session, onOpenExam }) {
 
                   <details className="classroom-plan-details">
                     <summary>Ver plan completo</summary>
-                    <h3>Prioridades académicas</h3>
+                    <h3>{plan.origen === 'laboral' ? 'Competencias por fortalecer' : 'Prioridades académicas'}</h3>
                     {priorities.length ? (
                       <div className="classroom-priority-list">
                         {priorities.map((item, index) => (
@@ -239,7 +248,10 @@ export default function MyClassroom({ session, onOpenExam }) {
                                 {item.prioridad}
                               </span>
                             </div>
-                            <p className="classroom-priority-grade">Calificación: {item.calificacion}</p>
+                            <p className="classroom-priority-grade">
+                              {plan.origen === 'laboral' ? 'Progreso estimado' : 'Calificación'}: {item.calificacion}
+                              {plan.origen === 'laboral' ? '%' : ''}
+                            </p>
                             <p>{item.recomendacion}</p>
                           </article>
                         ))}
@@ -311,7 +323,7 @@ export default function MyClassroom({ session, onOpenExam }) {
             >
               {plans.length === 0 && <option value="">No hay planes disponibles</option>}
               {plans.map((plan) => (
-                <option key={plan.id} value={String(plan.id)}>Periodo {plan.periodo}</option>
+                <option key={plan.id} value={String(plan.id)}>{getPlanTitle(plan)}</option>
               ))}
             </select>
           </label>
@@ -319,7 +331,7 @@ export default function MyClassroom({ session, onOpenExam }) {
           {selectedPlan && (
             <>
               <p className="classroom-selected-summary">
-                Periodo {selectedPlan.periodo} · {selectedTasks.length} {selectedTasks.length === 1 ? 'tarea guardada' : 'tareas guardadas'}
+                {getPlanTitle(selectedPlan)} · {selectedTasks.length} {selectedTasks.length === 1 ? 'tarea guardada' : 'tareas guardadas'}
               </p>
               <button
                 className="edit-btn primary-btn"

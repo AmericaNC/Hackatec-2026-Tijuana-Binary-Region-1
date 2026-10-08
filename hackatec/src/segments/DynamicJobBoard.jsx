@@ -8,6 +8,7 @@ import './jobBoardStyles.css';
 
 export default function DynamicJobBoard({
   perfil,
+  session,
   showSkillExtractor,
   showSavedSkills,
   showStudyPlans,
@@ -111,9 +112,12 @@ export default function DynamicJobBoard({
           />
 
           <JobDetails 
+            key={selectedJob?.id || 'no-job-selected'}
             job={selectedJob} 
             isBookmarked={selectedJob ? bookmarkedJobs.has(selectedJob.id) : false} 
             onToggleBookmark={toggleBookmark}
+            session={session}
+            onOpenStudyPlans={onToggleStudyPlans}
           />
 
           <CompanyDetails 
