@@ -10,7 +10,7 @@ export default function RegisterView({
   loading, error, status, handleRegister, onGoToLogin, theme, onToggleTheme
 }) {
   return (
-    <div className="login-card">
+    <div className="login-card register-account-card">
       <div className="register-card-heading">
         <h2>Crear Cuenta</h2>
         <ThemeToggle theme={theme} onToggle={onToggleTheme} compact />
