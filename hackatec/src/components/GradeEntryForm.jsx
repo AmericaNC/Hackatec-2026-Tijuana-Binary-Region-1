@@ -8,12 +8,18 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState('');
   const [step, setStep] = useState('');
+  const [savedGradesPeriod, setSavedGradesPeriod] = useState('');
+  const [generatingPlan, setGeneratingPlan] = useState(false);
+  const [planError, setPlanError] = useState(null);
+  const [studyPlan, setStudyPlan] = useState(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
     setSuccess('');
     setStep('');
+    setPlanError(null);
+    setStudyPlan(null);
 
     if (!carreraId) {
       setError('No se pudo identificar la carrera. Cierra y vuelve a abrir esta sección para cargarla de nuevo.');
@@ -118,6 +124,7 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
         throw new Error(`No se pudieron guardar las calificaciones: ${calificacionesError.message}`);
       }
 
+      setSavedGradesPeriod(periodoNormalizado);
       setSuccess(`Se guardaron ${registros.length} calificaciones para el periodo ${periodoNormalizado}.`);
       setStep('');
     } catch (submitError) {
@@ -127,6 +134,39 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
       setStep('');
     } finally {
       setSaving(false);
+    }
+  };
+
+  const generarPlan = async () => {
+    setGeneratingPlan(true);
+    setPlanError(null);
+    setStudyPlan(null);
+
+    try {
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw new Error(`No se pudo verificar tu sesión: ${sessionError.message}`);
+      if (!session?.access_token) throw new Error('Inicia sesión para generar tu plan de estudio.');
+
+      const response = await fetch('/api/study-plan', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({ periodo: periodo.trim() }),
+      });
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || 'No se pudo generar el plan de estudio.');
+      }
+
+      setStudyPlan(result.data);
+    } catch (planGenerationError) {
+      console.error('Error al generar el plan de estudio:', planGenerationError);
+      setPlanError(planGenerationError.message || 'No se pudo generar el plan de estudio.');
+    } finally {
+      setGeneratingPlan(false);
     }
   };
 
@@ -145,6 +185,9 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
           value={periodo}
           onChange={(event) => {
             setPeriodo(event.target.value);
+            setSavedGradesPeriod('');
+            setStudyPlan(null);
+            setPlanError(null);
             setError(null);
             setSuccess('');
           }}
@@ -171,6 +214,9 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
               value={calificaciones[clave] ?? ''}
               onChange={(event) => {
                 setCalificaciones((current) => ({ ...current, [clave]: event.target.value }));
+                setSavedGradesPeriod('');
+                setStudyPlan(null);
+                setPlanError(null);
                 setError(null);
                 setSuccess('');
               }}
@@ -188,6 +234,53 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
       <button type="submit" disabled={saving} style={styles.submit}>
         {saving ? 'Guardando...' : 'Guardar calificaciones'}
       </button>
+
+      <button
+        type="button"
+        onClick={generarPlan}
+        disabled={generatingPlan || !periodo.trim() || savedGradesPeriod !== periodo.trim()}
+        style={styles.planButton}
+      >
+        {generatingPlan ? 'Generando plan con Gemini...' : 'Generar plan de estudio'}
+      </button>
+      {savedGradesPeriod !== periodo.trim() && (
+        <p style={styles.description}>Guarda primero las calificaciones de este periodo para generar el plan.</p>
+      )}
+      {planError && <p role="alert" style={styles.error}>{planError}</p>}
+      {generatingPlan && <p role="status" style={styles.progress}>Consultando tus notas y preparando el plan...</p>}
+      {studyPlan && (
+        <section style={styles.plan}>
+          <h4>Tu plan de estudio · {studyPlan.periodo}</h4>
+          <p>{studyPlan.plan.resumen}</p>
+          <h5>Prioridades</h5>
+          <ul>
+            {studyPlan.plan.prioridades.map((item) => (
+              <li key={`${item.materia}-${item.prioridad}`}>
+                <strong>{item.materia}</strong> ({item.calificacion}) · {item.prioridad}
+                <p>{item.recomendacion}</p>
+              </li>
+            ))}
+          </ul>
+          <h5>Plan de cuatro semanas</h5>
+          <ol>
+            {studyPlan.plan.planSemanal.map((week) => (
+              <li key={week.semana}>
+                <strong>Semana {week.semana}: {week.objetivo}</strong>
+                <ul>
+                  {week.actividades.map((activity) => <li key={activity}>{activity}</li>)}
+                </ul>
+              </li>
+            ))}
+          </ol>
+          <h5>Recomendaciones generales</h5>
+          <ul>
+            {studyPlan.plan.recomendacionesGenerales.map((recommendation) => (
+              <li key={recommendation}>{recommendation}</li>
+            ))}
+          </ul>
+          <p style={styles.description}>Plan guardado en tu cuenta · ID {studyPlan.id}</p>
+        </section>
+      )}
     </form>
   );
 }
@@ -263,5 +356,23 @@ const styles = {
     color: '#ffffff',
     fontWeight: '600',
     cursor: 'pointer',
+  },
+  planButton: {
+    marginTop: '1rem',
+    marginLeft: '0.5rem',
+    padding: '0.65rem 1rem',
+    border: '1px solid #0066cc',
+    borderRadius: '6px',
+    backgroundColor: '#ffffff',
+    color: '#0066cc',
+    fontWeight: '600',
+    cursor: 'pointer',
+  },
+  plan: {
+    marginTop: '1.5rem',
+    padding: '1rem',
+    borderRadius: '8px',
+    backgroundColor: '#f8fafd',
+    border: '1px solid #d8e5f2',
   },
 };

@@ -1,16 +1,11 @@
-# React + Vite
+# Hackatec
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicacion React/Vite con funciones serverless de Vercel.
 
-Currently, two official plugins are available:
+## Generar planes de estudio
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Ejecuta `SQL/migracion_planes_estudio.sql` en el SQL Editor de Supabase.
+2. Configura en Vercel `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` y `GEMINI_API_KEY`. La clave `SUPABASE_SERVICE_ROLE_KEY` se utiliza solo en las funciones serverless; no la expongas con prefijo `VITE_`.
+3. El alumno guarda sus calificaciones para un periodo y pulsa **Generar plan de estudio**. `POST /api/study-plan` valida su token, consulta sus notas guardadas y el temario de su carrera, genera un plan y lo guarda en `planes_estudio`.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Se guarda un plan por alumno y periodo. Volver a generarlo para el mismo periodo actualiza ese plan.
