@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../supabaseClient'
+import { supabase } from '../supabaseClient.js'
 import { resumirProgresoSkills } from '../utils/skills.js'
 import './SkillsTracker.css'
 
