@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { BriefcaseBusiness, UsersRound } from 'lucide-react'
 import { supabase } from '../supabaseClient'
 import { registrarActividad } from '../utils/activityLogs'
 import EmployerJobsPage from './EmployerJobsPage'
@@ -209,6 +210,7 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
             aria-pressed={vistaEmpresa === 'vacantes'}
             onClick={() => setVistaEmpresa('vacantes')}
           >
+            <BriefcaseBusiness size={17} aria-hidden="true" />
             <span>Vacantes</span>
             <small>{empleos.length}</small>
           </button>
@@ -218,6 +220,7 @@ export default function EmploymentBoard({ user, tipoCuenta, carrera }) {
             aria-pressed={vistaEmpresa === 'talento'}
             onClick={() => setVistaEmpresa('talento')}
           >
+            <UsersRound size={17} aria-hidden="true" />
             <span>Talento</span>
             <small>{candidatosLoading ? '...' : candidatosFiltrados.length}</small>
           </button>

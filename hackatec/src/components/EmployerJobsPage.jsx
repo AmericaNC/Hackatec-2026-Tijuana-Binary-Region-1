@@ -1,4 +1,5 @@
 import { carrerasDisponibles } from '../constants/carreras'
+import { BriefcaseBusiness, Plus, Trash2 } from 'lucide-react'
 
 export default function EmployerJobsPage({
   esEmpresa,
@@ -16,7 +17,21 @@ export default function EmployerJobsPage({
   return (
     <>
       {esEmpresa && (
+        <header className="employment-view-heading">
+          <span className="employment-view-icon"><BriefcaseBusiness size={20} aria-hidden="true" /></span>
+          <div>
+            <p className="employment-eyebrow">Gestión de vacantes</p>
+            <h2>Empleos publicados</h2>
+          </div>
+          <span className="employment-view-count">{empleos.length} {empleos.length === 1 ? 'vacante' : 'vacantes'}</span>
+        </header>
+      )}
+
+      {esEmpresa && (
         <form className="employment-form" onSubmit={publicarEmpleo}>
+          <div className="employment-form-heading employment-field-wide">
+            <h3>Publicar una vacante</h3>
+          </div>
           <label className="employment-field">
             <span>Nombre del empleo</span>
             <input value={formulario.nombreEmpleo} onChange={(event) => actualizarCampo('nombreEmpleo', event.target.value)} required maxLength={120} />
@@ -57,6 +72,7 @@ export default function EmployerJobsPage({
           {error && <p className="employment-message employment-error employment-field-wide">{error}</p>}
           {statusMsg && <p className="employment-message employment-success employment-field-wide">{statusMsg}</p>}
           <button className="employment-submit employment-field-wide" type="submit" disabled={saving}>
+            <Plus size={17} aria-hidden="true" />
             {saving ? 'Publicando...' : 'Publicar vacante'}
           </button>
         </form>
@@ -77,7 +93,7 @@ export default function EmployerJobsPage({
                 </div>
                 {esEmpresa && (
                   <button className="employment-delete" type="button" onClick={() => eliminarEmpleo(empleo.id)} aria-label={`Eliminar ${empleo.nombre_empleo}`} title="Eliminar vacante">
-                    Eliminar
+                    <Trash2 size={16} aria-hidden="true" />
                   </button>
                 )}
               </div>

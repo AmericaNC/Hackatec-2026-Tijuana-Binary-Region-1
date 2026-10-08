@@ -1,4 +1,5 @@
 import { carrerasDisponibles } from '../constants/carreras'
+import { BriefcaseBusiness, GraduationCap, Search, UsersRound } from 'lucide-react'
 
 export default function EmployerCandidatesPage({
   candidatosFiltrados,
@@ -19,7 +20,12 @@ export default function EmployerCandidatesPage({
           <p className="employment-eyebrow">Talento relacionado</p>
           <h2 id="employment-candidates-title">Estudiantes afines</h2>
         </div>
-        {!candidatosLoading && <span>{candidatosFiltrados.length} perfiles</span>}
+        {!candidatosLoading && (
+          <span className="employment-results-count">
+            <UsersRound size={15} aria-hidden="true" />
+            {candidatosFiltrados.length} perfiles
+          </span>
+        )}
       </header>
 
       <div className="employment-candidate-filters">
@@ -41,12 +47,15 @@ export default function EmployerCandidatesPage({
         </label>
         <label className="employment-field employment-candidate-search">
           <span>Buscar perfil o competencia</span>
-          <input
-            type="search"
-            value={busquedaCandidato}
-            onChange={(event) => setBusquedaCandidato(event.target.value)}
-            placeholder="Nombre, carrera o competencia"
-          />
+            <span className="employment-search-control">
+              <Search size={17} aria-hidden="true" />
+              <input
+                type="search"
+                value={busquedaCandidato}
+                onChange={(event) => setBusquedaCandidato(event.target.value)}
+                placeholder="Nombre, carrera o competencia"
+              />
+            </span>
         </label>
       </div>
 
@@ -67,8 +76,11 @@ export default function EmployerCandidatesPage({
             <article className="employment-candidate" key={estudiante.id}>
               <div className="employment-candidate-header">
                 <div>
-                  <h3>{estudiante.nombre}</h3>
-                  <p>{estudiante.carrera}</p>
+                  <span className="employment-candidate-avatar"><GraduationCap size={18} aria-hidden="true" /></span>
+                  <div className="employment-candidate-identity">
+                    <h3>{estudiante.nombre}</h3>
+                    <p>{estudiante.carrera}</p>
+                  </div>
                 </div>
                 <span>{estudiante.vacantesAfin.length ? 'Afin a vacante' : 'Búsqueda por carrera'}</span>
               </div>
@@ -88,7 +100,7 @@ export default function EmployerCandidatesPage({
               {estudiante.vacantesAfin.length > 0 && (
                 <div className="employment-candidate-matches">
                   {estudiante.vacantesAfin.map((vacante) => (
-                    <span key={vacante.id}>{vacante.nombre_empleo} · {vacante.puesto_trabajo}</span>
+                    <span key={vacante.id}><BriefcaseBusiness size={13} aria-hidden="true" />{vacante.nombre_empleo} · {vacante.puesto_trabajo}</span>
                   ))}
                 </div>
               )}
