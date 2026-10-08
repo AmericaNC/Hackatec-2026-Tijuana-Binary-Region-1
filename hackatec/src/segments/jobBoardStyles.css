@@ -258,17 +258,30 @@
 
 .company-box-large {
   grid-column: span 2;
-  height: 110px;
+  min-height: 90px;
+  padding: 12px;
+  box-sizing: border-box;
   background-color: var(--background-50);
-  border: 2px dashed var(--secondary-300);
+  border: 1px solid var(--secondary-300);
   border-radius: 6px;
 }
 
 .company-box-small {
-  height: 75px;
+  min-height: 75px;
+  padding: 12px;
+  box-sizing: border-box;
   background-color: var(--background-50);
-  border: 2px dashed var(--secondary-300);
+  border: 1px solid var(--secondary-300);
   border-radius: 6px;
+  overflow-wrap: anywhere;
+}
+
+.company-box-large p,
+.company-box-small p {
+  margin: 6px 0 0;
+  color: var(--text-800);
+  font-size: 13px;
+  line-height: 1.45;
 }
 
 .company-description {

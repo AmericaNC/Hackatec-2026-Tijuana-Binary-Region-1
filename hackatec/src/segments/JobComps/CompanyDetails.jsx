@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { supabase } from '../../supabaseClient';
 import './../jobBoardStyles.css';
 
 export default function CompanyDetails({
@@ -24,8 +25,7 @@ export default function CompanyDetails({
         setLoading(true);
         setError(null);
 
-        // If `company` is already the complete object,
-        // there is nothing to fetch.
+        // Support callers that already provide the public company record.
         if (typeof company === 'object') {
           if (!cancelled) {
             setCompanyData(company);
@@ -33,14 +33,15 @@ export default function CompanyDetails({
           return;
         }
 
-        // Otherwise, fetch the company using its ID.
-        const response = await fetch(`/api/companies/${company}`);
+        const { data, error: companyError } = await supabase
+          .from('empresas_publicas')
+          .select('id, nombre, direccion, created_at')
+          .eq('id', company)
+          .maybeSingle();
 
-        if (!response.ok) {
-          throw new Error('No se pudo obtener la empresa.');
+        if (companyError) {
+          throw new Error(`No se pudo obtener la empresa: ${companyError.message}`);
         }
-
-        const data = await response.json();
 
         if (!cancelled) {
           setCompanyData(data);
@@ -78,7 +79,7 @@ export default function CompanyDetails({
     return (
       <section className="company-details-empty">
         <p className="company-description">
-          Error al cargar la empresa: {error}
+          {error}
         </p>
       </section>
     );
@@ -117,14 +118,23 @@ export default function CompanyDetails({
       </div>
 
       <div className="company-grid">
-        <div className="company-box-large"></div>
-        <div className="company-box-small"></div>
-        <div className="company-box-small"></div>
+        <div className="company-box-large">
+          <strong>Empresa</strong>
+          <p>{companyData.nombre}</p>
+        </div>
+        <div className="company-box-small">
+          <strong>Ubicación</strong>
+          <p>{companyData.direccion || 'No especificada'}</p>
+        </div>
+        <div className="company-box-small">
+          <strong>Publicación</strong>
+          <p>
+            {companyData.created_at
+              ? new Date(companyData.created_at).toLocaleDateString()
+              : 'Fecha no disponible'}
+          </p>
+        </div>
       </div>
-
-      <p className="company-description">
-        {companyData.direccion || 'Sin descripción disponible.'}
-      </p>
     </section>
   );
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { supabase } from '../supabaseClient';
 import OffersList from './JobComps/OffersList';
 import JobDetails from './JobComps/JobDetails';
@@ -30,14 +30,7 @@ export default function DynamicJobBoard({ perfil }) {
           prestaciones, 
           areas_oportunidad, 
           carreras_dirigidas, 
-          created_at,
-          empresas ( 
-            id, 
-            nombre, 
-            razon_social_rfc, 
-            direccion,
-            created_at 
-          )
+          created_at
         `);
 
       if (error) {
@@ -72,11 +65,7 @@ export default function DynamicJobBoard({ perfil }) {
     return <div className="board-loading">Cargando ofertas de trabajo...</div>;
   }
 
-  // 1. Manejo seguro con optional chaining (?.) en caso de que selectedJob sea null.
-  // 2. Normalización del resultado: Supabase a veces retorna la relación 'empresas' 
-  //    como un arreglo de 1 elemento ([{...}]). Si es así, tomamos la posición [0].
-  const rawCompany = selectedJob?.empresas;
-  const currentCompany = Array.isArray(rawCompany) ? rawCompany[0] : rawCompany;
+  const companyId = selectedJob?.empresa_id;
 
   return (
     <div className="board-container">
@@ -103,8 +92,8 @@ export default function DynamicJobBoard({ perfil }) {
         />
 
         <CompanyDetails 
-          company={currentCompany} 
-          isBookmarked={currentCompany?.id ? bookmarkedCompanies.has(currentCompany.id) : false} 
+          company={companyId}
+          isBookmarked={companyId ? bookmarkedCompanies.has(companyId) : false}
           onToggleBookmark={toggleBookmark}
         />
       </main>
