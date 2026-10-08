@@ -6,6 +6,7 @@ import EmploymentBoard from './components/EmploymentBoard';
 import DocumentUploader from './pages/skills-extract';
 import SavedSkillsPage from './components/SavedSkillsPage';
 import MyClassroom from './segments/MyClassroom';
+import StudyTaskExam from './segments/StudyTaskExam';
 import ActivityLog from './components/ActivityLog';
 
 // Importación de componentes de Autenticación
@@ -25,6 +26,18 @@ export default function App() {
   const [showSkillExtractor, setShowSkillExtractor] = useState(false);
   const [showSavedSkills, setShowSavedSkills] = useState(false);
   const [showStudyPlans, setShowStudyPlans] = useState(false);
+  const [examTaskId, setExamTaskId] = useState(() => new URLSearchParams(window.location.search).get('examen'));
+
+  useEffect(() => {
+    const syncExamRoute = (event) => {
+      const nextTaskId = new URLSearchParams(window.location.search).get('examen');
+      setExamTaskId(nextTaskId);
+      if (!nextTaskId && event.state?.studyPlans) setShowStudyPlans(true);
+    };
+
+    window.addEventListener('popstate', syncExamRoute);
+    return () => window.removeEventListener('popstate', syncExamRoute);
+  }, []);
 
   async function fetchPerfil(userId) {
     try {
@@ -82,9 +95,40 @@ export default function App() {
   };
 
   const handleToggleStudyPlans = () => {
+    if (examTaskId) {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('examen');
+      window.history.replaceState({ studyPlans: true }, '', url);
+      setExamTaskId(null);
+      setShowStudyPlans(true);
+      return;
+    }
     setShowStudyPlans((curr) => !curr);
     setShowSkillExtractor(false);
     setShowSavedSkills(false);
+  };
+
+  const handleOpenExam = (taskId) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('examen', taskId);
+    window.history.replaceState({ studyPlans: true }, '', window.location.href);
+    window.history.pushState({ exam: true }, '', url);
+    setShowSkillExtractor(false);
+    setShowSavedSkills(false);
+    setShowStudyPlans(true);
+    setExamTaskId(String(taskId));
+  };
+
+  const handleReturnToPlans = () => {
+    if (window.history.state?.exam) {
+      window.history.back();
+      return;
+    }
+    const url = new URL(window.location.href);
+    url.searchParams.delete('examen');
+    window.history.replaceState({ studyPlans: true }, '', url);
+    setExamTaskId(null);
+    setShowStudyPlans(true);
   };
 
   const handleLogout = async () => {
@@ -98,6 +142,7 @@ export default function App() {
   };
 
   const getHeaderTitle = () => {
+    if (examTaskId) return 'Evaluación de tarea';
     if (showSkillExtractor) return 'Extraer Competencias';
     if (showSavedSkills) return 'Mis Skills Guardadas';
     if (showStudyPlans) return 'Mis planes de estudio';
@@ -137,13 +182,13 @@ export default function App() {
   // 4. SI HAY SESIÓN ACTIVA -> Tableros de la aplicación
   return (
     <div className="app-container">
-      {(showSkillExtractor || showSavedSkills || showStudyPlans || perfil?.tipo_cuenta === 'empresa') && (
+      {(showSkillExtractor || showSavedSkills || showStudyPlans || examTaskId || perfil?.tipo_cuenta === 'empresa') && (
         <Header
           title={getHeaderTitle()}
           perfil={perfil}
           showSkillExtractor={showSkillExtractor}
           showSavedSkills={showSavedSkills}
-          showStudyPlans={showStudyPlans}
+          showStudyPlans={showStudyPlans || Boolean(examTaskId)}
           onToggleExtractor={handleToggleExtractor}
           onToggleSavedSkills={handleToggleSavedSkills}
           onToggleStudyPlans={handleToggleStudyPlans}
@@ -153,12 +198,19 @@ export default function App() {
 
       {perfil?.tipo_cuenta === 'empresa' ? (
         <EmploymentBoard user={session.user} tipoCuenta="empresa" />
+      ) : examTaskId ? (
+        <StudyTaskExam
+          key={examTaskId}
+          session={session}
+          taskId={examTaskId}
+          onBack={handleReturnToPlans}
+        />
       ) : showSkillExtractor ? (
         <DocumentUploader carrera={perfil?.carrera} matricula={perfil?.matricula} />
       ) : showSavedSkills ? (
         <SavedSkillsPage carrera={perfil?.carrera} />
       ) : showStudyPlans ? (
-        <MyClassroom session={session} />
+        <MyClassroom session={session} onOpenExam={handleOpenExam} />
       ) : (
         <DynamicJobBoard
           perfil={perfil}
@@ -173,7 +225,7 @@ export default function App() {
           currentArea={getHeaderTitle()}
         />
       )}
-      {!showStudyPlans && <ActivityLog userId={session.user.id} />}
+      {!showStudyPlans && !examTaskId && <ActivityLog userId={session.user.id} />}
     </div>
   );
 }

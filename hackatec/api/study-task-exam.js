@@ -140,7 +140,7 @@ export default async function handler(req, res) {
 
     const { data: task, error: taskError } = await supabase
       .from('tareas')
-      .select('id, alumno_id, plan_estudio_id, titulo, descripcion, materia, estado, intentos_examen')
+      .select('id, alumno_id, plan_estudio_id, semana, titulo, descripcion, materia, estado, intentos_examen')
       .eq('id', taskId)
       .eq('alumno_id', user.id)
       .maybeSingle();
@@ -148,7 +148,33 @@ export default async function handler(req, res) {
     if (taskError) throw new Error(`No se pudo consultar la tarea: ${taskError.message}`);
     if (!task) return res.status(404).json({ error: 'No se encontró esa tarea.' });
     if (task.estado === 'completada') return res.status(409).json({ error: 'Esta tarea ya está acreditada.' });
-    if (task.intentos_examen >= 2) {
+
+    const { data: pendingExam, error: pendingError } = await supabase
+      .from('evaluaciones_tareas')
+      .select('id, intento, respuestas_correctas, preguntas')
+      .eq('tarea_id', task.id)
+      .eq('alumno_id', user.id)
+      .is('enviado_at', null)
+      .order('intento', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (pendingError) throw new Error(`No se pudo recuperar el examen pendiente: ${pendingError.message}`);
+    if (Array.isArray(pendingExam?.preguntas) && pendingExam.preguntas.length === 5) {
+      return res.status(200).json({
+        examId: pendingExam.id,
+        intento: pendingExam.intento,
+        task: {
+          titulo: task.titulo,
+          descripcion: task.descripcion,
+          materia: task.materia,
+          semana: task.semana,
+        },
+        preguntas: pendingExam.preguntas.map(({ pregunta, opciones }) => ({ pregunta, opciones })),
+      });
+    }
+
+    if (!pendingExam && task.intentos_examen >= 2) {
       return res.status(409).json({ error: 'Ya utilizaste los dos intentos disponibles para esta tarea.' });
     }
 
@@ -201,36 +227,64 @@ export default async function handler(req, res) {
     const exam = JSON.parse(generated.text);
     if (!isValidExam(exam)) throw new Error('El examen generado tiene un formato inválido.');
 
-    const nextAttempt = task.intentos_examen + 1;
-    const { data: claimedTask, error: claimError } = await supabase
-      .from('tareas')
-      .update({ estado: 'en_progreso', intentos_examen: nextAttempt })
-      .eq('id', task.id)
-      .eq('alumno_id', user.id)
-      .eq('intentos_examen', task.intentos_examen)
-      .neq('estado', 'completada')
-      .select('id')
-      .maybeSingle();
+    const nextAttempt = pendingExam?.intento || task.intentos_examen + 1;
+    let evaluationId = pendingExam?.id;
 
-    if (claimError) throw new Error(`No se pudo iniciar el intento: ${claimError.message}`);
-    if (!claimedTask) return res.status(409).json({ error: 'El examen ya se inició o se agotaron los intentos.' });
+    if (pendingExam) {
+      const { data: updatedEvaluation, error: updateError } = await supabase
+        .from('evaluaciones_tareas')
+        .update({
+          respuestas_correctas: exam.preguntas.map(({ respuestaCorrecta }) => respuestaCorrecta),
+          preguntas: exam.preguntas.map(({ pregunta, opciones, explicacion }) => ({ pregunta, opciones, explicacion })),
+        })
+        .eq('id', pendingExam.id)
+        .eq('alumno_id', user.id)
+        .is('enviado_at', null)
+        .select('id')
+        .maybeSingle();
 
-    const { data: evaluation, error: saveError } = await supabase
-      .from('evaluaciones_tareas')
-      .insert({
-        tarea_id: task.id,
-        alumno_id: user.id,
-        intento: nextAttempt,
-        respuestas_correctas: exam.preguntas.map(({ respuestaCorrecta }) => respuestaCorrecta),
-      })
-      .select('id')
-      .single();
+      if (updateError) throw new Error(`No se pudo actualizar el examen: ${updateError.message}`);
+      if (!updatedEvaluation) return res.status(409).json({ error: 'El examen ya fue enviado.' });
+      evaluationId = updatedEvaluation.id;
+    } else {
+      const { data: claimedTask, error: claimError } = await supabase
+        .from('tareas')
+        .update({ estado: 'en_progreso', intentos_examen: nextAttempt })
+        .eq('id', task.id)
+        .eq('alumno_id', user.id)
+        .eq('intentos_examen', task.intentos_examen)
+        .neq('estado', 'completada')
+        .select('id')
+        .maybeSingle();
 
-    if (saveError) throw new Error(`No se pudo guardar el examen: ${saveError.message}`);
+      if (claimError) throw new Error(`No se pudo iniciar el intento: ${claimError.message}`);
+      if (!claimedTask) return res.status(409).json({ error: 'El examen ya se inició o se agotaron los intentos.' });
+
+      const { data: evaluation, error: saveError } = await supabase
+        .from('evaluaciones_tareas')
+        .insert({
+          tarea_id: task.id,
+          alumno_id: user.id,
+          intento: nextAttempt,
+          respuestas_correctas: exam.preguntas.map(({ respuestaCorrecta }) => respuestaCorrecta),
+          preguntas: exam.preguntas.map(({ pregunta, opciones, explicacion }) => ({ pregunta, opciones, explicacion })),
+        })
+        .select('id')
+        .single();
+
+      if (saveError) throw new Error(`No se pudo guardar el examen: ${saveError.message}`);
+      evaluationId = evaluation.id;
+    }
 
     return res.status(200).json({
-      examId: evaluation.id,
+      examId: evaluationId,
       intento: nextAttempt,
+      task: {
+        titulo: task.titulo,
+        descripcion: task.descripcion,
+        materia: task.materia,
+        semana: task.semana,
+      },
       preguntas: exam.preguntas.map(({ pregunta, opciones }) => ({ pregunta, opciones })),
     });
   } catch (error) {

@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS public.evaluaciones_tareas (
   CONSTRAINT evaluaciones_tarea_intento_unique UNIQUE (tarea_id, intento)
 );
 
+ALTER TABLE public.evaluaciones_tareas
+  ADD COLUMN IF NOT EXISTS preguntas jsonb NOT NULL DEFAULT '[]'::jsonb
+    CHECK (preguntas = '[]'::jsonb OR jsonb_array_length(preguntas) = 5);
+
 ALTER TABLE public.evaluaciones_tareas ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON TABLE public.evaluaciones_tareas FROM anon, authenticated;
 GRANT ALL ON TABLE public.evaluaciones_tareas TO service_role;
