@@ -12,6 +12,7 @@ export default function JobDetails({
 }) {
   const [assessment, setAssessment] = useState(null);
   const [assessmentError, setAssessmentError] = useState('');
+  const [assessmentWarning, setAssessmentWarning] = useState('');
   const [assessmentLoading, setAssessmentLoading] = useState(false);
   const [savingPlan, setSavingPlan] = useState(false);
   const [planSaved, setPlanSaved] = useState(false);
@@ -72,7 +73,7 @@ export default function JobDetails({
         },
         body: JSON.stringify({ empleoId: job.id }),
       });
-      const result = await response.json();
+      const result = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(result.error || 'No se pudo registrar tu postulación.');
       setApplicationStatus('applied');
     } catch (error) {
@@ -87,6 +88,7 @@ export default function JobDetails({
     setAssessmentLoading(action === 'evaluate');
     setSavingPlan(action === 'create-plan');
     setAssessmentError('');
+    setAssessmentWarning('');
 
     try {
       const { data: { session: activeSession }, error: sessionError } = await supabase.auth.getSession();
@@ -107,6 +109,7 @@ export default function JobDetails({
       if (action === 'evaluate') {
         setAssessment(result.evaluacion);
         setPlanSaved(Boolean(result.planExistente));
+        setAssessmentWarning(result.advertencia || '');
       } else {
         setPlanSaved(true);
       }
@@ -222,6 +225,7 @@ export default function JobDetails({
 
         {assessmentError && <p className="job-skill-assessment-error" role="alert">{assessmentError}</p>}
         {assessmentLoading && <p className="job-skill-assessment-status" role="status">Analizando tu perfil y la vacante...</p>}
+        {assessmentWarning && <p className="job-skill-assessment-warning" role="status">{assessmentWarning}</p>}
 
         {assessment && (
           <div className="job-skill-assessment-result">

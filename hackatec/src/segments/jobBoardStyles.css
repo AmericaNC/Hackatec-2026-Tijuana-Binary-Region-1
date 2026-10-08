@@ -703,6 +703,17 @@
   font-size: 13px;
 }
 
+.job-skill-assessment-warning {
+  margin: 0;
+  padding: 10px 12px;
+  border-left: 3px solid var(--accent-500);
+  border-radius: 0 6px 6px 0;
+  background: var(--background-50);
+  color: var(--text-800);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 .job-skill-assessment-status {
   margin: 0;
   color: var(--primary-700);

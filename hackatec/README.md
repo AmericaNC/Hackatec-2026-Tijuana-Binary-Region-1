@@ -13,3 +13,5 @@ En Supabase, asegúrate de haber aplicado `SQL/migracion_empresas.sql` y `SQL/mi
 3. El alumno guarda sus calificaciones para un periodo y pulsa **Generar plan de estudio**. `POST /api/study-plan` valida su token, consulta sus notas guardadas y el temario de su carrera, genera un plan y lo guarda en `planes_estudio`.
 
 Se guarda un plan por alumno y periodo. Volver a generarlo para el mismo periodo actualiza ese plan.
+
+Para habilitar planes de mejora asociados a vacantes, ejecuta también `SQL/migracion_planes_vacantes.sql` en el SQL Editor de Supabase.
