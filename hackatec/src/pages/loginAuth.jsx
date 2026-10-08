@@ -13,13 +13,17 @@ export default function LoginAuth({ onGoToRegister }) {
     setLoading(true)
     setError(null)
 
-    const { error: loginError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+    try {
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
 
-    if (loginError) {
-      setError(loginError.message)
+      if (loginError) setError(loginError.message)
+    } catch (loginRequestError) {
+      console.error('Error al iniciar sesión:', loginRequestError)
+      setError(loginRequestError.message || 'No se pudo conectar con el servicio de inicio de sesión.')
+    } finally {
       setLoading(false)
     }
   }

@@ -7,11 +7,26 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState('');
+  const [step, setStep] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setError(null);
     setSuccess('');
+    setStep('');
+
+    if (!carreraId) {
+      setError('No se pudo identificar la carrera. Cierra y vuelve a abrir esta sección para cargarla de nuevo.');
+      return;
+    }
+    if (!matricula?.trim()) {
+      setError('El perfil no tiene matrícula. Completa o actualiza tu perfil antes de guardar.');
+      return;
+    }
+    if (!materias.length) {
+      setError('No hay materias disponibles para registrar.');
+      return;
+    }
 
     const periodoNormalizado = periodo.trim();
     if (!periodoNormalizado) {
@@ -37,10 +52,12 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
 
     setSaving(true);
     try {
+      setStep('Verificando sesión...');
       const { data: { user }, error: authError } = await supabase.auth.getUser();
       if (authError) throw new Error(`No se pudo verificar tu sesión: ${authError.message}`);
       if (!user) throw new Error('Inicia sesión para guardar calificaciones.');
 
+      setStep('Verificando que tu matrícula esté vinculada a tu usuario...');
       const { data: alumno, error: alumnoError } = await supabase
         .from('alumnos')
         .select('uid')
@@ -56,6 +73,7 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
       }
 
       const materiasUnicas = [...new Map(materias.map((materia) => [materia.clave, materia])).values()];
+      setStep('Guardando materias...');
       const { data: materiasGuardadas, error: materiasError } = await supabase
         .from('materias')
         .upsert(
@@ -91,6 +109,7 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
         };
       });
 
+      setStep('Guardando calificaciones...');
       const { error: calificacionesError } = await supabase
         .from('calificaciones')
         .upsert(registros, { onConflict: 'alumno_id,materia_id,periodo' });
@@ -100,16 +119,19 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
       }
 
       setSuccess(`Se guardaron ${registros.length} calificaciones para el periodo ${periodoNormalizado}.`);
+      setStep('');
     } catch (submitError) {
       console.error('Error al guardar calificaciones:', submitError);
-      setError(submitError.message || 'Ocurrió un error al guardar las calificaciones.');
+      const code = submitError.code ? ` (código: ${submitError.code})` : '';
+      setError(`${submitError.message || 'Ocurrió un error al guardar las calificaciones.'}${code}`);
+      setStep('');
     } finally {
       setSaving(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} style={styles.form}>
+    <form onSubmit={handleSubmit} noValidate style={styles.form}>
       <h4 style={styles.title}>Registrar calificaciones</h4>
       <p style={styles.description}>
         El periodo aplica a todas las calificaciones que ingreses. Las materias sin calificación no se guardarán.
@@ -128,7 +150,6 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
           }}
           placeholder="Ej. 2026-1"
           maxLength={50}
-          required
           style={styles.periodInput}
         />
       </label>
@@ -162,8 +183,9 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
 
       {error && <p role="alert" style={styles.error}>{error}</p>}
       {success && <p role="status" style={styles.success}>{success}</p>}
+      {step && <p role="status" style={styles.progress}>{step}</p>}
 
-      <button type="submit" disabled={saving || !carreraId || !matricula} style={styles.submit}>
+      <button type="submit" disabled={saving} style={styles.submit}>
         {saving ? 'Guardando...' : 'Guardar calificaciones'}
       </button>
     </form>
@@ -228,6 +250,9 @@ const styles = {
   },
   success: {
     color: '#176b35',
+  },
+  progress: {
+    color: '#245b8f',
   },
   submit: {
     marginTop: '1rem',

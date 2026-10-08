@@ -32,7 +32,7 @@ export default function DocumentUploader({ carrera, matricula, onExtractSuccess 
       try {
         const { data: carreraData, error: carreraQueryError } = await supabase
           .from('carreras')
-          .select('clave, nombre')
+          .select('id, clave, nombre')
           .eq('nombre', carrera)
           .maybeSingle();
 
