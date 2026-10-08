@@ -1,0 +1,146 @@
+.user-profile-page {
+  width: min(100% - 2rem, 960px);
+  min-height: calc(100vh - 60px);
+  margin: 0 auto;
+  padding: 1.25rem 0 3rem;
+  color: var(--text-900);
+}
+
+.user-profile-toolbar {
+  margin-bottom: 1.25rem;
+}
+
+.user-profile-back {
+  padding: 0.35rem 0;
+  border: 0;
+  background: transparent;
+  color: var(--primary-600);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.user-profile-back span {
+  margin-right: 0.35rem;
+  font-size: 1.15rem;
+}
+
+.user-profile-content {
+  overflow: hidden;
+  border: 1px solid var(--secondary-200);
+  border-radius: 8px;
+  background: var(--background-100);
+}
+
+.user-profile-heading {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding: clamp(1.25rem, 4vw, 2rem);
+  background: var(--background-50);
+}
+
+.user-profile-avatar {
+  display: grid;
+  width: 84px;
+  height: 84px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.user-profile-initials {
+  background: var(--primary-100);
+  color: var(--primary-800);
+  font-size: 1.4rem;
+  font-weight: 700;
+}
+
+.user-profile-eyebrow {
+  margin: 0 0 0.2rem;
+  color: var(--accent-700);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.user-profile-heading h1 {
+  margin: 0;
+  color: var(--text-900);
+  font-size: 1.6rem;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.user-profile-email {
+  margin: 0.35rem 0 0;
+  color: var(--text-700);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
+}
+
+.user-profile-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  padding: 0.5rem clamp(1.25rem, 4vw, 2rem);
+}
+
+.user-profile-details > div {
+  min-width: 0;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--secondary-200);
+}
+
+.user-profile-details dt {
+  color: var(--text-700);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.user-profile-details dd {
+  margin: 0.3rem 0 0;
+  color: var(--text-900);
+  font-size: 0.95rem;
+  overflow-wrap: anywhere;
+}
+
+.user-profile-message,
+.user-profile-error {
+  margin: 0;
+  padding: 1rem clamp(1.25rem, 4vw, 2rem);
+  font-size: 0.9rem;
+}
+
+.user-profile-message {
+  color: var(--text-700);
+}
+
+.user-profile-error {
+  color: #a32d25;
+}
+
+@media (max-width: 620px) {
+  .user-profile-page {
+    width: min(100% - 1.25rem, 960px);
+  }
+
+  .user-profile-heading {
+    align-items: flex-start;
+    gap: 0.9rem;
+  }
+
+  .user-profile-avatar {
+    width: 64px;
+    height: 64px;
+  }
+
+  .user-profile-heading h1 {
+    font-size: 1.25rem;
+  }
+
+  .user-profile-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

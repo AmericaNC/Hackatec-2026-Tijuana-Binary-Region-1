@@ -14,6 +14,7 @@ export default function DynamicJobBoard({
   onToggleExtractor,
   onToggleSavedSkills,
   onToggleStudyPlans,
+  onOpenProfile,
   onLogout,
   currentArea = "Demands / Offers"
 }) {
@@ -93,6 +94,7 @@ export default function DynamicJobBoard({
         onToggleExtractor={onToggleExtractor}
         onToggleSavedSkills={onToggleSavedSkills}
         onToggleStudyPlans={onToggleStudyPlans}
+        onOpenProfile={onOpenProfile}
         onLogout={onLogout}
       />
 

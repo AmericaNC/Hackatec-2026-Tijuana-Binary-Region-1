@@ -8,6 +8,7 @@ import SavedSkillsPage from './components/SavedSkillsPage';
 import MyClassroom from './segments/MyClassroom';
 import StudyTaskExam from './segments/StudyTaskExam';
 import ActivityLog from './components/ActivityLog';
+import UserProfilePage from './pages/UserProfilePage';
 
 // Importación de componentes de Autenticación
 import LandingView from './pages/landingView'; // O la ruta donde guardaste LandingView
@@ -26,6 +27,7 @@ export default function App() {
   const [showSkillExtractor, setShowSkillExtractor] = useState(false);
   const [showSavedSkills, setShowSavedSkills] = useState(false);
   const [showStudyPlans, setShowStudyPlans] = useState(false);
+  const [showUserProfile, setShowUserProfile] = useState(false);
   const [examTaskId, setExamTaskId] = useState(() => new URLSearchParams(window.location.search).get('examen'));
 
   useEffect(() => {
@@ -164,9 +166,13 @@ export default function App() {
     setShowSkillExtractor(false);
     setShowSavedSkills(false);
     setShowStudyPlans(false);
+    setShowUserProfile(false);
   };
 
+  const handleOpenProfile = () => setShowUserProfile(true);
+
   const getHeaderTitle = () => {
+    if (showUserProfile) return 'Mi perfil';
     if (examTaskId) return 'Evaluación de tarea';
     if (showSkillExtractor) return 'Extraer Competencias';
     if (showSavedSkills) return 'Mis Skills Guardadas';
@@ -207,7 +213,7 @@ export default function App() {
   // 4. SI HAY SESIÓN ACTIVA -> Tableros de la aplicación
   return (
     <div className="app-container">
-      {(showSkillExtractor || showSavedSkills || showStudyPlans || examTaskId || perfil?.tipo_cuenta === 'empresa') && (
+      {(showSkillExtractor || showSavedSkills || showStudyPlans || examTaskId || showUserProfile || perfil?.tipo_cuenta === 'empresa') && (
         <Header
           title={getHeaderTitle()}
           perfil={perfil}
@@ -217,11 +223,18 @@ export default function App() {
           onToggleExtractor={handleToggleExtractor}
           onToggleSavedSkills={handleToggleSavedSkills}
           onToggleStudyPlans={handleToggleStudyPlans}
+          onOpenProfile={handleOpenProfile}
           onLogout={handleLogout}
         />
       )}
 
-      {perfil?.tipo_cuenta === 'empresa' ? (
+      {showUserProfile ? (
+        <UserProfilePage
+          session={session}
+          perfil={perfil}
+          onBack={() => setShowUserProfile(false)}
+        />
+      ) : perfil?.tipo_cuenta === 'empresa' ? (
         <EmploymentBoard user={session.user} tipoCuenta="empresa" />
       ) : examTaskId ? (
         <StudyTaskExam
@@ -246,11 +259,12 @@ export default function App() {
           onToggleExtractor={handleToggleExtractor}
           onToggleSavedSkills={handleToggleSavedSkills}
           onToggleStudyPlans={handleToggleStudyPlans}
+          onOpenProfile={handleOpenProfile}
           onLogout={handleLogout}
           currentArea={getHeaderTitle()}
         />
       )}
-      {perfil?.tipo_cuenta !== 'empresa' && !showStudyPlans && !examTaskId && (
+      {perfil?.tipo_cuenta !== 'empresa' && !showStudyPlans && !examTaskId && !showUserProfile && (
         <ActivityLog userId={session.user.id} />
       )}
     </div>

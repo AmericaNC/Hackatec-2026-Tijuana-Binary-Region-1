@@ -9,6 +9,7 @@ export default function Header({
   onToggleExtractor,
   onToggleSavedSkills,
   onToggleStudyPlans,
+  onOpenProfile,
   onLogout
 }) {
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -60,8 +61,8 @@ export default function Header({
             aria-label="Perfil de usuario"
             onClick={() => setShowProfileMenu((prev) => !prev)}
           >
-            {perfil?.avatar_url ? (
-              <img src={perfil.avatar_url} alt="Profile" className="avatar-img" />
+            {perfil?.foto_url || perfil?.avatar_url ? (
+              <img src={perfil.foto_url || perfil.avatar_url} alt="Profile" className="avatar-img" />
             ) : (
               <span className="avatar-placeholder">👤</span>
             )}
@@ -74,6 +75,16 @@ export default function Header({
                 <span className="profile-name">{perfil?.nombre || perfil?.email || 'Mi Perfil'}</span>
                 <span className="profile-role">{perfil?.tipo_cuenta || 'Estudiante'}</span>
               </div>
+              <button
+                className="dropdown-profile-btn"
+                type="button"
+                onClick={() => {
+                  setShowProfileMenu(false);
+                  onOpenProfile?.();
+                }}
+              >
+                Ver perfil
+              </button>
               <hr className="dropdown-divider" />
               <button className="dropdown-logout-btn" onClick={onLogout}>
                 🚪 Cerrar Sesión
