@@ -7,7 +7,7 @@ import DocumentUploader from './pages/skills-extract';
 import SavedSkillsPage from './components/SavedSkillsPage';
 
 // Importación de componentes de Autenticación
-import LandingView from './pages/LandingView'; // O la ruta donde guardaste LandingView
+import LandingView from './pages/landingView'; // O la ruta donde guardaste LandingView
 import LoginAuth from './pages/loginAuth';
 import RegisterAuth from './pages/registerAuth'; // Si tienes vista de registro
 
