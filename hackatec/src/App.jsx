@@ -1,18 +1,23 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabaseClient'
-import LoginAuth from './pages//loginAuth'
+import LoginAuth from './pages/loginAuth'
 import RegisterAuth from './pages/registerAuth'
 import RegisterProfile from './pages/registerProfile'
 import DocumentUploader from './pages/skills-extract'
 import SistemasDashboard from './segments/sistemasComputacionales'
 import ElectronicaDashboard from './segments/electronica'
+import LandingView from './pages/landingView.jsx' // <-- Importamos la nueva Landing
 
 function App() {
   const [session, setSession] = useState(null)
   const [perfil, setPerfil] = useState(null)
   const [registeredUid, setRegisteredUid] = useState(null)
+  
+  // Estados de navegación
+  const [showLanding, setShowLanding] = useState(true) // <-- Nuevo estado para la Landing
   const [isRegisterView, setIsRegisterView] = useState(false)
   const [showSkillExtractor, setShowSkillExtractor] = useState(false)
+  
   const [loading, setLoading] = useState(true)
 
   async function cargarPerfil(uid) {
@@ -29,7 +34,6 @@ function App() {
   }
 
   useEffect(() => {
-    // Verificar la sesión al iniciar
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session)
       if (session?.user) {
@@ -39,7 +43,6 @@ function App() {
       }
     })
 
-    // Escuchar el estado de autenticación
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setSession(session)
       if (session?.user) {
@@ -55,10 +58,10 @@ function App() {
   }, [])
 
   if (loading) {
-    return <div style={{ textAlign: 'center', marginTop: '50px' }}>Cargando aplicación...</div>
+    return <div style={{ textAlign: 'center', marginTop: '50px', color: 'var(--text-900)' }}>Cargando aplicación...</div>
   }
 
-  // CASO 1: Transición INMEDIATA tras el registro -> Formulario de perfil de usuario
+  // CASO 1: Transición INMEDIATA tras el registro -> Formulario de perfil
   if (registeredUid && !perfil) {
     return (
       <RegisterProfile
@@ -71,7 +74,7 @@ function App() {
     )
   }
 
-  // CASO 2: Usuario autenticado pero sin registro de información en la BD (ej. cerró la ventana antes de llenar perfil)
+  // CASO 2: Usuario autenticado pero sin registro en BD
   if (session?.user && !perfil) {
     return (
       <RegisterProfile
@@ -83,8 +86,14 @@ function App() {
     )
   }
 
-  // CASO 3: Sin sesión ni registro activo -> Permite alternar entre Login y Registro
+  // CASO 3: Sin sesión activa (Flujo público)
   if (!session) {
+    // 3.1: Mostrar Landing Page por defecto
+    if (showLanding) {
+      return <LandingView onEnterApp={() => setShowLanding(false)} />
+    }
+
+    // 3.2: Mostrar Login o Registro según corresponda
     return isRegisterView ? (
       <RegisterAuth
         onAuthSuccess={(uid) => {
@@ -103,10 +112,13 @@ function App() {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', padding: '10px' }}>
-        <button onClick={() => setShowSkillExtractor((current) => !current)}>
+        <button className="login-button" style={{ padding: '8px 16px' }} onClick={() => setShowSkillExtractor((current) => !current)}>
           {showSkillExtractor ? 'Volver al panel' : 'Extraer competencias'}
         </button>
-        <button onClick={() => supabase.auth.signOut()}>Cerrar Sesión</button>
+        <button className="login-btn-verify" style={{ backgroundColor: '#dc2626' }} onClick={() => {
+          supabase.auth.signOut()
+          setShowLanding(true) // Regresar a la landing al cerrar sesión
+        }}>Cerrar Sesión</button>
       </div>
 
       {showSkillExtractor ? (
@@ -117,7 +129,7 @@ function App() {
         ) : perfil?.carrera === 'Ingeniería Electrónica' ? (
           <ElectronicaDashboard user={session.user} perfil={perfil} />
         ) : (
-          <div style={{ padding: '20px' }}>
+          <div style={{ padding: '20px', color: 'var(--text-900)' }}>
             <h2>Panel General</h2>
             <p>Bienvenido, {perfil?.nombre}</p>
           </div>
