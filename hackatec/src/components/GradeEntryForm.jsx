@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { registrarActividad } from '../utils/activityLogs';
+import './GradeEntryForm.css';
 
 export default function GradeEntryForm({ carreraId, matricula, materias }) {
   const [periodo, setPeriodo] = useState('');
@@ -309,13 +310,18 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
 
   return (
     <>
-    <form onSubmit={handleSubmit} noValidate style={styles.form}>
-      <h4 style={styles.title}>Registrar calificaciones</h4>
-      <p style={styles.description}>
+    <form onSubmit={handleSubmit} noValidate className="grade-entry-form">
+      <header className="grade-section-heading">
+        <div>
+          <p className="grade-eyebrow">Seguimiento académico</p>
+          <h2>Registrar calificaciones</h2>
+        </div>
+      </header>
+      <p className="grade-description">
         El periodo aplica a todas las calificaciones que ingreses. Las materias sin calificación no se guardarán.
       </p>
 
-      <label style={styles.periodLabel} htmlFor="grade-period">
+      <label className="grade-period-label" htmlFor="grade-period">
         Periodo
         <input
           id="grade-period"
@@ -331,16 +337,16 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
           }}
           placeholder="Ej. 2026-1"
           maxLength={50}
-          style={styles.periodInput}
+          className="grade-period-input"
         />
       </label>
 
-      <div style={styles.grades}>
+      <div className="grade-subject-list">
         {materias.map(({ clave, nombre }) => (
-          <label key={clave} style={styles.gradeRow} htmlFor={`grade-${clave}`}>
-            <span>
+          <label key={clave} className="grade-subject-card" htmlFor={`grade-${clave}`}>
+            <span className="grade-subject-info">
               <strong>{nombre}</strong>
-              <small style={styles.subjectKey}>{clave}</small>
+              <small className="grade-subject-key">{clave}</small>
             </span>
             <input
               id={`grade-${clave}`}
@@ -359,44 +365,46 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
                 setSuccess('');
               }}
               aria-label={`Calificación de ${nombre}`}
-              style={styles.gradeInput}
+              className="grade-input"
             />
             {savedMateriaKeys.includes(clave) && (
-              <small style={styles.savedGrade}>Ya registrada en este periodo</small>
+              <small className="grade-saved-label">Ya registrada en este periodo</small>
             )}
           </label>
         ))}
       </div>
 
-      {error && <p role="alert" style={styles.error}>{error}</p>}
-      {success && <p role="status" style={styles.success}>{success}</p>}
-      {step && <p role="status" style={styles.progress}>{step}</p>}
+      {error && <p role="alert" className="grade-message grade-message-error">{error}</p>}
+      {success && <p role="status" className="grade-message grade-message-success">{success}</p>}
+      {step && <p role="status" className="grade-message grade-message-progress">{step}</p>}
 
-      <button type="submit" disabled={saving || historyLoading} style={styles.submit}>
-        {saving ? 'Guardando...' : 'Guardar calificaciones'}
-      </button>
+      <div className="grade-actions">
+        <button type="submit" disabled={saving || historyLoading} className="skills-button skills-button-primary">
+          {saving ? 'Guardando...' : 'Guardar calificaciones'}
+        </button>
 
-      <button
-        type="button"
-        onClick={generarPlan}
-        disabled={
-          generatingPlan
-          || historyLoading
-          || hasUnsavedGrades
-          || !periodo.trim()
-          || savedGradesPeriod !== periodo.trim()
-        }
-        style={styles.planButton}
-      >
-        {generatingPlan ? 'Generando plan con Gemini...' : 'Generar plan de estudio'}
-      </button>
+        <button
+          type="button"
+          onClick={generarPlan}
+          disabled={
+            generatingPlan
+            || historyLoading
+            || hasUnsavedGrades
+            || !periodo.trim()
+            || savedGradesPeriod !== periodo.trim()
+          }
+          className="skills-button skills-button-secondary"
+        >
+          {generatingPlan ? 'Generando plan con Gemini...' : 'Generar plan de estudio'}
+        </button>
+      </div>
       {(savedGradesPeriod !== periodo.trim() || hasUnsavedGrades) && (
-        <p style={styles.description}>Guarda primero las calificaciones de este periodo para generar el plan.</p>
+        <p className="grade-description">Guarda primero las calificaciones de este periodo para generar el plan.</p>
       )}
-      {planError && <p role="alert" style={styles.error}>{planError}</p>}
-      {generatingPlan && <p role="status" style={styles.progress}>Consultando tus notas y preparando el plan...</p>}
+      {planError && <p role="alert" className="grade-message grade-message-error">{planError}</p>}
+      {generatingPlan && <p role="status" className="grade-message grade-message-progress">Consultando tus notas y preparando el plan...</p>}
       {studyPlan && (
-        <section style={styles.plan}>
+        <section className="grade-generated-plan">
           <h4>Tu plan de estudio · {studyPlan.periodo}</h4>
           <p>{studyPlan.plan.resumen}</p>
           <h5>Prioridades</h5>
@@ -425,30 +433,43 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
               <li key={recommendation}>{recommendation}</li>
             ))}
           </ul>
-          <p style={styles.description}>Plan guardado en tu cuenta · ID {studyPlan.id}</p>
+          <p className="grade-description">Plan guardado en tu cuenta · ID {studyPlan.id}</p>
         </section>
       )}
     </form>
-    <section style={styles.history}>
-      <h4>Calificaciones registradas</h4>
-      {historyLoading && <p role="status">Cargando tu historial...</p>}
-      {historyError && <p role="alert" style={styles.error}>{historyError}</p>}
+    <section className="grade-history">
+      <header className="grade-section-heading">
+        <div>
+          <p className="grade-eyebrow">Historial académico</p>
+          <h2>Calificaciones registradas</h2>
+        </div>
+        {!historyLoading && !historyError && gradeHistory.length > 0 && (
+          <span className="grade-count-badge">{gradeHistory.length} registros</span>
+        )}
+      </header>
+      {historyLoading && <p role="status" className="grade-history-state">Cargando tu historial...</p>}
+      {historyError && <p role="alert" className="grade-message grade-message-error">{historyError}</p>}
       {!historyLoading && !historyError && gradeHistory.length === 0 && (
-        <p>Aún no tienes calificaciones registradas.</p>
+        <p className="grade-history-state">Aún no tienes calificaciones registradas.</p>
       )}
       {!historyLoading && !historyError && gradeHistory.length > 0 && (
         [...new Set(gradeHistory.map(({ periodo: gradePeriod }) => gradePeriod))]
           .sort((left, right) => right.localeCompare(left))
           .map((gradePeriod) => (
-            <div key={gradePeriod} style={styles.historyPeriod}>
-              <h5>Periodo {gradePeriod}</h5>
-              <div style={styles.historyTableWrapper}>
-                <table style={styles.historyTable}>
+            <section key={gradePeriod} className="grade-history-period">
+              <header className="grade-period-heading">
+                <h3>Periodo {gradePeriod}</h3>
+                <span>
+                  {gradeHistory.filter(({ periodo: rowPeriod }) => rowPeriod === gradePeriod).length} materias
+                </span>
+              </header>
+              <div className="grade-history-table-wrapper">
+                <table className="grade-history-table">
                   <thead>
                     <tr>
-                      <th style={styles.historyCell}>Materia</th>
-                      <th style={styles.historyCell}>Clave</th>
-                      <th style={styles.historyCell}>Calificación</th>
+                      <th>Materia</th>
+                      <th>Clave</th>
+                      <th>Calificación</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -456,9 +477,9 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
                       .filter(({ periodo: rowPeriod }) => rowPeriod === gradePeriod)
                       .map((registro) => (
                         <tr key={`${registro.materia_id}-${registro.periodo}`}>
-                          <td style={styles.historyCell}>{registro.nombreMateria}</td>
-                          <td style={styles.historyCell}>{registro.claveMateria}</td>
-                          <td style={styles.historyCell}>
+                          <td data-label="Materia">{registro.nombreMateria}</td>
+                          <td data-label="Clave"><span className="grade-subject-key">{registro.claveMateria}</span></td>
+                          <td data-label="Calificación">
                             {registro.calificacion === null ? 'Sin calificación' : registro.calificacion}
                           </td>
                         </tr>
@@ -466,127 +487,10 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </section>
           ))
       )}
     </section>
     </>
   );
 }
-
-const styles = {
-  form: {
-    marginTop: '1.5rem',
-    paddingTop: '1.25rem',
-    borderTop: '1px solid #e0e0e0',
-  },
-  title: {
-    margin: '0 0 0.5rem 0',
-  },
-  description: {
-    color: '#666666',
-    fontSize: '0.875rem',
-  },
-  periodLabel: {
-    display: 'grid',
-    gap: '0.4rem',
-    maxWidth: '280px',
-    margin: '1rem 0',
-    fontWeight: '600',
-  },
-  periodInput: {
-    padding: '0.6rem',
-    border: '1px solid #ccc',
-    borderRadius: '6px',
-    font: 'inherit',
-    fontWeight: '400',
-  },
-  grades: {
-    display: 'grid',
-    gap: '0.5rem',
-  },
-  gradeRow: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    gap: '1rem',
-    padding: '0.75rem',
-    backgroundColor: '#ffffff',
-    border: '1px solid #e0e0e0',
-    borderRadius: '6px',
-  },
-  subjectKey: {
-    display: 'block',
-    marginTop: '0.2rem',
-    color: '#777777',
-  },
-  gradeInput: {
-    width: '100px',
-    padding: '0.5rem',
-    border: '1px solid #ccc',
-    borderRadius: '6px',
-    font: 'inherit',
-  },
-  savedGrade: {
-    color: '#5b6470',
-    fontSize: '0.75rem',
-  },
-  error: {
-    color: '#b00020',
-  },
-  success: {
-    color: '#176b35',
-  },
-  progress: {
-    color: '#245b8f',
-  },
-  submit: {
-    marginTop: '1rem',
-    padding: '0.65rem 1rem',
-    border: 0,
-    borderRadius: '6px',
-    backgroundColor: '#0066cc',
-    color: '#ffffff',
-    fontWeight: '600',
-    cursor: 'pointer',
-  },
-  planButton: {
-    marginTop: '1rem',
-    marginLeft: '0.5rem',
-    padding: '0.65rem 1rem',
-    border: '1px solid #0066cc',
-    borderRadius: '6px',
-    backgroundColor: '#ffffff',
-    color: '#0066cc',
-    fontWeight: '600',
-    cursor: 'pointer',
-  },
-  plan: {
-    marginTop: '1.5rem',
-    padding: '1rem',
-    borderRadius: '8px',
-    backgroundColor: '#f8fafd',
-    border: '1px solid #d8e5f2',
-  },
-  history: {
-    marginTop: '1.5rem',
-    paddingTop: '1.25rem',
-    borderTop: '1px solid #e0e0e0',
-  },
-  historyPeriod: {
-    marginTop: '1rem',
-  },
-  historyTableWrapper: {
-    overflowX: 'auto',
-  },
-  historyTable: {
-    width: '100%',
-    borderCollapse: 'collapse',
-    textAlign: 'left',
-    backgroundColor: '#ffffff',
-  },
-  historyCell: {
-    padding: '0.65rem',
-    border: '1px solid #e0e0e0',
-  },
-};

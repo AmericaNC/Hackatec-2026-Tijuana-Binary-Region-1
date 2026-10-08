@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import GradeEntryForm from '../components/GradeEntryForm';
+import './skills-extract.css';
 
 export default function DocumentUploader({ carrera, matricula, onExtractSuccess }) {
   const [loading, setLoading] = useState(false);
@@ -150,40 +151,59 @@ export default function DocumentUploader({ carrera, matricula, onExtractSuccess 
   };
 
   return (
-    <div style={styles.card}>
-      <h3 style={styles.title}>Extraer competencias de un temario</h3>
-      <p style={styles.subtitle}>Sube un PDF para extraer la carrera, asignatura y competencias.</p>
+    <main className="skills-extract-page">
+    <div className="skills-extract-card">
+      <header className="skills-extract-heading">
+        <p className="skills-extract-eyebrow">Herramienta académica</p>
+        <h1>Extraer competencias de un temario</h1>
+        <p>Sube un PDF para extraer la carrera, asignatura y competencias.</p>
+      </header>
 
-      <section style={styles.careerSection}>
-        <h4 style={styles.sectionTitle}>Temarios disponibles de tu carrera</h4>
-        {carreraLoading && <p>Cargando temarios...</p>}
-        {carreraError && <div style={styles.errorMessage}>⚠️ {carreraError}</div>}
+      <section className="skills-career-section">
+        <header className="skills-section-heading">
+          <div>
+            <p className="skills-extract-eyebrow">Tu carrera</p>
+            <h2>Temarios disponibles</h2>
+          </div>
+          {!carreraLoading && !carreraError && (
+            <span className="skills-count-badge">{temarios.length} materias</span>
+          )}
+        </header>
+        {carreraLoading && <p className="skills-state" role="status">Cargando temarios...</p>}
+        {carreraError && <div className="skills-message skills-message-error" role="alert">{carreraError}</div>}
         {!carreraLoading && !carreraError && (
           <>
-            <p style={styles.hint}>
-              {carrera} ({claveCarrera}) · {temarios.length} materias
-            </p>
+            <div className="skills-career-summary">
+              <strong>{carrera}</strong>
+              <span>{claveCarrera}</span>
+            </div>
             {temarios.length === 0 ? (
-              <p>No hay temarios disponibles para esta carrera.</p>
+              <p className="skills-state">No hay temarios disponibles para esta carrera.</p>
             ) : (
-              <div style={styles.courseList}>
+              <div className="skills-course-list">
                 {temarios.map(({ archivo, claveMateria, contenido }) => (
-                  <article key={archivo} style={styles.courseCard}>
-                    <h5 style={styles.courseTitle}>
-                      {contenido.asignatura?.nombre || claveMateria}
-                    </h5>
-                    <p style={styles.hint}>{contenido.asignatura?.clave || claveMateria}</p>
+                  <article key={archivo} className="skills-course-card">
+                    <header className="skills-course-heading">
+                      <div>
+                        <p className="skills-extract-eyebrow">Asignatura</p>
+                        <h3>{contenido.asignatura?.nombre || claveMateria}</h3>
+                      </div>
+                      <span className="skills-subject-key">{contenido.asignatura?.clave || claveMateria}</span>
+                    </header>
                     {contenido.competencias?.length > 0 ? (
-                      <ul style={styles.competencyList}>
+                      <div className="skills-competency-list">
                         {contenido.competencias.map((competencia) => (
-                          <li key={competencia.id} style={styles.competency}>
+                          <article className="skills-competency-card" key={competencia.id}>
+                            <span className="skills-competency-marker" aria-hidden="true">✓</span>
+                            <div>
                             <strong>{competencia.nombre}</strong>
                             <p>{competencia.descripcion}</p>
-                          </li>
+                            </div>
+                          </article>
                         ))}
-                      </ul>
+                      </div>
                     ) : (
-                      <p>Este temario no contiene competencias.</p>
+                      <p className="skills-state">Este temario no contiene competencias.</p>
                     )}
                   </article>
                 ))}
@@ -200,17 +220,17 @@ export default function DocumentUploader({ carrera, matricula, onExtractSuccess 
         )}
       </section>
 
-      <label style={{ ...styles.dropzone, opacity: loading ? 0.6 : 1 }}>
+      <label className={`skills-dropzone${loading ? ' is-loading' : ''}`}>
         <input
           type="file"
           accept="application/pdf,.pdf"
           onChange={handleFileChange}
           disabled={loading}
-          style={{ display: 'none' }}
+          className="skills-file-input"
         />
 
-        <div style={styles.iconContainer}>{loading ? '🤖' : '📄'}</div>
-        <span style={styles.uploadText}>
+        <span className="skills-upload-icon" aria-hidden="true">{loading ? '🤖' : '📄'}</span>
+        <span className="skills-upload-text">
           {loading
             ? 'Procesando documento con Inteligencia Artificial...'
             : fileName
@@ -218,128 +238,27 @@ export default function DocumentUploader({ carrera, matricula, onExtractSuccess 
             : 'Haz clic aquí para seleccionar un PDF'}
         </span>
         {!loading && !fileName && (
-          <span style={styles.hint}>PDF de hasta 3 MB</span>
+          <span className="skills-upload-hint">PDF de hasta 3 MB</span>
         )}
       </label>
 
-      {error && <div style={styles.errorMessage}>⚠️ {error}</div>}
+      {error && <div className="skills-message skills-message-error" role="alert">{error}</div>}
 
       {resultado && (
-        <section style={styles.result}>
-          <h4>Competencias extraídas</h4>
-          <button type="button" onClick={descargarJSON} style={styles.downloadButton}>
+        <section className="skills-extraction-result">
+          <header className="skills-section-heading">
+            <div>
+              <p className="skills-extract-eyebrow">Documento procesado</p>
+              <h2>Competencias extraídas</h2>
+            </div>
+            <button type="button" onClick={descargarJSON} className="skills-button skills-button-secondary">
             Descargar {resultado.asignatura.clave || 'competencias'}.json
-          </button>
-          <pre style={styles.preview}>{JSON.stringify(resultado, null, 2)}</pre>
+            </button>
+          </header>
+          <pre className="skills-json-preview">{JSON.stringify(resultado, null, 2)}</pre>
         </section>
       )}
     </div>
+    </main>
   );
 }
-
-const styles = {
-  card: {
-    maxWidth: '700px',
-    margin: '1.5rem auto',
-    padding: '1.5rem',
-    borderRadius: '12px',
-    backgroundColor: '#ffffff',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-    border: '1px solid #e0e0e0',
-    fontFamily: 'system-ui, -apple-system, sans-serif',
-  },
-  title: {
-    margin: '0 0 0.5rem 0',
-    fontSize: '1.25rem',
-    color: '#1a1a1a',
-  },
-  subtitle: {
-    margin: '0 0 1.25rem 0',
-    fontSize: '0.875rem',
-    color: '#666666',
-  },
-  careerSection: {
-    margin: '1.5rem 0',
-    padding: '1rem',
-    borderRadius: '8px',
-    backgroundColor: '#f8fafd',
-    border: '1px solid #e0e0e0',
-  },
-  sectionTitle: {
-    margin: '0 0 0.5rem 0',
-  },
-  courseList: {
-    display: 'grid',
-    gap: '0.75rem',
-  },
-  courseCard: {
-    padding: '1rem',
-    borderRadius: '6px',
-    backgroundColor: '#ffffff',
-    border: '1px solid #e0e0e0',
-  },
-  courseTitle: {
-    margin: '0 0 0.25rem 0',
-    fontSize: '1rem',
-  },
-  competencyList: {
-    paddingLeft: '1.25rem',
-  },
-  competency: {
-    marginTop: '0.75rem',
-  },
-  dropzone: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: '2rem 1rem',
-    border: '2px dashed #0066cc',
-    borderRadius: '8px',
-    backgroundColor: '#f8fafd',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-  },
-  iconContainer: {
-    fontSize: '2rem',
-    marginBottom: '0.5rem',
-  },
-  uploadText: {
-    fontSize: '0.95rem',
-    fontWeight: '600',
-    color: '#0066cc',
-    textAlign: 'center',
-  },
-  hint: {
-    marginTop: '0.4rem',
-    fontSize: '0.75rem',
-    color: '#888888',
-  },
-  errorMessage: {
-    marginTop: '1rem',
-    padding: '0.75rem',
-    borderRadius: '6px',
-    backgroundColor: '#fff0f0',
-    color: '#d32f2f',
-    fontSize: '0.85rem',
-  },
-  result: {
-    marginTop: '1.5rem',
-  },
-  downloadButton: {
-    padding: '0.6rem 1rem',
-    border: 0,
-    borderRadius: '6px',
-    backgroundColor: '#218838',
-    color: '#ffffff',
-    cursor: 'pointer',
-  },
-  preview: {
-    marginTop: '1rem',
-    padding: '1rem',
-    borderRadius: '6px',
-    backgroundColor: '#f4f4f4',
-    overflowX: 'auto',
-    fontSize: '0.85rem',
-  },
-};
