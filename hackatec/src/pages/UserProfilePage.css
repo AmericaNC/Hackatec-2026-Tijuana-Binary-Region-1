@@ -123,6 +123,7 @@
 
 .user-profile-company-form {
   display: grid;
+  min-width: 0;
   gap: 0.55rem;
   margin: 0 clamp(1.25rem, 4vw, 2rem) 1.5rem;
   padding: 1rem;
@@ -145,7 +146,11 @@
 }
 
 .user-profile-company-form textarea {
+  display: block;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   padding: 0.75rem;
   border: 1px solid var(--secondary-300);
   border-radius: 6px;

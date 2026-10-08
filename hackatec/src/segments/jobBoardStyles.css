@@ -435,8 +435,9 @@
 /* Componente 3: CompanyDetails */
 .company-details-section {
   width: 25%;
-  min-width: 220px;
   max-width: 25%;
+  box-sizing: border-box;
+  min-width: 220px;
   padding: 20px;
   overflow-y: auto;
   background-color: var(--background-100);
@@ -445,6 +446,8 @@
 
 .company-details-empty {
   width: 25%;
+  max-width: 25%;
+  box-sizing: border-box;
   min-width: 220px;
   padding: 20px;
   background-color: var(--background-100);
@@ -493,9 +496,16 @@
 }
 
 .company-about {
-  margin-top: 12px;
-  padding: 4px 0 4px 12px;
+  width: 100%;
+  min-width: 0;
+  align-self: stretch;
+  margin: 12px 0 0;
+  padding: 12px 12px 12px 10px;
+  box-sizing: border-box;
+  border: 1px solid var(--secondary-300);
   border-left: 3px solid var(--accent-500);
+  border-radius: 6px;
+  background-color: var(--background-50);
   text-align: left;
 }
 
