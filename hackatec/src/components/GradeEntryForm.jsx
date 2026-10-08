@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { registrarActividad } from '../utils/activityLogs';
+import AiContentNotice from './AiContentNotice';
 import './GradeEntryForm.css';
 
 export default function GradeEntryForm({ carreraId, matricula, materias }) {
@@ -434,6 +435,7 @@ export default function GradeEntryForm({ carreraId, matricula, materias }) {
             ))}
           </ul>
           <p className="grade-description">Plan guardado en tu cuenta · ID {studyPlan.id}</p>
+          <AiContentNotice />
         </section>
       )}
     </form>

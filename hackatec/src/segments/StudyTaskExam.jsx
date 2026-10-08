@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { supabase } from '../supabaseClient';
+import AiContentNotice from '../components/AiContentNotice';
 import './MyClassroom.css';
 import './StudyTaskExam.css';
 
@@ -108,6 +109,7 @@ export default function StudyTaskExam({ session, taskId, onBack }) {
                   {result.correctas} de 5 respuestas correctas · {result.puntaje}%.
                   {!result.acreditado && exam.intento < 2 && ' Puedes volver a intentarlo desde tus planes.'}
                 </p>
+                <AiContentNotice />
                 <button className="edit-btn primary-btn classroom-exam-button" type="button" onClick={onBack}>
                   Volver a mis planes
                 </button>
@@ -139,6 +141,7 @@ export default function StudyTaskExam({ session, taskId, onBack }) {
                 <button className="edit-btn primary-btn classroom-exam-button study-exam-submit" type="submit" disabled={busy || answers.some((answer) => answer === null)}>
                   {busy ? 'Calificando...' : 'Enviar respuestas'}
                 </button>
+                <AiContentNotice />
               </form>
             )}
           </>

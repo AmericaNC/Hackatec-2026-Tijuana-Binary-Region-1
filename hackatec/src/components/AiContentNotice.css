@@ -1,0 +1,14 @@
+.ai-content-notice {
+  margin: 0.65rem 0 0;
+  padding: 0.65rem 0.75rem;
+  border-left: 3px solid var(--accent-500);
+  border-radius: 0 6px 6px 0;
+  background: var(--background-50);
+  color: var(--text-700);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.ai-content-notice strong {
+  color: var(--text-900);
+}

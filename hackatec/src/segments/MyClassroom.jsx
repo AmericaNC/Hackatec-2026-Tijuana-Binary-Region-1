@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import ActivityLog from '../components/ActivityLog';
+import AiContentNotice from '../components/AiContentNotice';
 import './MyClassroom.css';
 
 function getPlanWeeks(plan) {
@@ -299,6 +300,7 @@ export default function MyClassroom({ session, onOpenExam }) {
                       </div>
                     ) : <p>No hay recomendaciones registradas.</p>}
                   </details>
+                  <AiContentNotice />
                 </article>
               );
             })}
@@ -385,6 +387,7 @@ export default function MyClassroom({ session, onOpenExam }) {
               })}
             </ul>
           )}
+          {selectedPlan && selectedTasks.length > 0 && <AiContentNotice />}
         </section>
       </aside>
     </main>

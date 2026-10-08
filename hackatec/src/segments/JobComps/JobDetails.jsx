@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { supabase } from '../../supabaseClient';
+import AiContentNotice from '../../components/AiContentNotice';
 import './../jobBoardStyles.css';
 
 export default function JobDetails({
@@ -283,6 +284,7 @@ export default function JobDetails({
               </button>
             )}
             {savingPlan && <p className="job-skill-assessment-status" role="status">Creando una ruta personalizada para esta vacante...</p>}
+            <AiContentNotice />
           </div>
         )}
       </section>
