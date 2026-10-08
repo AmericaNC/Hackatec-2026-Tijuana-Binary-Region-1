@@ -72,6 +72,11 @@ export default function App() {
     setShowSavedSkills(false);
   };
 
+  const handleToggleSavedSkills = () => {
+    setShowSavedSkills((curr) => !curr);
+    setShowSkillExtractor(false);
+  };
+
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setSession(null);
@@ -79,22 +84,6 @@ export default function App() {
     setAuthView('landing');
     setShowSkillExtractor(false);
     setShowSavedSkills(false);
-  };
-
-  const handleGoToDashboard = () => {
-    setShowSavedSkills(false);
-    setShowSkillExtractor(false);
-  };
-
-  const handleToggleSavedSkills = () => {
-    if (showSavedSkills) {
-      // Si ya estamos en 'Mis Skills', regresamos al panel principal
-      handleGoToDashboard();
-    } else {
-      // Si estamos en otra vista, mostramos 'Mis Skills'
-      setShowSavedSkills(true);
-      setShowSkillExtractor(false);
-    }
   };
 
   const getHeaderTitle = () => {

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { obtenerSkillsCurriculares } from '../utils/skills.js';
 import SkillsTracker from './SkillsTracker';
-import './SavedSkillsPage.css';
 
 export default function SavedSkillsPage({ carrera }) {
   const [competencias, setCompetencias] = useState([]);
@@ -31,7 +30,6 @@ export default function SavedSkillsPage({ carrera }) {
         const params = new URLSearchParams({ clave: carreraData.clave });
         const response = await fetch(`/api/carrera?${params.toString()}`);
         const result = await response.json();
-
         if (!response.ok) {
           throw new Error(result.error || 'No se pudieron cargar las competencias curriculares.');
         }
@@ -53,21 +51,31 @@ export default function SavedSkillsPage({ carrera }) {
     return () => { isCurrent = false; };
   }, [carrera]);
 
-  if (loading) {
-    return <p className="saved-skills-message">Cargando tus skills guardadas...</p>;
-  }
-
-  if (error) {
-    return <p role="alert" className="saved-skills-error">{error}</p>;
-  }
+  if (loading) return <p style={styles.message}>Cargando tus skills guardadas...</p>;
+  if (error) return <p role="alert" style={styles.error}>{error}</p>;
 
   return (
-    <main className="saved-skills-page">
-      <h2 className="saved-skills-title">Mis skills guardadas</h2>
-      <p className="saved-skills-description">
-        Consulta tu progreso curricular y administra las skills personales guardadas en tu cuenta.
-      </p>
+    <main style={styles.page}>
+      <h2>Mis skills guardadas</h2>
+      <p>Consulta tu progreso curricular y administra las skills personales guardadas en tu cuenta.</p>
       <SkillsTracker competenciasCurriculares={competencias} />
     </main>
   );
 }
+
+const styles = {
+  page: {
+    maxWidth: '900px',
+    margin: '1.5rem auto',
+    padding: '1.5rem',
+    color: 'var(--text-900, #1a1a1a)',
+  },
+  message: {
+    padding: '1.5rem',
+    textAlign: 'center',
+  },
+  error: {
+    margin: '1.5rem',
+    color: '#b42318',
+  },
+};
