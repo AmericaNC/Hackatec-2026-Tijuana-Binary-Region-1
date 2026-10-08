@@ -14,6 +14,12 @@ export default function MyClassroom({ session }) {
   const [error, setError] = useState('');
   const [taskError, setTaskError] = useState('');
   const [creatingTasks, setCreatingTasks] = useState(false);
+  const [activeTaskId, setActiveTaskId] = useState('');
+  const [activeExam, setActiveExam] = useState(null);
+  const [examAnswers, setExamAnswers] = useState([]);
+  const [examResult, setExamResult] = useState(null);
+  const [examError, setExamError] = useState('');
+  const [examBusy, setExamBusy] = useState(false);
   const userId = session?.user?.id;
 
   useEffect(() => {
@@ -46,7 +52,7 @@ export default function MyClassroom({ session }) {
           for (let from = 0; ; from += 1000) {
             const { data: tasks, error: tasksError } = await supabase
               .from('tareas')
-              .select('id, plan_estudio_id, periodo, semana, titulo, descripcion, materia, prioridad, duracion_minutos, estado, created_at')
+              .select('id, plan_estudio_id, periodo, semana, titulo, descripcion, materia, prioridad, duracion_minutos, estado, intentos_examen, ultimo_puntaje, created_at')
               .eq('alumno_id', userId)
               .order('semana', { ascending: true })
               .range(from, from + 999);
@@ -130,6 +136,79 @@ export default function MyClassroom({ session }) {
       setTaskError(createError.message || 'No se pudieron crear las tareas.');
     } finally {
       setCreatingTasks(false);
+    }
+  };
+
+  const sendExamRequest = async (body) => {
+    const { data: { session: activeSession }, error: sessionError } = await supabase.auth.getSession();
+    if (sessionError) throw new Error(`No se pudo verificar tu sesión: ${sessionError.message}`);
+    if (!activeSession?.access_token) throw new Error('Inicia sesión para evaluar esta tarea.');
+
+    const response = await fetch('/api/study-task-exam', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${activeSession.access_token}`,
+      },
+      body: JSON.stringify(body),
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'No se pudo procesar el examen.');
+    return result;
+  };
+
+  const startExam = async (task) => {
+    setExamBusy(true);
+    setExamError('');
+    setExamResult(null);
+    setActiveTaskId(String(task.id));
+    try {
+      const exam = await sendExamRequest({ action: 'start', taskId: task.id });
+      setActiveExam({ ...exam, taskId: task.id });
+      setExamAnswers(Array(exam.preguntas.length).fill(null));
+      setPlans((current) => current.map((plan) => ({
+        ...plan,
+        tareas: plan.tareas.map((savedTask) => (
+          savedTask.id === task.id
+            ? { ...savedTask, estado: 'en_progreso', intentos_examen: exam.intento }
+            : savedTask
+        )),
+      })));
+    } catch (startError) {
+      setExamError(startError.message || 'No se pudo iniciar el examen.');
+    } finally {
+      setExamBusy(false);
+    }
+  };
+
+  const submitExam = async () => {
+    if (!activeExam || examAnswers.some((answer) => answer === null)) return;
+    setExamBusy(true);
+    setExamError('');
+    try {
+      const result = await sendExamRequest({
+        action: 'submit',
+        examId: activeExam.examId,
+        answers: examAnswers,
+      });
+      setExamResult({ ...result, intento: activeExam.intento });
+      setPlans((current) => current.map((plan) => ({
+        ...plan,
+        tareas: plan.tareas.map((task) => (
+          task.id === activeExam.taskId
+            ? {
+              ...task,
+              estado: result.acreditado ? 'completada' : 'en_progreso',
+              ultimo_puntaje: result.puntaje,
+            }
+            : task
+        )),
+      })));
+      setActiveExam(null);
+    } catch (submitError) {
+      setExamError(submitError.message || 'No se pudo enviar el examen.');
+    } finally {
+      setExamBusy(false);
     }
   };
 
@@ -327,12 +406,69 @@ export default function MyClassroom({ session }) {
           {selectedPlan && selectedTasks.length === 0 && <p>Aún no se han creado tareas para este plan.</p>}
           {selectedPlan && selectedTasks.length > 0 && (
             <ul className="classroom-task-list">
-              {selectedTasks.map((task) => (
-                <li key={task.id}>
-                  <strong>{task.titulo}</strong>
-                  <span>Semana {task.semana} · {task.estado}</span>
-                </li>
-              ))}
+              {selectedTasks.map((task) => {
+                const isActive = activeTaskId === String(task.id);
+                const attempts = Number(task.intentos_examen) || 0;
+                return (
+                  <li key={task.id}>
+                    <strong>{task.titulo}</strong>
+                    <span>Semana {task.semana} · {task.materia} · {task.estado.replace('_', ' ')}</span>
+                    <p className="classroom-task-description">{task.descripcion}</p>
+                    <span>Intentos: {attempts}/2{task.ultimo_puntaje !== null && task.ultimo_puntaje !== undefined ? ` · Último puntaje: ${task.ultimo_puntaje}%` : ''}</span>
+                    {task.estado !== 'completada' && (
+                      <button
+                        className="edit-btn primary-btn classroom-exam-button"
+                        type="button"
+                        onClick={() => startExam(task)}
+                        disabled={examBusy || attempts >= 2}
+                      >
+                        {examBusy && isActive ? 'Preparando examen...' : attempts >= 2 ? 'Intentos agotados' : attempts ? 'Presentar segundo intento' : 'Iniciar examen'}
+                      </button>
+                    )}
+                    {isActive && examError && <p className="classroom-error" role="alert">{examError}</p>}
+                    {isActive && examResult && (
+                      <p className={`classroom-exam-result${examResult.acreditado ? ' is-passed' : ''}`} role="status">
+                        {examResult.acreditado
+                          ? `Tarea acreditada: ${examResult.correctas}/5 respuestas correctas (${examResult.puntaje}%).`
+                          : `No acreditada: ${examResult.correctas}/5 respuestas correctas (${examResult.puntaje}%). Puedes volver a intentarlo una vez.`}
+                      </p>
+                    )}
+                    {isActive && activeExam && (
+                      <form
+                        className="classroom-exam"
+                        onSubmit={(event) => {
+                          event.preventDefault();
+                          submitExam();
+                        }}
+                      >
+                        <h3>Examen · intento {activeExam.intento} de 2</h3>
+                        {activeExam.preguntas.map((question, questionIndex) => (
+                          <fieldset className="classroom-exam-question" key={`${activeExam.examId}-${questionIndex}`}>
+                            <legend>{questionIndex + 1}. {question.pregunta}</legend>
+                            {question.opciones.map((option, optionIndex) => (
+                              <label key={`${questionIndex}-${optionIndex}`}>
+                                <input
+                                  type="radio"
+                                  name={`exam-${activeExam.examId}-question-${questionIndex}`}
+                                  value={optionIndex}
+                                  checked={examAnswers[questionIndex] === optionIndex}
+                                  onChange={() => setExamAnswers((current) => current.map((answer, index) => (
+                                    index === questionIndex ? optionIndex : answer
+                                  )))}
+                                />
+                                {option}
+                              </label>
+                            ))}
+                          </fieldset>
+                        ))}
+                        <button className="edit-btn primary-btn classroom-exam-button" type="submit" disabled={examBusy || examAnswers.some((answer) => answer === null)}>
+                          {examBusy ? 'Calificando...' : 'Enviar examen'}
+                        </button>
+                      </form>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           )}
         </section>
